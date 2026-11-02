@@ -81,8 +81,6 @@ jobs:
 
   build:
     name: Build on ${{ matrix.os }}
-    # Pull requests and manual runs only: macOS minutes are expensive on a private repo.
-    if: github.event_name != 'push'
     needs: checks
     strategy:
       fail-fast: false
