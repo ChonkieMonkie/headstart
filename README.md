@@ -2,7 +2,7 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M0 (foundations)**. The app installs, lives in the menu bar or system tray and updates itself. Study features arrive in M1–M5. See [docs/technical-plan.md](docs/technical-plan.md).
+> Status: milestone **M0 (foundations)**. The app installs, lives in the menu bar or system tray and updates itself. Study features arrive in the next milestones.
 
 ## Installing (unsigned builds)
 
@@ -36,7 +36,7 @@ pnpm build            # build installers for the current OS
 apps/desktop/         Tauri 2 app: SvelteKit UI in src/, Rust shell in src-tauri/
 packages/core/        domain logic in pure TypeScript (timer, rewards, crates …)
 packages/ui/          design tokens, fonts and shared Svelte components
-docs/                 technical plan and decisions
+scripts/              repository tooling, such as the licence check
 .github/workflows/    CI and release builds for all three operating systems
 ```
 
@@ -49,8 +49,25 @@ docs/                 technical plan and decisions
 
 Update files are signed with the key in the `TAURI_SIGNING_PRIVATE_KEY` repository secret. The matching public key is in `apps/desktop/src-tauri/tauri.conf.json`. Never commit the private key.
 
-## Licence
+## License
 
-Headstart is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License, version 3 or (at your option) any later version**. See [LICENSE](LICENSE).
+```
+Headstart, a study companion that helps you get started, stay focused and keep going.
+Copyright (C) 2026  ChonkieMonkie
 
-The bundled Fredoka and Nunito fonts are licensed under the SIL Open Font License 1.1.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
+
+The full license is in [LICENSE](LICENSE). The bundled Fredoka and Nunito fonts are licensed under the SIL Open Font License 1.1. Questions, bugs or ideas: open an
+[issue on GitHub](https://github.com/ChonkieMonkie/headstart/issues).
