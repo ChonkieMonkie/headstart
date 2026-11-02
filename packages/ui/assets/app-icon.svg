@@ -1,0 +1,14 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Source for the app icons. Regenerate them with "pnpm icons" in apps/desktop. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect x="100" y="100" width="824" height="824" rx="190" fill="#5B4BD6"/>
+  <g transform="translate(100 100) scale(8.24) translate(12 12) scale(0.76)" fill="#FFFFFF" stroke="#FFFFFF">
+    <rect x="43" y="3" width="14" height="10" rx="3.5" stroke="none"/>
+    <rect x="74" y="13" width="10" height="8" rx="3" stroke="none" transform="rotate(40 79 17)"/>
+    <circle cx="50" cy="55" r="34" fill="none" stroke-opacity="0.35" stroke-width="8"/>
+    <circle cx="50" cy="55" r="34" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="38 214" transform="rotate(-90 50 55)"/>
+    <path d="M33 53 Q40 44 47 53" fill="none" stroke-width="6" stroke-linecap="round"/>
+    <path d="M53 53 Q60 44 67 53" fill="none" stroke-width="6" stroke-linecap="round"/>
+    <path d="M36 62 Q50 79 64 62 Z" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+</svg>

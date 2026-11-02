@@ -1,0 +1,23 @@
+{
+  "name": "headstart",
+  "private": true,
+  "description": "A study companion that helps you get started, stay focused and keep going.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @headstart/desktop tauri dev",
+    "build": "pnpm --filter @headstart/desktop tauri build",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "check:licenses": "node scripts/check-licenses.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4"
+  }
+}

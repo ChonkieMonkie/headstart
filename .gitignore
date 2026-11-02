@@ -1,0 +1,22 @@
+# Dependencies and build output
+node_modules/
+build/
+dist/
+coverage/
+.svelte-kit/
+target/
+**/src-tauri/gen/schemas/
+
+# Secrets: updater signing keys and env files never go in git
+.secrets/
+*.key
+*.key.pub
+.env
+.env.*
+!.env.example
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.log
+vite.config.*.timestamp-*

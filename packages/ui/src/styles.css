@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* Headstart design tokens and base styles. Bundled fonts so the app works offline. */
+/* biome-ignore-all lint/complexity/noImportantStyles: the reduced-motion reset must override every component animation */
+
+@import "@fontsource-variable/fredoka";
+@import "@fontsource-variable/nunito";
+
+:root {
+  /* Colour */
+  --hs-ink: #1b2236;
+  --hs-ink-muted: #4a5370;
+  --hs-ink-subtle: #5a6378;
+  --hs-ground: #f3f5fa;
+  --hs-surface: #ffffff;
+  --hs-line: #e2e6ef;
+  --hs-accent: #5b4bd6;
+  --hs-accent-strong: #4335b0;
+  --hs-accent-soft: #eeecfe;
+  --hs-lavender: #e9e6fd;
+  --hs-success: #2f9e6e;
+  --hs-success-strong: #1e6b4a;
+  --hs-success-soft: #e3f4ec;
+  --hs-focus-ground: #1b1f3b;
+  --hs-focus-surface: #232850;
+  --hs-focus-accent: #a99bff;
+  --hs-focus-text: #f3f5fa;
+  --hs-focus-text-muted: #b8bfd6;
+
+  /* Type */
+  --hs-font-display: "Fredoka Variable", "Fredoka", system-ui, sans-serif;
+  --hs-font-body: "Nunito Variable", "Nunito", system-ui, sans-serif;
+
+  /* Shape and space */
+  --hs-radius-sm: 10px;
+  --hs-radius-md: 14px;
+  --hs-radius-lg: 20px;
+  --hs-space-1: 4px;
+  --hs-space-2: 8px;
+  --hs-space-3: 12px;
+  --hs-space-4: 16px;
+  --hs-space-5: 24px;
+  --hs-space-6: 32px;
+  --hs-shadow-pop: 0 12px 32px rgb(27 34 54 / 0.22);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--hs-ground);
+  color: var(--hs-ink);
+  font-family: var(--hs-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--hs-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

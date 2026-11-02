@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// Design tokens from the design canvas. styles.css mirrors these as CSS custom
+// properties; use this file where a raw value is needed (SVG attributes, canvas).
+
+export const colors = {
+  ink: "#1B2236",
+  inkMuted: "#4A5370",
+  inkSubtle: "#5A6378",
+  ground: "#F3F5FA",
+  surface: "#FFFFFF",
+  line: "#E2E6EF",
+  accent: "#5B4BD6",
+  accentStrong: "#4335B0",
+  accentSoft: "#EEECFE",
+  lavender: "#E9E6FD",
+  success: "#2F9E6E",
+  successStrong: "#1E6B4A",
+  successSoft: "#E3F4EC",
+  focusGround: "#1B1F3B",
+  focusSurface: "#232850",
+  focusAccent: "#A99BFF",
+  focusText: "#F3F5FA",
+  focusTextMuted: "#B8BFD6",
+} as const;
+
+export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
+
+/** Rarity colours: `dot` for markers, `fg`/`bg` for readable labels (4.5:1 contrast). */
+export const rarityColors: Record<Rarity, { dot: string; fg: string; bg: string }> = {
+  common: { dot: "#8A93A6", fg: "#4B5468", bg: "#ECEEF2" },
+  uncommon: { dot: "#2F9E6E", fg: "#1E6B4A", bg: "#E3F4EC" },
+  rare: { dot: "#2F7FD8", fg: "#1D5FA8", bg: "#E3EEFA" },
+  epic: { dot: "#8B5CF6", fg: "#6D3FD6", bg: "#EFE9FE" },
+  legendary: { dot: "#E8890C", fg: "#8F5300", bg: "#FDF0DC" },
+};
+
+export const fonts = {
+  display: "'Fredoka Variable', 'Fredoka', system-ui, sans-serif",
+  body: "'Nunito Variable', 'Nunito', system-ui, sans-serif",
+} as const;
