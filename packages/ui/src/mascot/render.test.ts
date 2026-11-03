@@ -128,4 +128,18 @@ describe("mascot renderer", () => {
       }
     }
   });
+
+  it("draws still and grey versions for long lists", () => {
+    const item = items.find((i) => i.id === "aura.orbit-of-focus");
+    if (!item) throw new Error("missing test item");
+    const look = itemPreview(item, "maple", items);
+    expect(renderMascot(look)).toContain("animation:");
+    const still = renderMascot(look, "idle", { still: true });
+    expect(still).not.toContain("animation");
+    expectClean(still, "still");
+    const grey = renderMascot(look, "idle", { grey: true });
+    for (const [, hex] of grey.matchAll(/#([0-9A-F]{6})/gi)) {
+      expect(hex?.slice(0, 2), "grey").toBe(hex?.slice(2, 4));
+    }
+  });
 });

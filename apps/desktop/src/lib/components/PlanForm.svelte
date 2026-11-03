@@ -16,12 +16,14 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Plans a session for a task (or just a course) at a set time. -->
+<!-- Plans a session for a task (or just a course) at a set time, and which to-dos it is for. -->
 <script lang="ts">
   import { untrack } from "svelte";
   import { localDayKey, planSession } from "@headstart/core";
   import { fromInputs, toTimeInput } from "$lib/format.ts";
+  import { taskGroups } from "$lib/options.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import Select from "./Select.svelte";
 
   let {
     study,
@@ -41,20 +43,50 @@
   let time = $state(toTimeInput(soon));
   let minutes = $state(25);
   let error = $state<string | null>(null);
+  let chosen = $state(new Set<string>());
+
+  const picked = $derived.by(() => {
+    const [kind, id] = target.split(":");
+    if (kind === "task" && id) {
+      const task = study.task(id);
+      return task ? { courseId: task.courseId, taskId: id } : null;
+    }
+    return kind === "course" && id ? { courseId: id, taskId: null } : null;
+  });
+  // The task's to-dos first, then the rest of the course.
+  const todos = $derived.by(() => {
+    if (!picked) return [];
+    const all = study.todosOf(picked.courseId).filter((t) => t.planId === null);
+    return picked.taskId ? [...all.filter((t) => t.taskId === picked.taskId), ...all.filter((t) => t.taskId !== picked.taskId)] : all;
+  });
+
+  function choose(id: string, on: boolean): void {
+    const next = new Set(chosen);
+    if (on) next.add(id);
+    else next.delete(id);
+    chosen = next;
+  }
 
   async function submit(): Promise<void> {
     const [kind, id] = target.split(":");
+    const planId = study.newId();
     const result = await study.run((s) =>
       planSession(s, {
-        planId: study.newId(),
+        planId,
         startAt: new Date(fromInputs(day, time)),
         minutes,
         ...(kind === "task" && id ? { taskId: id } : {}),
         ...(kind === "course" && id ? { courseId: id } : {}),
       }),
     );
-    if (result.ok) onDone();
-    else error = result.reason;
+    if (!result.ok) {
+      error = result.reason;
+      return;
+    }
+    for (const todo of todos) {
+      if (chosen.has(todo.id)) await study.assignTodo(todo.id, { planId });
+    }
+    onDone();
   }
 </script>
 
@@ -65,20 +97,10 @@
     submit();
   }}
 >
-  <label class="wide">
+  <div class="wide field">
     <span>What</span>
-    <select bind:value={target}>
-      <option value="">Free session, no course</option>
-      {#each study.courses as course (course.id)}
-        <optgroup label={course.name}>
-          <option value="course:{course.id}">{course.name}, no task</option>
-          {#each study.tasksOf(course.id).filter((t) => !t.done) as task (task.id)}
-            <option value="task:{task.id}">{task.title}</option>
-          {/each}
-        </optgroup>
-      {/each}
-    </select>
-  </label>
+    <Select bind:value={target} groups={taskGroups(study, { none: "Free session, no course", courses: true })} label="What" onchange={() => (chosen = new Set())} />
+  </div>
   <label>
     <span>Day</span>
     <input type="date" bind:value={day} required />
@@ -87,14 +109,22 @@
     <span>Start</span>
     <input type="time" bind:value={time} required />
   </label>
-  <label>
+  <div class="field">
     <span>Length</span>
-    <select bind:value={minutes}>
-      {#each LENGTHS as length (length)}
-        <option value={length}>{length} min</option>
+    <Select bind:value={minutes} groups={[{ label: "", options: LENGTHS.map((m) => ({ value: m, label: `${m} min` })) }]} label="Length" />
+  </div>
+  {#if todos.length > 0}
+    <fieldset class="wide todos">
+      <legend>To-dos for this session (optional)</legend>
+      {#each todos as todo (todo.id)}
+        <label class="check">
+          <input type="checkbox" checked={chosen.has(todo.id)} onchange={(e) => choose(todo.id, e.currentTarget.checked)} />
+          {todo.text}
+          {#if todo.taskId && todo.taskId !== picked?.taskId}<span class="muted">{study.task(todo.taskId)?.title}</span>{/if}
+        </label>
       {/each}
-    </select>
-  </label>
+    </fieldset>
+  {/if}
   <div class="actions">
     <button type="submit" class="primary">Plan session</button>
     <button type="button" class="secondary" onclick={onDone}>Cancel</button>
@@ -118,7 +148,9 @@
     grid-column: 1 / -1;
   }
 
-  label {
+  label,
+  .field,
+  legend {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -127,8 +159,7 @@
     color: var(--hs-ink-muted);
   }
 
-  input,
-  select {
+  input:not([type="checkbox"]) {
     min-height: 42px;
     box-sizing: border-box;
     padding: 0 10px;
@@ -138,6 +169,36 @@
     font: inherit;
     font-weight: 600;
     color: var(--hs-ink);
+  }
+
+  .todos {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  label.check {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--hs-ink);
+  }
+
+  .check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--hs-accent);
+  }
+
+  .muted {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hs-ink-subtle);
   }
 
   .actions {
@@ -176,7 +237,6 @@
   }
 
   input:focus-visible,
-  select:focus-visible,
   button:focus-visible {
     outline: 3px solid var(--hs-accent);
     outline-offset: 2px;

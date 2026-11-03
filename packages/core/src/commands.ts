@@ -21,7 +21,14 @@
 import type { MascotId, Slot } from "@headstart/content";
 import { craftBlocker, itemFits, rollCrate } from "./crates.ts";
 import type { FocusRating, StudyEvent } from "./events.ts";
-import { type CoreContext, owns, type Plan, type ProgressState } from "./state.ts";
+import {
+  type CoreContext,
+  openPlanFor,
+  owns,
+  type Plan,
+  type ProgressState,
+  type Todo,
+} from "./state.ts";
 
 export type CommandResult<E extends StudyEvent = StudyEvent> =
   | { ok: true; event: E }
@@ -37,6 +44,7 @@ export const MAX_EXTENSION_MINUTES = 60;
 export const MAX_NAME_LENGTH = 60;
 export const MAX_TITLE_LENGTH = 120;
 export const MAX_STEP_LENGTH = 200;
+export const MAX_CODE_LENGTH = 16;
 
 export interface StartSessionInput {
   sessionId: string;
@@ -200,7 +208,7 @@ function isFocusRating(n: number): n is FocusRating {
   return Number.isInteger(n) && n >= 1 && n <= 5;
 }
 
-// Courses and tasks
+// Courses, tasks and to-dos
 
 /** Trims text and checks its length; returns the clean text or a reason. */
 function cleanText(text: string, what: string, max: number): { text: string } | { reason: string } {
@@ -221,14 +229,25 @@ export function isDateKey(value: string): boolean {
 
 const isColor = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value);
 
+/** A course code without spaces at the ends, or a reason. "" means no code. */
+function cleanCode(code: string): { code: string } | { reason: string } {
+  const clean = code.trim().replace(/\s+/g, " ");
+  if (clean.length > MAX_CODE_LENGTH) {
+    return { reason: `The course code can be at most ${MAX_CODE_LENGTH} characters` };
+  }
+  return { code: clean };
+}
+
 export function createCourse(
   state: ProgressState,
-  input: { courseId: string; name: string; color: string; examDate?: string },
+  input: { courseId: string; name: string; color: string; code?: string; examDate?: string },
 ): CommandResult<EventOf<"course.created">> {
   if (state.courses.has(input.courseId)) return reject("That course already exists");
   const name = cleanText(input.name, "The course name", MAX_NAME_LENGTH);
   if ("reason" in name) return reject(name.reason);
   if (!isColor(input.color)) return reject("Pick a colour");
+  const code = cleanCode(input.code ?? "");
+  if ("reason" in code) return reject(code.reason);
   if (input.examDate !== undefined && !isDateKey(input.examDate))
     return reject("Unknown exam date");
   return accept({
@@ -236,6 +255,7 @@ export function createCourse(
     courseId: input.courseId,
     name: name.text,
     color: input.color,
+    ...(code.code ? { code: code.code } : {}),
     ...(input.examDate ? { examDate: input.examDate } : {}),
   });
 }
@@ -243,9 +263,10 @@ export function createCourse(
 export function updateCourse(
   state: ProgressState,
   courseId: string,
-  changes: { name?: string; color?: string; examDate?: string | null },
+  changes: { name?: string; color?: string; code?: string | null; examDate?: string | null },
 ): CommandResult<EventOf<"course.updated">> {
-  if (!state.courses.has(courseId)) return reject("Unknown course");
+  const course = state.courses.get(courseId);
+  if (!course) return reject("Unknown course");
   const event: EventOf<"course.updated"> = { type: "course.updated", courseId };
   if (changes.name !== undefined) {
     const name = cleanText(changes.name, "The course name", MAX_NAME_LENGTH);
@@ -256,12 +277,40 @@ export function updateCourse(
     if (!isColor(changes.color)) return reject("Pick a colour");
     event.color = changes.color;
   }
+  if (changes.code !== undefined) {
+    const code = cleanCode(changes.code ?? "");
+    if ("reason" in code) return reject(code.reason);
+    const next = code.code || null;
+    if (next !== course.code) event.code = next;
+  }
   if (changes.examDate !== undefined) {
     if (changes.examDate !== null && !isDateKey(changes.examDate))
       return reject("Unknown exam date");
     event.examDate = changes.examDate;
   }
   return accept(event);
+}
+
+/**
+ * A course code typed at the end or start of a name, such as "MA1041" in
+ * "Calculus 1 MA1041": letters followed by digits (and maybe one more
+ * letter). Returns the code and the name without it, or null.
+ */
+export function codeInName(name: string): { code: string; name: string } | null {
+  const pattern = /^[A-Za-zÅÄÖåäö]{2,6}\d{2,4}[A-Za-z]?$/;
+  const words = name.trim().split(/\s+/);
+  if (words.length < 2) return null;
+  for (const index of [words.length - 1, 0]) {
+    const word = (words[index] ?? "").replace(/^[([]|[)\],:]$/g, "");
+    if (!pattern.test(word)) continue;
+    const rest = words
+      .filter((_, i) => i !== index)
+      .join(" ")
+      .replace(/\s*[-–:,]\s*$/, "")
+      .replace(/^\s*[-–:,]\s*/, "");
+    if (rest) return { code: word.toUpperCase(), name: rest };
+  }
+  return null;
 }
 
 export function archiveCourse(
@@ -387,4 +436,129 @@ export function cancelPlan(
   const found = openPlan(state, planId);
   if ("reason" in found) return reject(found.reason);
   return accept({ type: "plan.cancelled", planId });
+}
+
+// To-dos
+
+function openTodo(state: ProgressState, todoId: string): { todo: Todo } | { reason: string } {
+  const todo = state.todos.get(todoId);
+  if (!todo) return { reason: "Unknown to-do" };
+  if (todo.done) return { reason: "That to-do is already done" };
+  return { todo };
+}
+
+/** Where a to-do goes: a planned session, the running session, or nowhere (the course list). */
+export type TodoTarget = { planId: string } | { sessionId: string } | null;
+
+function checkTarget(
+  state: ProgressState,
+  courseId: string,
+  target: TodoTarget,
+): { planId?: string; sessionId?: string } | { reason: string } {
+  if (target === null) return {};
+  if ("planId" in target) {
+    const plan = openPlanFor(state, target.planId);
+    if (!plan) return { reason: "That session has already started or was removed" };
+    if (plan.courseId && plan.courseId !== courseId) {
+      return { reason: "That session is for another course" };
+    }
+    return { planId: plan.id };
+  }
+  const active = state.active;
+  if (!active || active.sessionId !== target.sessionId) return { reason: "No session is running" };
+  if (active.courseId && active.courseId !== courseId) {
+    return { reason: "The running session is for another course" };
+  }
+  return { sessionId: active.sessionId };
+}
+
+export function createTodo(
+  state: ProgressState,
+  input: { todoId: string; courseId: string; taskId?: string; text: string; target?: TodoTarget },
+): CommandResult<EventOf<"todo.created">> {
+  if (state.todos.has(input.todoId)) return reject("That to-do already exists");
+  const course = state.courses.get(input.courseId);
+  if (!course || course.archived) return reject("Pick a course");
+  if (input.taskId) {
+    const task = state.tasks.get(input.taskId);
+    if (!task || task.courseId !== input.courseId) return reject("Unknown task");
+  }
+  const text = cleanText(input.text, "The to-do", MAX_STEP_LENGTH);
+  if ("reason" in text) return reject(text.reason);
+  const target = checkTarget(state, input.courseId, input.target ?? null);
+  if ("reason" in target) return reject(target.reason);
+  return accept({
+    type: "todo.created",
+    todoId: input.todoId,
+    courseId: input.courseId,
+    ...(input.taskId ? { taskId: input.taskId } : {}),
+    text: text.text,
+    ...target,
+  });
+}
+
+export function updateTodo(
+  state: ProgressState,
+  todoId: string,
+  text: string,
+): CommandResult<EventOf<"todo.updated">> {
+  const todo = state.todos.get(todoId);
+  if (!todo) return reject("Unknown to-do");
+  const clean = cleanText(text, "The to-do", MAX_STEP_LENGTH);
+  if ("reason" in clean) return reject(clean.reason);
+  if (clean.text === todo.text) return reject("Nothing changed");
+  return accept({ type: "todo.updated", todoId, text: clean.text });
+}
+
+/** Ticks a to-do off. During a session it counts for that session. */
+export function completeTodo(
+  state: ProgressState,
+  todoId: string,
+  sessionId?: string,
+): CommandResult<EventOf<"todo.completed">> {
+  const found = openTodo(state, todoId);
+  if ("reason" in found) return reject(found.reason);
+  const session = sessionId ?? found.todo.sessionId ?? undefined;
+  return accept({ type: "todo.completed", todoId, ...(session ? { sessionId: session } : {}) });
+}
+
+export function reopenTodo(
+  state: ProgressState,
+  todoId: string,
+): CommandResult<EventOf<"todo.reopened">> {
+  const todo = state.todos.get(todoId);
+  if (!todo) return reject("Unknown to-do");
+  if (!todo.done) return reject("That to-do is not done");
+  return accept({ type: "todo.reopened", todoId });
+}
+
+export function deleteTodo(
+  state: ProgressState,
+  todoId: string,
+): CommandResult<EventOf<"todo.deleted">> {
+  if (!state.todos.has(todoId)) return reject("Unknown to-do");
+  return accept({ type: "todo.deleted", todoId });
+}
+
+/** Gives a to-do to a planned or running session, or (with null) back to the course list. */
+export function assignTodo(
+  state: ProgressState,
+  todoId: string,
+  target: TodoTarget,
+): CommandResult<EventOf<"todo.assigned"> | EventOf<"todo.unassigned">> {
+  const found = openTodo(state, todoId);
+  if ("reason" in found) return reject(found.reason);
+  const { todo } = found;
+  if (target === null) {
+    if (todo.planId === null && todo.sessionId === null) return reject("It is not in a session");
+    return accept({ type: "todo.unassigned", todoId });
+  }
+  const checked = checkTarget(state, todo.courseId, target);
+  if ("reason" in checked) return reject(checked.reason);
+  if (checked.planId && checked.planId === todo.planId)
+    return reject("It is already in that session");
+  if (checked.sessionId && checked.sessionId === todo.sessionId) {
+    return reject("It is already in that session");
+  }
+  return accept({ type: "todo.assigned", todoId, ...checked });
 }

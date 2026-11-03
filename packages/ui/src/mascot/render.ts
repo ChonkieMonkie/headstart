@@ -633,7 +633,64 @@ function wearParts(look: MascotLook, slot: WearSlot, mood: MoodLook): WearParts 
 }
 
 /** The inside of a `viewBox="0 0 200 200"` SVG. */
-export function renderMascot(look: MascotLook, mood: Mood = "idle"): string {
+export interface RenderOptions {
+  /** Leave out every animation, for thumbnails and long lists. */
+  still?: boolean;
+  /** Draw in greys, for items not found yet. Cheaper than a CSS filter. */
+  grey?: boolean;
+}
+
+const CACHE_LIMIT = 400;
+const cache = new Map<string, string>();
+
+/**
+ * The inside of a `viewBox="0 0 200 200"` SVG. Results are cached, since the
+ * same look is drawn again whenever a screen updates.
+ */
+export function renderMascot(
+  look: MascotLook,
+  mood: Mood = "idle",
+  options: RenderOptions = {},
+): string {
+  const key = JSON.stringify([look, mood, options.still === true, options.grey === true]);
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  let svg = draw(look, mood);
+  if (options.still) svg = withoutAnimation(svg);
+  if (options.grey) svg = inGrey(svg);
+  if (cache.size >= CACHE_LIMIT) {
+    const oldest = cache.keys().next().value;
+    if (oldest !== undefined) cache.delete(oldest);
+  }
+  cache.set(key, svg);
+  return svg;
+}
+
+/** Drops `animation: …` from inline styles (and styles left empty by that). */
+function withoutAnimation(svg: string): string {
+  return svg.replace(/ style="([^"]*)"/g, (_, style: string) => {
+    const rest = style
+      .split(";")
+      .map((part) => part.trim())
+      .filter((part) => part !== "" && !part.startsWith("animation"))
+      .join("; ");
+    return rest ? ` style="${rest}"` : "";
+  });
+}
+
+/** Swaps every colour for a light grey of the same lightness, outlines stay dark. */
+function inGrey(svg: string): string {
+  return svg.replace(/#([0-9A-Fa-f]{6})\b/g, (match, hex: string) => {
+    if (match.toUpperCase() === OUTLINE) return "#8F8F8F";
+    const n = Number.parseInt(hex, 16);
+    const luma = 0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+    const v = Math.round(200 + (luma / 255) * 45);
+    const h = v.toString(16).padStart(2, "0");
+    return `#${h}${h}${h}`;
+  });
+}
+
+function draw(look: MascotLook, mood: Mood): string {
   const { species } = look;
   const geo = GEOMETRY[species];
   const m = MOOD_LOOKS[mood];

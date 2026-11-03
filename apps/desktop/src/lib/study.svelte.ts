@@ -24,6 +24,7 @@ import { items as catalog, type Item, type MascotId, type Slot, sets } from "@he
 import {
   type ActiveSession,
   abandonSession,
+  assignTodo,
   breakAfter,
   type CollectionCount,
   type CommandResult,
@@ -34,11 +35,14 @@ import {
   collectionCount,
   completeSession,
   completeTask,
+  completeTodo,
   computeStats,
   craftItem,
   crateOdds,
+  createTodo,
   createUlidFactory,
   defaultContext,
+  deleteTodo,
   type EarnedCrate,
   type EventStore,
   equipItem,
@@ -52,6 +56,7 @@ import {
   type OddsRow,
   openCrate,
   openTasks,
+  openTodos,
   owns,
   type PityState,
   type Plan,
@@ -62,6 +67,7 @@ import {
   planToStartNow,
   rateSession,
   remainingMs,
+  reopenTodo,
   resumeSession,
   type SetProgress,
   StudyEngine,
@@ -72,15 +78,20 @@ import {
   type Task,
   TIMER_PRESETS,
   type TimerPreset,
+  type Todo,
+  type TodoTarget,
+  todosForPlan,
+  todosForSession,
   unopenedCrates,
   upcomingPlan,
   upcomingReminders,
-  updateTask,
+  updateTodo,
   writeRecall,
 } from "@headstart/core";
 import { lookFor, MASCOT_NAMES, type MascotLook, type Mood } from "@headstart/ui";
 import { clockTime } from "./format.ts";
 import { mascotLine, mascotMood } from "./mascot.ts";
+import { courseLabel } from "./options.ts";
 import {
   type FocusLayout,
   listenToShell,
@@ -139,6 +150,8 @@ export interface Completion {
   crateEarned: boolean;
   course: Course | null;
   task: Task | null;
+  /** To-dos the session carried, or the task's first open one if it had none. */
+  todos: Todo[];
 }
 
 /** A crate that was just opened, for the reveal screen. */
@@ -242,7 +255,8 @@ export class Study {
     if (!state) return [];
     return [...state.courses.values()]
       .filter((c) => !c.archived)
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(copy);
   }
 
   get archivedCourses(): Course[] {
@@ -261,15 +275,18 @@ export class Study {
     if (!state) return [];
     return [...state.tasks.values()]
       .filter((t) => t.courseId === courseId)
-      .sort((a, b) => a.createdAt - b.createdAt);
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .map(copy);
   }
 
   course(id: string | null): Course | null {
-    return id ? (this.state?.courses.get(id) ?? null) : null;
+    const course = id ? this.state?.courses.get(id) : undefined;
+    return course ? copy(course) : null;
   }
 
   task(id: string | null): Task | null {
-    return id ? (this.state?.tasks.get(id) ?? null) : null;
+    const task = id ? this.state?.tasks.get(id) : undefined;
+    return task ? copy(task) : null;
   }
 
   plansOn(day: string): PlanView[] {
@@ -301,6 +318,81 @@ export class Study {
       .sort((a, b) => b.endedAt - a.endedAt)
       .slice(0, limit)
       .map((r) => ({ endedAt: r.endedAt, text: r.recallText ?? "" }));
+  }
+
+  // To-dos
+
+  /** Open to-dos of a course, or of one task (null: those not under a task). */
+  todosOf(courseId: string, taskId?: string | null): Todo[] {
+    const state = this.state;
+    return state ? openTodos(state, courseId, taskId).map(copy) : [];
+  }
+
+  /** Every to-do of a course, open and done, oldest first. */
+  allTodosOf(courseId: string): Todo[] {
+    const state = this.state;
+    return state ? [...state.todos.values()].filter((t) => t.courseId === courseId).map(copy) : [];
+  }
+
+  /** Planned sessions that have not started, soonest first. */
+  get openPlans(): Plan[] {
+    const state = this.state;
+    if (!state) return [];
+    return [...state.plans.values()]
+      .filter(
+        (p) => !p.cancelled && p.sessionId === null && p.startAt + p.minutes * MINUTE > this.now,
+      )
+      .sort((a, b) => a.startAt - b.startAt);
+  }
+
+  todosForPlan(planId: string): Todo[] {
+    const state = this.state;
+    return state ? todosForPlan(state, planId).map(copy) : [];
+  }
+
+  /** The running session's to-dos, done ones included. */
+  get sessionTodos(): Todo[] {
+    const state = this.state;
+    const active = this.active;
+    return state && active ? todosForSession(state, active.sessionId).map(copy) : [];
+  }
+
+  async addTodo(input: {
+    courseId: string;
+    taskId?: string | null;
+    text: string;
+    target?: TodoTarget;
+  }): Promise<string | null> {
+    const result = await this.run((s) =>
+      createTodo(s, {
+        todoId: this.#newId(),
+        courseId: input.courseId,
+        ...(input.taskId ? { taskId: input.taskId } : {}),
+        text: input.text,
+        target: input.target ?? null,
+      }),
+    );
+    return result.ok ? null : result.reason;
+  }
+
+  async editTodo(todoId: string, text: string): Promise<string | null> {
+    const result = await this.run((s) => updateTodo(s, todoId, text));
+    return result.ok || result.reason === "Nothing changed" ? null : result.reason;
+  }
+
+  /** Ticks a to-do off or on. In a running session it counts for that session. */
+  async toggleTodo(todo: Todo): Promise<void> {
+    if (todo.done) await this.run((s) => reopenTodo(s, todo.id));
+    else await this.run((s) => completeTodo(s, todo.id, this.active?.sessionId));
+  }
+
+  async removeTodo(todoId: string): Promise<void> {
+    await this.run((s) => deleteTodo(s, todoId));
+  }
+
+  async assignTodo(todoId: string, target: TodoTarget): Promise<string | null> {
+    const result = await this.run((s) => assignTodo(s, todoId, target));
+    return result.ok ? null : result.reason;
   }
 
   // The mascot and the collection
@@ -539,20 +631,37 @@ export class Study {
   async saveCompletion(input: {
     recall: string;
     rating: number | null;
-    nextStep: string;
+    /** To-dos ticked off on the "session complete" screen. */
+    done: ReadonlySet<string>;
+    /** A to-do to add for next time. */
+    nextTodo: string;
     taskDone: boolean;
   }): Promise<string | null> {
     const completion = this.completion;
     if (!completion) return null;
-    const { sessionId, task } = completion;
+    const { sessionId, task, course } = completion;
     if (input.recall.trim()) {
       const result = await this.run((s) => writeRecall(s, sessionId, input.recall.trim()));
       if (!result.ok) return result.reason;
     }
     if (input.rating !== null) await this.run((s) => rateSession(s, sessionId, input.rating ?? 0));
-    if (task && input.nextStep.trim() && input.nextStep.trim() !== task.nextStep) {
-      const result = await this.run((s) => updateTask(s, task.id, { nextStep: input.nextStep }));
-      if (!result.ok) return result.reason;
+    for (const todo of completion.todos) {
+      const current = this.state?.todos.get(todo.id);
+      if (!current) continue;
+      if (input.done.has(todo.id) && !current.done)
+        await this.run((s) => completeTodo(s, todo.id, sessionId));
+      if (!input.done.has(todo.id) && current.done && current.doneInSessionId === sessionId) {
+        await this.run((s) => reopenTodo(s, todo.id));
+      }
+    }
+    const courseId = course?.id ?? task?.courseId;
+    if (input.nextTodo.trim() && courseId) {
+      const reason = await this.addTodo({
+        courseId,
+        taskId: task?.id ?? null,
+        text: input.nextTodo,
+      });
+      if (reason) return reason;
     }
     if (task && input.taskDone) await this.run((s) => completeTask(s, task.id));
     this.completion = null;
@@ -603,6 +712,7 @@ export class Study {
           crateEarned: engine.state.crates.length > cratesBefore,
           course: this.course(record.courseId),
           task: this.task(record.taskId),
+          todos: this.#completionTodos(record.sessionId, record.taskId),
         };
       }
       const rest = breakAfter(this.#sessionsToday(), this.#preset);
@@ -612,6 +722,17 @@ export class Study {
     } finally {
       this.#finishing = false;
     }
+  }
+
+  /** The session's to-dos, or the task's first open to-do when it had none. */
+  #completionTodos(sessionId: string, taskId: string | null): Todo[] {
+    const state = this.engine?.state;
+    if (!state) return [];
+    const own = todosForSession(state, sessionId);
+    if (own.length > 0 || !taskId) return own.map((t) => ({ ...t }));
+    const task = state.tasks.get(taskId);
+    const first = task ? openTodos(state, task.courseId, taskId)[0] : undefined;
+    return first ? [{ ...first }] : [];
   }
 
   #onTrayAction(action: TrayAction): void {
@@ -712,7 +833,9 @@ export class Study {
           id: reminder.id,
           at: reminder.at,
           title: `Starting at ${clockTime(reminder.plan.startAt)}`,
-          body: task ? `${course?.name ?? task.title}: ${task.nextStep}` : `Time for ${what}.`,
+          body: task?.nextStep
+            ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
+            : `Time for ${what}.`,
         };
       }
       return {
@@ -769,7 +892,7 @@ export class Study {
       upNext: next
         ? {
             time: clockTime(next.startAt),
-            course: nextCourse?.name ?? "Study session",
+            course: nextCourse ? courseLabel(nextCourse) : "Study session",
             task: nextTask?.title ?? null,
             startsNow,
           }
@@ -790,6 +913,14 @@ export class Study {
           : null,
     };
   }
+}
+
+/**
+ * A shallow copy. The engine changes its state in place, so views get fresh
+ * objects after each change and Svelte sees that something changed.
+ */
+function copy<T extends object>(value: T): T {
+  return { ...value };
 }
 
 /** The break rhythm that fits a session length. */

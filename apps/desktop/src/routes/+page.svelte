@@ -21,7 +21,10 @@
   import { cancelPlan, daysUntil, formatDuration, formatMinutes, movePlan, TIMER_PRESETS } from "@headstart/core";
   import { Mascot, MASCOT_TINTS } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
+  import CourseName from "$lib/components/CourseName.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
+  import Select from "$lib/components/Select.svelte";
+  import { taskGroups } from "$lib/options.ts";
   import { useApp } from "$lib/context.ts";
   import { clockTime, examLabel, plural } from "$lib/format.ts";
 
@@ -49,6 +52,8 @@
   const next = $derived(study.upNext);
   const nextCourse = $derived(next ? study.course(next.courseId) : null);
   const nextTask = $derived(next ? study.task(next.taskId) : null);
+  const nextTodos = $derived(next ? study.todosForPlan(next.id) : []);
+  const quickTaskId = $derived(quickTask.startsWith("task:") ? quickTask.slice(5) : "");
   const plannedLeft = $derived(plans.filter((v) => v.status === "next" || v.status === "planned").length);
   const weekMinutes = $derived(stats?.days.reduce((sum, d) => sum + d.minutes, 0) ?? 0);
 
@@ -128,11 +133,18 @@
       {nextTask?.title ?? nextCourse?.name ?? "Study session"}
     </h2>
     <p class="meta">
-      {nextCourse?.name ?? "No course"}{nextCourse?.examDate
+      {#if nextCourse}<CourseName course={nextCourse} dot={false} />{:else}No course{/if}{nextCourse?.examDate
         ? ` · ${examLabel(daysUntil(nextCourse.examDate, study.now))}`
         : ""}
     </p>
-    {#if nextTask}
+    {#if nextTodos.length > 0}
+      <div class="step">
+        <span>In this session</span>
+        <ul class="todos">
+          {#each nextTodos as todo (todo.id)}<li>{todo.text}</li>{/each}
+        </ul>
+      </div>
+    {:else if nextTask?.nextStep}
       <p class="step"><span>Next step</span> {nextTask.nextStep}</p>
     {/if}
     <div class="actions">
@@ -151,31 +163,21 @@
     <h2 id="next-h">Nothing planned right now</h2>
     <p class="meta">Pick a task and go, or plan your next session below.</p>
     <div class="actions">
-      <label class="visually-hidden" for="quick-task">Task</label>
-      <select id="quick-task" bind:value={quickTask}>
-        <option value="">No task</option>
-        {#each study.courses as course (course.id)}
-          <optgroup label={course.name}>
-            {#each study.tasksOf(course.id).filter((t) => !t.done) as task (task.id)}
-              <option value={task.id}>{task.title}</option>
-            {/each}
-          </optgroup>
-        {/each}
-      </select>
-      <button type="button" class="primary" onclick={() => study.start(quickTask ? { taskId: quickTask } : {})}>
+      <Select bind:value={quickTask} groups={taskGroups(study, { none: "No task" })} label="Task" />
+      <button type="button" class="primary" onclick={() => study.start(quickTaskId ? { taskId: quickTaskId } : {})}>
         Start 25 min
       </button>
       <button
         type="button"
         class="secondary"
-        onclick={() => study.start({ ...(quickTask ? { taskId: quickTask } : {}), minutes: TIMER_PRESETS.justFive.focusMinutes })}
+        onclick={() => study.start({ ...(quickTaskId ? { taskId: quickTaskId } : {}), minutes: TIMER_PRESETS.justFive.focusMinutes })}
       >
         Just 5 minutes
       </button>
       <button
         type="button"
         class="secondary"
-        onclick={() => study.start({ ...(quickTask ? { taskId: quickTask } : {}), minutes: TIMER_PRESETS.deep.focusMinutes })}
+        onclick={() => study.start({ ...(quickTaskId ? { taskId: quickTaskId } : {}), minutes: TIMER_PRESETS.deep.focusMinutes })}
       >
         Deep work 50 min
       </button>
@@ -246,8 +248,11 @@
           <span class="time">{clockTime(view.plan.startAt)}</span>
           <span class="bar" style:background={view.course?.color ?? "#8A93A6"} aria-hidden="true"></span>
           <span class="what">
-            <strong>{view.course?.name ?? "Study session"}</strong>
-            <span>{view.task?.title ?? `${view.plan.minutes} min`}</span>
+            <strong>{#if view.course}<CourseName course={view.course} dot={false} />{:else}Study session{/if}</strong>
+            <span>
+              {view.task?.title ?? `${view.plan.minutes} min`}{#if study.todosForPlan(view.plan.id).length > 0}
+                · {plural(study.todosForPlan(view.plan.id).length, "to-do")}{/if}
+            </span>
           </span>
           <span class="status status-{view.status}">{STATUS[view.status]}</span>
           {#if view.status === "next" || view.status === "planned" || view.status === "missed"}
@@ -436,6 +441,11 @@
     line-height: 1.5;
   }
 
+  .todos {
+    margin: 4px 0 0;
+    padding-left: 20px;
+  }
+
   .step span {
     display: block;
     font-size: 12px;
@@ -482,16 +492,6 @@
     cursor: default;
   }
 
-  select {
-    min-height: 44px;
-    max-width: 280px;
-    padding: 0 10px;
-    border: 1px solid #c9cfdc;
-    border-radius: 12px;
-    background: var(--hs-surface);
-    font: inherit;
-    font-weight: 600;
-  }
 
   .notice {
     display: flex;
@@ -682,7 +682,6 @@
   }
 
   button:focus-visible,
-  select:focus-visible,
   a:focus-visible {
     outline: 3px solid var(--hs-accent);
     outline-offset: 2px;

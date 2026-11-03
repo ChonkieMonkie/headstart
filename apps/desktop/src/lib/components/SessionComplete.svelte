@@ -23,6 +23,7 @@
   import { Mascot, MASCOT_TINTS } from "@headstart/ui";
   import { goto } from "$app/navigation";
   import { plural } from "$lib/format.ts";
+  import { courseLabel } from "$lib/options.ts";
   import type { Study } from "$lib/study.svelte.ts";
 
   let { study }: { study: Study } = $props();
@@ -33,7 +34,8 @@
 
   let recall = $state("");
   let rating = $state<number | null>(null);
-  let nextStep = $state(done?.task?.nextStep ?? "");
+  let nextTodo = $state("");
+  let ticked = $state(new Set((done?.todos ?? []).filter((t) => t.done).map((t) => t.id)));
   let taskDone = $state(false);
   let error = $state<string | null>(null);
   let saving = $state(false);
@@ -43,7 +45,7 @@
 
   const headline = $derived.by(() => {
     if (!done) return "";
-    const what = done.course ? ` on ${done.course.name}` : "";
+    const what = done.course ? ` on ${courseLabel(done.course)}` : "";
     const streak =
       done.onTime && done.onTimeStreak > 1
         ? ` That is ${plural(done.onTimeStreak, "on-time start")} in a row.`
@@ -53,9 +55,16 @@
     return `${plural(done.focusMinutes, "minute")}${what}.${streak}`;
   });
 
+  function tick(id: string, on: boolean): void {
+    const next = new Set(ticked);
+    if (on) next.add(id);
+    else next.delete(id);
+    ticked = next;
+  }
+
   async function save(thenOpenCrate = false): Promise<void> {
     saving = true;
-    error = await study.saveCompletion({ recall, rating, nextStep, taskDone });
+    error = await study.saveCompletion({ recall, rating, done: ticked, nextTodo, taskDone });
     saving = false;
     if (!error && thenOpenCrate) await goto("/crates");
   }
@@ -143,17 +152,36 @@
           </div>
         </fieldset>
 
-        {#if done.task}
+        {#if done.todos.length > 0}
+          <fieldset class="field">
+            <legend><h2>What did you get done?</h2></legend>
+            <p class="hint">Tick what you finished. The rest goes back to the course's to-do list.</p>
+            <ul class="todo-list">
+              {#each done.todos as todo (todo.id)}
+                <li>
+                  <label class="check">
+                    <input type="checkbox" checked={ticked.has(todo.id)} onchange={(e) => tick(todo.id, e.currentTarget.checked)} />
+                    {todo.text}
+                  </label>
+                </li>
+              {/each}
+            </ul>
+          </fieldset>
+        {/if}
+
+        {#if done.course || done.task}
           <div class="field">
             <h2 id="next-h">Next time, start with</h2>
             <p class="hint" id="next-hint">
-              {done.task.title}. Leaving a clear thread makes the next start easier.
+              Add a to-do{done.task ? ` to ${done.task.title}` : ""}. Leaving a clear thread makes the next start easier.
             </p>
-            <input type="text" bind:value={nextStep} maxlength="200" aria-labelledby="next-h" aria-describedby="next-hint" />
-            <label class="check">
-              <input type="checkbox" bind:checked={taskDone} />
-              This task is done
-            </label>
+            <input type="text" bind:value={nextTodo} maxlength="200" aria-labelledby="next-h" aria-describedby="next-hint" placeholder="Redo problem 3.7 d" />
+            {#if done.task}
+              <label class="check">
+                <input type="checkbox" bind:checked={taskDone} />
+                The whole task ({done.task.title}) is done
+              </label>
+            {/if}
           </div>
         {/if}
 
@@ -283,6 +311,15 @@
   .crate {
     margin: 0;
     color: var(--hs-ink-muted);
+  }
+
+  .todo-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .field {

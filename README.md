@@ -2,7 +2,7 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M4 (mascot and collection)** is done: study buddies, a wardrobe, Study Crates you can open and a starter catalogue of 154 items. Next up: to-do lists per course (M4.5), then polish and the first release for friends (M5).
+> Status: milestone **M4.5 (course to-dos)** is done: to-do lists per course that you hand to planned sessions, course codes, clearer course colours and a lighter Collection screen. Next up is M5: polish and the first release for friends.
 
 ## What works today
 
@@ -10,8 +10,9 @@ A study companion for Windows, macOS and Linux that helps you **get started**, *
 - **Study Crates**: open the crates you earn, with the odds and the pity guarantee shown before you open one. Each item is revealed on your own mascot and can be put on right away. Duplicates turn into **Stardust**.
 - **Collection**: a wardrobe for each mascot (skin, head, face, outfit, held item and aura), every item in the catalogue with what you have found so far, and five themed sets. Missing items can be crafted with Stardust, except legendary skins and seasonal items.
 - **154 items** to collect, from palette-swapped commons to animated legendaries. A few items only fit one mascot.
-- **Courses and tasks.** Courses can have an exam date with a countdown. Every task needs a concrete **next step**, so starting never needs a decision.
-- **Today screen**: the next planned session with its next step, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
+- **Courses and tasks.** Courses can have a course code (shown as a small tag before the name) and an exam date with a countdown. Every task starts with a concrete **first to-do**, so starting never needs a decision.
+- **To-do lists** under every course and task, such as "Redo problem 3.7 d". Give to-dos to a planned session (or the one that is running) to decide what it is for; tick them off in the focus view or when the session is done. Whatever you did not get to goes back to the list.
+- **Today screen**: the next planned session with its to-dos, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
 - **Planned sessions with reminders**: a notification two minutes before, and one gentle nudge if a session has not started ten minutes in (at most three nudges a day). Starting a planned session on time earns a bonus.
 - **Session complete**: what you earned, then write down what you remember (free recall), rate your focus and set the next step. Recall notes are kept per course.
 - **Stats**: focus time per day and per course, on-time start rate, streaks, distraction-free share and focus rating.

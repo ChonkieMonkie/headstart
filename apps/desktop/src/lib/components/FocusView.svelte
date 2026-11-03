@@ -21,6 +21,8 @@
   import { formatDuration } from "@headstart/core";
   import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
+  import CourseName from "./CourseName.svelte";
+  import Select from "./Select.svelte";
   import HoldButton from "./HoldButton.svelte";
 
   let { study }: { study: Study } = $props();
@@ -29,6 +31,27 @@
   const course = $derived(study.course(study.active?.courseId ?? null));
   const task = $derived(study.task(study.active?.taskId ?? null));
   const sessionsToday = $derived(study.stats(1)?.todaySessions ?? 0);
+  const todos = $derived(study.sessionTodos);
+  const fromList = $derived(
+    course ? study.todosOf(course.id).filter((t) => !todos.some((own) => own.id === t.id)) : [],
+  );
+  let pickTodo = $state("");
+  let newTodo = $state("");
+  let todoError = $state<string | null>(null);
+
+  async function addToSession(todoId: string): Promise<void> {
+    const sessionId = study.active?.sessionId;
+    if (!todoId || !sessionId) return;
+    todoError = await study.assignTodo(todoId, { sessionId });
+    pickTodo = "";
+  }
+
+  async function addNew(): Promise<void> {
+    const sessionId = study.active?.sessionId;
+    if (!course || !sessionId || !newTodo.trim()) return;
+    todoError = await study.addTodo({ courseId: course.id, taskId: task?.id ?? null, text: newTodo, target: { sessionId } });
+    if (!todoError) newTodo = "";
+  }
   const RADIUS = 140;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
   const minutesDone = $derived(
@@ -49,8 +72,7 @@
   <header>
     <div>
       <p class="eyebrow">
-        {#if course}<span class="dot" style:background={course.color} aria-hidden="true"></span>{/if}
-        {course?.name ?? "Focus session"}
+        {#if course}<CourseName {course} />{:else}Focus session{/if}
       </p>
       <p class="sub">{task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today</p>
     </div>
@@ -90,8 +112,49 @@
     </div>
     </div>
 
-    {#if task}
-      <p class="next-step"><span>Next step</span> {task.nextStep}</p>
+    {#if todos.length > 0 || course}
+      <section class="next-step" aria-label="To-dos for this session">
+        <span>{todos.length > 0 ? "This session" : "Next step"}</span>
+        {#if todos.length > 0}
+          <ul class="todos">
+            {#each todos as todo (todo.id)}
+              <li>
+                <label class:done={todo.done}>
+                  <input type="checkbox" checked={todo.done} onchange={() => study.toggleTodo(todo)} />
+                  {todo.text}
+                </label>
+              </li>
+            {/each}
+          </ul>
+        {:else if task?.nextStep}
+          <p class="plain">{task.nextStep}</p>
+        {/if}
+        {#if course}
+          <div class="add">
+            {#if fromList.length > 0}
+              <Select
+                dark
+                bind:value={pickTodo}
+                label="Add a to-do from your list"
+                onchange={(id) => addToSession(id)}
+                groups={[
+                  { label: "", options: [{ value: "", label: "Add from your list…" }] },
+                  { label: "", options: fromList.map((t) => ({ value: t.id, label: t.text, hint: t.taskId ? (study.task(t.taskId)?.title ?? "") : "" })) },
+                ]}
+              />
+            {/if}
+            <form
+              onsubmit={(e) => {
+                e.preventDefault();
+                addNew();
+              }}
+            >
+              <input type="text" bind:value={newTodo} maxlength="200" placeholder="Add a to-do" aria-label="New to-do for this session" />
+            </form>
+          </div>
+          {#if todoError}<p class="todo-error" role="alert">{todoError}</p>{/if}
+        {/if}
+      </section>
     {/if}
 
     {#if confirmingEnd}
@@ -158,13 +221,6 @@
     color: var(--hs-focus-accent);
   }
 
-  .dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 4px;
-    border-radius: 999px;
-  }
 
   .next-step {
     max-width: 520px;
@@ -176,7 +232,84 @@
     line-height: 1.5;
   }
 
-  .next-step span {
+  .next-step {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: min(420px, 90vw);
+    text-align: left;
+  }
+
+  .todos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .todos label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 32px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .todos label.done {
+    color: var(--hs-focus-text-muted);
+    text-decoration: line-through;
+  }
+
+  .todos input {
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+    flex: none;
+    accent-color: var(--hs-focus-accent);
+  }
+
+  .plain {
+    margin: 0;
+  }
+
+  .add {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .add form {
+    flex: 1 1 180px;
+    display: flex;
+  }
+
+  .add input {
+    flex: 1 1 auto;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #3a4070;
+    border-radius: 12px;
+    background: transparent;
+    font: inherit;
+    font-weight: 600;
+    color: var(--hs-focus-text);
+  }
+
+  .add input::placeholder {
+    color: var(--hs-focus-text-muted);
+  }
+
+  .todo-error {
+    margin: 0;
+    color: #ffb4a8;
+    font-weight: 700;
+  }
+
+  .next-step > span {
     display: block;
     font-size: 12px;
     font-weight: 800;

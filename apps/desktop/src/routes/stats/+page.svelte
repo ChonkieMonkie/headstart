@@ -18,6 +18,7 @@
 
 <!-- Basic stats: focus time, on-time starts, focus per course and the crate odds. -->
 <script lang="ts">
+  import { courseLabel } from "$lib/options.ts";
   import { formatMinutes, formatPercent } from "@headstart/core";
   import { rarityColors } from "@headstart/ui";
   import { useApp } from "$lib/context.ts";
@@ -142,7 +143,7 @@
           <li>
             <span class="bar-name">
               <span class="dot" style:background={course?.color ?? "#8A93A6"} aria-hidden="true"></span>
-              {course?.name ?? "No course"}
+              {course ? courseLabel(course) : "No course"}
             </span>
             <span class="bar-track">
               <span

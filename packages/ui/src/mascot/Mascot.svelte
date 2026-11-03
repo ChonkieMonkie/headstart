@@ -26,15 +26,21 @@
     mood = "idle",
     size = 120,
     label,
+    still = false,
+    grey = false,
   }: {
     look: MascotLook;
     mood?: Mood;
     size?: number;
     /** Screen reader text. Defaults to the mascot's name and mood; "" hides it. */
     label?: string;
+    /** No animations, for thumbnails and long lists. */
+    still?: boolean;
+    /** Drawn in greys, for items not found yet. */
+    grey?: boolean;
   } = $props();
 
-  const inner = $derived(renderMascot(look, mood));
+  const inner = $derived(renderMascot(look, mood, { still, grey }));
   const text = $derived(label ?? mascotLabel(look.species, mood));
 </script>
 

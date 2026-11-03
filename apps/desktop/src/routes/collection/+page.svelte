@@ -33,6 +33,8 @@
     StardustIcon,
   } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
+  import LazyMascot from "$lib/components/LazyMascot.svelte";
+  import Select from "$lib/components/Select.svelte";
   import { useApp } from "$lib/context.ts";
 
   const { study } = useApp();
@@ -232,14 +234,19 @@
           </button>
         {/each}
       </div>
-      <label class="show">
-        Show
-        <select bind:value={found}>
-          <option value="all">Everything</option>
-          <option value="found">Found</option>
-          <option value="missing">Not found yet</option>
-        </select>
-      </label>
+      <div class="show">
+        <span id="show-label">Show</span>
+        <Select
+          bind:value={found}
+          id="show-select"
+          label="Show"
+          groups={[{ label: "", options: [
+            { value: "all", label: "Everything" },
+            { value: "found", label: "Found" },
+            { value: "missing", label: "Not found yet" },
+          ] }]}
+        />
+      </div>
     </div>
 
     <div class="browse">
@@ -250,13 +257,12 @@
             <button
               type="button"
               class="item"
-              class:missing={!owned}
               aria-pressed={selectedId === item.id}
               style:border-bottom-color={rarityColors[item.rarity].dot}
               onclick={() => (selectedId = item.id)}
             >
               <span class="thumb" style:background={owned ? MASCOT_TINTS[previewSpecies(item, mascot ?? "maple")] : "#ECEEF2"}>
-                <Mascot look={preview(item)} size={96} label="" />
+                <LazyMascot look={preview(item)} size={96} grey={!owned} />
               </span>
               <span class="item-name">{item.name}</span>
               <span class="item-rarity" style:color={rarityColors[item.rarity].fg}>
@@ -272,8 +278,8 @@
           {@const owned = study.owned(selected.id) > 0}
           {@const blocker = craftBlocker(selected, stardust, study.state?.inventory ?? new Map(), study.context.crates)}
           {@const set = study.setOf(selected)}
-          <div class="detail-art" class:missing={!owned} style:background={MASCOT_TINTS[previewSpecies(selected, mascot ?? "maple")]}>
-            <Mascot look={preview(selected)} size={200} />
+          <div class="detail-art" style:background={MASCOT_TINTS[previewSpecies(selected, mascot ?? "maple")]}>
+            <Mascot look={preview(selected)} size={200} grey={!owned} />
           </div>
           <div class="tags">
             <span class="rarity" style:color={rarityColors[selected.rarity].fg} style:background={rarityColors[selected.rarity].bg}>
@@ -323,7 +329,7 @@
       <article class="card set">
         <div class="set-art" style:background={progress.set.tint}>
           {#each members.filter((i) => study.owned(i.id) > 0).slice(0, 4) as item (item.id)}
-            <Mascot look={preview(item)} size={72} label="" />
+            <LazyMascot look={preview(item)} size={72} />
           {:else}
             <span class="note">Nothing found yet</span>
           {/each}
@@ -569,16 +575,6 @@
     font-weight: 700;
   }
 
-  select {
-    min-height: 44px;
-    padding: 0 10px;
-    border: 1px solid #c9cfdc;
-    border-radius: 12px;
-    background: var(--hs-surface);
-    font: inherit;
-    font-weight: 600;
-  }
-
   /* The detail sits beside the grid, or above it when the window is narrow.
      With wrap-reverse the cross axis runs bottom to top, so flex-end means top. */
   .browse {
@@ -627,11 +623,6 @@
     width: 104px;
     height: 104px;
     border-radius: 12px;
-  }
-
-  .missing :global(.mascot) {
-    filter: grayscale(1);
-    opacity: 0.45;
   }
 
   .item-name {
@@ -770,8 +761,7 @@
     cursor: pointer;
   }
 
-  button:focus-visible,
-  select:focus-visible {
+  button:focus-visible {
     outline: 3px solid var(--hs-accent);
     outline-offset: 2px;
   }

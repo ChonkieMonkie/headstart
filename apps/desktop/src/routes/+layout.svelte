@@ -44,7 +44,10 @@
   let version = $state("dev");
 
   onMount(() => {
-    if (!study || !updater) return;
+    // Pause every animation while the window cannot be seen (closed to the tray, minimised).
+    const pause = () => document.documentElement.classList.toggle("hs-paused", document.hidden);
+    document.addEventListener("visibilitychange", pause);
+    if (!study || !updater) return () => document.removeEventListener("visibilitychange", pause);
     study.onCheckUpdates = () => updater.check();
     study.open();
     if (inTauri) {
@@ -53,7 +56,10 @@
       });
       if (import.meta.env.PROD) updater.check();
     }
-    return () => study.close();
+    return () => {
+      document.removeEventListener("visibilitychange", pause);
+      study.close();
+    };
   });
 </script>
 

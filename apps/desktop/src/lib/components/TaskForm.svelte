@@ -16,7 +16,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Adds a task to a course, or edits one. The next step is required: a concrete first action makes starting easy. -->
+<!-- Adds a task to a course, or renames one. A new task needs a first to-do: a concrete first action makes starting easy. -->
 <script lang="ts">
   import { untrack } from "svelte";
   import { createTask, type Task, updateTask } from "@headstart/core";
@@ -36,7 +36,7 @@
 
   async function submit(): Promise<void> {
     const result = initial
-      ? await study.run((s) => updateTask(s, initial.id, { title, nextStep }))
+      ? await study.run((s) => updateTask(s, initial.id, { title }))
       : await study.run((s) => createTask(s, { taskId: study.newId(), courseId, title, nextStep }));
     if (result.ok || result.reason === "Nothing changed") onDone();
     else error = result.reason;
@@ -54,16 +54,18 @@
     <span>Task</span>
     <input type="text" bind:value={title} maxlength="120" placeholder="Problems 4.12 to 4.15" required />
   </label>
-  <label>
-    <span>Next step: the very first thing you will do</span>
-    <input
-      type="text"
-      bind:value={nextStep}
-      maxlength="200"
-      placeholder="Open chapter 4 and read the worked example"
-      required
-    />
-  </label>
+  {#if !initial}
+    <label>
+      <span>First to-do: the very first thing you will do</span>
+      <input
+        type="text"
+        bind:value={nextStep}
+        maxlength="200"
+        placeholder="Open chapter 4 and read the worked example"
+        required
+      />
+    </label>
+  {/if}
   <div class="actions">
     <button type="submit" class="primary">{initial ? "Save task" : "Add task"}</button>
     <button type="button" class="secondary" onclick={onDone}>Cancel</button>

@@ -67,6 +67,8 @@ export type StudyEvent =
       courseId: string;
       name: string;
       color: string;
+      /** Short code such as "MA1234", shown beside the name. */
+      code?: string;
       /** Local date of the exam, "YYYY-MM-DD". */
       examDate?: string;
     }
@@ -75,6 +77,8 @@ export type StudyEvent =
       courseId: string;
       name?: string;
       color?: string;
+      /** A code sets it, null removes it. */
+      code?: string | null;
       /** A date sets the exam, null removes it. */
       examDate?: string | null;
     }
@@ -84,9 +88,11 @@ export type StudyEvent =
       taskId: string;
       courseId: string;
       title: string;
-      /** The concrete first action, so starting never needs a decision. */
+      /** The concrete first action, so starting never needs a decision. It
+       * becomes the task's first to-do, with the id `<taskId>:first`. */
       nextStep: string;
     }
+  /** Older logs change the first to-do through `nextStep`; new code uses `todo.*`. */
   | { type: "task.updated"; taskId: string; title?: string; nextStep?: string }
   | { type: "task.completed"; taskId: string }
   | { type: "task.reopened"; taskId: string }
@@ -100,6 +106,25 @@ export type StudyEvent =
     }
   | { type: "plan.moved"; planId: string; startAt: string }
   | { type: "plan.cancelled"; planId: string }
+  /** A to-do under a course (and maybe a task), such as "Redo problem 3.7 d". */
+  | {
+      type: "todo.created";
+      todoId: string;
+      courseId: string;
+      taskId?: string;
+      text: string;
+      /** Assign it right away to a planned session or the running one. */
+      planId?: string;
+      sessionId?: string;
+    }
+  | { type: "todo.updated"; todoId: string; text: string }
+  /** Ticked off, during or after the session given, if any. */
+  | { type: "todo.completed"; todoId: string; sessionId?: string }
+  | { type: "todo.reopened"; todoId: string }
+  | { type: "todo.deleted"; todoId: string }
+  /** Give the to-do to a planned session or the running session. */
+  | { type: "todo.assigned"; todoId: string; planId?: string; sessionId?: string }
+  | { type: "todo.unassigned"; todoId: string }
   | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
   | { type: "item.crafted"; itemId: string; cost: number }
   | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }

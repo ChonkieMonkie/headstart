@@ -16,7 +16,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Adds a course, or edits one: name, colour and an optional exam date. -->
+<!-- Adds a course, or edits one: name, an optional course code, colour and an optional exam date. -->
 <script lang="ts">
   import { untrack } from "svelte";
   import { COURSE_COLORS, type Course, createCourse, updateCourse } from "@headstart/core";
@@ -25,18 +25,24 @@
   let { study, course = null, onDone }: { study: Study; course?: Course | null; onDone: () => void } =
     $props();
 
+  const COLOR_NAMES = ["Blue", "Orange", "Green", "Raspberry", "Lavender", "Mint"];
+
   const initial = untrack(() => course);
   let name = $state(initial?.name ?? "");
-  const courseCount = untrack(() => study.courses.length);
-  let color = $state<string>(initial?.color ?? COURSE_COLORS[courseCount % COURSE_COLORS.length] ?? "#5B4BD6");
+  let code = $state(initial?.code ?? "");
+  // A new course gets the first colour no other course uses yet.
+  const used = untrack(() => new Set(study.courses.map((c) => c.color)));
+  let color = $state<string>(
+    initial?.color ?? COURSE_COLORS.find((c) => !used.has(c)) ?? COURSE_COLORS[used.size % COURSE_COLORS.length] ?? "#255EBC",
+  );
   let examDate = $state(initial?.examDate ?? "");
   let error = $state<string | null>(null);
 
   async function submit(): Promise<void> {
     const result = initial
-      ? await study.run((s) => updateCourse(s, initial.id, { name, color, examDate: examDate || null }))
+      ? await study.run((s) => updateCourse(s, initial.id, { name, code: code || null, color, examDate: examDate || null }))
       : await study.run((s) =>
-          createCourse(s, { courseId: study.newId(), name, color, ...(examDate ? { examDate } : {}) }),
+          createCourse(s, { courseId: study.newId(), name, code, color, ...(examDate ? { examDate } : {}) }),
         );
     if (result.ok) onDone();
     else error = result.reason;
@@ -55,6 +61,10 @@
     <input type="text" bind:value={name} maxlength="60" placeholder="Linear Algebra" required />
   </label>
   <label>
+    <span>Course code (optional)</span>
+    <input type="text" class="code" bind:value={code} maxlength="16" placeholder="MA1234" autocomplete="off" spellcheck="false" />
+  </label>
+  <label>
     <span>Exam date (optional)</span>
     <input type="date" bind:value={examDate} />
   </label>
@@ -62,9 +72,9 @@
     <legend>Colour</legend>
     <div class="swatches">
       {#each COURSE_COLORS as swatch, i (swatch)}
-        <label class="swatch" style:--swatch={swatch}>
+        <label class="swatch" style:--swatch={swatch} title={COLOR_NAMES[i]}>
           <input type="radio" name="colour" value={swatch} bind:group={color} />
-          <span class="visually-hidden">Colour {i + 1}</span>
+          <span class="visually-hidden">{COLOR_NAMES[i] ?? `Colour ${i + 1}`}</span>
         </label>
       {/each}
     </div>
@@ -107,6 +117,11 @@
     font: inherit;
     font-weight: 600;
     color: var(--hs-ink);
+  }
+
+  input.code {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
   }
 
   fieldset {

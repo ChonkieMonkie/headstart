@@ -62,11 +62,15 @@ export interface SessionRecord {
   planId: string | null;
   courseId: string | null;
   taskId: string | null;
+  /** To-dos the session carried when it ended, done or not. */
+  todoIds: string[];
 }
 
 export interface Course {
   id: string;
   name: string;
+  /** Short code such as "MA1234", or null. */
+  code: string | null;
   color: string;
   /** Local date of the exam, "YYYY-MM-DD". */
   examDate: string | null;
@@ -78,11 +82,31 @@ export interface Task {
   id: string;
   courseId: string;
   title: string;
+  /** The first open to-do of the task, or "" when every to-do is done. */
   nextStep: string;
   done: boolean;
   createdAt: number;
   completedAt: number | null;
 }
+
+export interface Todo {
+  id: string;
+  courseId: string;
+  taskId: string | null;
+  text: string;
+  done: boolean;
+  createdAt: number;
+  completedAt: number | null;
+  /** The session it was ticked off in, if any. */
+  doneInSessionId: string | null;
+  /** A planned session it is meant for, until that session starts. */
+  planId: string | null;
+  /** The running session it belongs to. Cleared when that session ends. */
+  sessionId: string | null;
+}
+
+/** The id of the to-do made from a task's first next step. */
+export const firstTodoId = (taskId: string) => `${taskId}:first`;
 
 /** A session planned for a set time. */
 export interface Plan {
@@ -128,6 +152,8 @@ export interface ProgressState {
   equipped: Record<MascotId, Partial<Record<Slot, string>>>;
   courses: Map<string, Course>;
   tasks: Map<string, Task>;
+  /** To-dos in the order they were made. */
+  todos: Map<string, Todo>;
   plans: Map<string, Plan>;
   lastEventAt: number | null;
 }
@@ -165,6 +191,7 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     equipped,
     courses: new Map(),
     tasks: new Map(),
+    todos: new Map(),
     plans: new Map(),
     lastEventAt: null,
   };
@@ -197,6 +224,14 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         courseId: event.courseId ?? null,
         taskId: event.taskId ?? null,
       };
+      if (plan) {
+        for (const todo of state.todos.values()) {
+          if (todo.planId === plan.id) {
+            todo.planId = null;
+            if (!todo.done) todo.sessionId = event.sessionId;
+          }
+        }
+      }
       return;
     }
     case "session.paused": {
@@ -223,6 +258,12 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       // An abandoned session leaves its plan open, so it can be started again.
       const plan = active.planId ? state.plans.get(active.planId) : undefined;
       if (plan?.sessionId === active.sessionId) plan.sessionId = null;
+      for (const todo of state.todos.values()) {
+        if (todo.sessionId !== active.sessionId) continue;
+        todo.sessionId = null;
+        // Back to the plan it came from, so restarting the plan brings it along.
+        if (plan && !todo.done) todo.planId = plan.id;
+      }
       state.active = null;
       return;
     }
@@ -252,7 +293,8 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       state.courses.set(event.courseId, {
         id: event.courseId,
         name: event.name,
-        color: event.color,
+        code: event.code ?? null,
+        color: currentCourseColor(event.color),
         examDate: event.examDate ?? null,
         archived: false,
         createdAt: at,
@@ -263,7 +305,8 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       const course = state.courses.get(event.courseId);
       if (!course) return;
       if (event.name !== undefined) course.name = event.name;
-      if (event.color !== undefined) course.color = event.color;
+      if (event.code !== undefined) course.code = event.code;
+      if (event.color !== undefined) course.color = currentCourseColor(event.color);
       if (event.examDate !== undefined) course.examDate = event.examDate;
       return;
     }
@@ -283,13 +326,27 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         createdAt: at,
         completedAt: null,
       });
+      state.todos.set(
+        firstTodoId(event.taskId),
+        newTodo(firstTodoId(event.taskId), event.courseId, event.taskId, event.nextStep, at),
+      );
       return;
     }
     case "task.updated": {
       const task = state.tasks.get(event.taskId);
       if (!task) return;
       if (event.title !== undefined) task.title = event.title;
-      if (event.nextStep !== undefined) task.nextStep = event.nextStep;
+      if (event.nextStep !== undefined) {
+        // The old "next step" field: change the first to-do, or add one if it is done.
+        const first = state.todos.get(firstTodoId(task.id));
+        if (first && !first.done) first.text = event.nextStep;
+        else
+          state.todos.set(
+            `${envelope.id}:step`,
+            newTodo(`${envelope.id}:step`, task.courseId, task.id, event.nextStep, at),
+          );
+        refreshNextStep(state, task.id);
+      }
       return;
     }
     case "task.completed": {
@@ -329,6 +386,71 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
     case "plan.cancelled": {
       const plan = state.plans.get(event.planId);
       if (plan && plan.sessionId === null) plan.cancelled = true;
+      return;
+    }
+    case "todo.created": {
+      if (state.todos.has(event.todoId) || !state.courses.has(event.courseId)) return;
+      const task = event.taskId ? state.tasks.get(event.taskId) : undefined;
+      const todo = newTodo(event.todoId, event.courseId, task ? task.id : null, event.text, at);
+      if (event.planId && openPlanFor(state, event.planId)) todo.planId = event.planId;
+      if (event.sessionId && state.active?.sessionId === event.sessionId)
+        todo.sessionId = event.sessionId;
+      state.todos.set(todo.id, todo);
+      if (task) refreshNextStep(state, task.id);
+      return;
+    }
+    case "todo.updated": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo) return;
+      todo.text = event.text;
+      if (todo.taskId) refreshNextStep(state, todo.taskId);
+      return;
+    }
+    case "todo.completed": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo || todo.done) return;
+      todo.done = true;
+      todo.completedAt = at;
+      todo.doneInSessionId = event.sessionId ?? todo.sessionId;
+      todo.planId = null;
+      if (todo.taskId) refreshNextStep(state, todo.taskId);
+      return;
+    }
+    case "todo.reopened": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo?.done) return;
+      todo.done = false;
+      todo.completedAt = null;
+      todo.doneInSessionId = null;
+      if (todo.sessionId !== null && state.active?.sessionId !== todo.sessionId)
+        todo.sessionId = null;
+      if (todo.taskId) refreshNextStep(state, todo.taskId);
+      return;
+    }
+    case "todo.deleted": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo) return;
+      state.todos.delete(todo.id);
+      if (todo.taskId) refreshNextStep(state, todo.taskId);
+      return;
+    }
+    case "todo.assigned": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo || todo.done) return;
+      if (event.planId && openPlanFor(state, event.planId)) {
+        todo.planId = event.planId;
+        todo.sessionId = null;
+      } else if (event.sessionId && state.active?.sessionId === event.sessionId) {
+        todo.sessionId = event.sessionId;
+        todo.planId = null;
+      }
+      return;
+    }
+    case "todo.unassigned": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo) return;
+      todo.planId = null;
+      if (!todo.done) todo.sessionId = null;
       return;
     }
     case "crate.opened": {
@@ -405,7 +527,14 @@ function completeSession(
     planId: active.planId,
     courseId: active.courseId,
     taskId: active.taskId,
+    todoIds: [...state.todos.values()]
+      .filter((t) => t.sessionId === active.sessionId || t.doneInSessionId === active.sessionId)
+      .map((t) => t.id),
   });
+  // The session is over: unfinished to-dos go back to the course list.
+  for (const todo of state.todos.values()) {
+    if (todo.sessionId === active.sessionId) todo.sessionId = null;
+  }
 
   if (score.onTime === true) {
     state.onTimeStreak += 1;
@@ -454,4 +583,64 @@ export function owns(state: ProgressState, itemId: string): boolean {
 
 export function level(state: ProgressState, ctx: CoreContext): LevelInfo {
   return levelInfo(state.xp, ctx.rewards);
+}
+
+function newTodo(
+  id: string,
+  courseId: string,
+  taskId: string | null,
+  text: string,
+  at: number,
+): Todo {
+  return {
+    id,
+    courseId,
+    taskId,
+    text,
+    done: false,
+    createdAt: at,
+    completedAt: null,
+    doneInSessionId: null,
+    planId: null,
+    sessionId: null,
+  };
+}
+
+/** A plan that has not started or been cancelled. */
+export function openPlanFor(state: ProgressState, planId: string): Plan | null {
+  const plan = state.plans.get(planId);
+  return plan && !plan.cancelled && plan.sessionId === null ? plan : null;
+}
+
+/** Keeps `task.nextStep` equal to the task's first open to-do. */
+function refreshNextStep(state: ProgressState, taskId: string): void {
+  const task = state.tasks.get(taskId);
+  if (!task) return;
+  let next = "";
+  for (const todo of state.todos.values()) {
+    if (todo.taskId === taskId && !todo.done) {
+      next = todo.text;
+      break;
+    }
+  }
+  task.nextStep = next;
+}
+
+/**
+ * Course colours that are no longer offered, and what they show as now. The
+ * log keeps the old value; only the projection swaps it.
+ */
+const RETIRED_COURSE_COLORS: Record<string, string> = {
+  "#5B4BD6": "#B897F0",
+  "#B35C00": "#F28F29",
+  "#2A9D8F": "#53C48E",
+  "#8A6D00": "#F28F29",
+  "#C2417A": "#C24976",
+  "#2F7FD8": "#255EBC",
+  "#2F9E6E": "#227702",
+  "#B4462E": "#C24976",
+};
+
+export function currentCourseColor(color: string): string {
+  return RETIRED_COURSE_COLORS[color.toUpperCase()] ?? color;
 }

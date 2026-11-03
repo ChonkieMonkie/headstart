@@ -300,3 +300,10 @@ body {
     animation: none !important;
   }
 }
+
+/* Set on the root while the window is hidden, so nothing animates unseen. */
+.hs-paused *,
+.hs-paused *::before,
+.hs-paused *::after {
+  animation-play-state: paused !important;
+}

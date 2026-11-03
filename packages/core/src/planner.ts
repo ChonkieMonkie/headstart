@@ -18,25 +18,32 @@
 // tray and reminders.
 
 import type { RewardRules } from "@headstart/content";
-import { type Course, localDayKey, type Plan, type ProgressState, type Task } from "./state.ts";
+import {
+  type Course,
+  localDayKey,
+  type Plan,
+  type ProgressState,
+  type Task,
+  type Todo,
+} from "./state.ts";
 
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
 
 /**
- * Course colours offered in the app, in a fixed order. Checked with a palette
- * validator: neighbours stay apart for colour-blind readers, and every colour
- * has at least 3:1 contrast on white. Course names always sit beside them.
+ * Course colours offered in the app. Checked with a palette validator on every
+ * pair, since any two courses can sit side by side: easy to tell apart with
+ * normal vision (ΔE 21.7, floor 15) and for colour-blind readers (ΔE 10.9,
+ * target 8). Three are lighter than 3:1 on white, so a course name or code
+ * always sits beside the colour.
  */
 export const COURSE_COLORS = [
-  "#5B4BD6",
-  "#B35C00",
-  "#2A9D8F",
-  "#8A6D00",
-  "#C2417A",
-  "#2F7FD8",
-  "#2F9E6E",
-  "#B4462E",
+  "#255EBC",
+  "#F28F29",
+  "#227702",
+  "#C24976",
+  "#B897F0",
+  "#53C48E",
 ] as const;
 
 export type PlanStatus = "done" | "running" | "missed" | "next" | "planned";
@@ -170,4 +177,25 @@ export function openTasks(state: ProgressState): Task[] {
   return [...state.tasks.values()]
     .filter((task) => !task.done && state.courses.get(task.courseId)?.archived === false)
     .sort((a, b) => a.createdAt - b.createdAt);
+}
+
+/** Open to-dos of a course (or one task), oldest first. */
+export function openTodos(state: ProgressState, courseId: string, taskId?: string | null): Todo[] {
+  return [...state.todos.values()].filter(
+    (t) => !t.done && t.courseId === courseId && (taskId === undefined || t.taskId === taskId),
+  );
+}
+
+/** To-dos given to a planned session. */
+export function todosForPlan(state: ProgressState, planId: string): Todo[] {
+  return [...state.todos.values()].filter((t) => t.planId === planId);
+}
+
+/** To-dos of a session: the ones it carries now, and those ticked off in it. */
+export function todosForSession(state: ProgressState, sessionId: string): Todo[] {
+  const record = state.sessions.get(sessionId);
+  const ids = new Set(record?.todoIds ?? []);
+  return [...state.todos.values()].filter(
+    (t) => t.sessionId === sessionId || t.doneInSessionId === sessionId || ids.has(t.id),
+  );
 }
