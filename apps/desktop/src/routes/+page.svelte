@@ -165,7 +165,7 @@
     <div class="actions">
       <Select bind:value={quickTask} groups={taskGroups(study, { none: "No task" })} label="Task" />
       <button type="button" class="primary" onclick={() => study.start(quickTaskId ? { taskId: quickTaskId } : {})}>
-        Start 25 min
+        Start {study.settings.focusMinutes} min
       </button>
       <button
         type="button"
@@ -174,6 +174,7 @@
       >
         Just 5 minutes
       </button>
+      {#if study.settings.focusMinutes < TIMER_PRESETS.deep.focusMinutes}
       <button
         type="button"
         class="secondary"
@@ -181,6 +182,7 @@
       >
         Deep work 50 min
       </button>
+      {/if}
     </div>
   {:else}
     <h2 id="next-h">Welcome to Headstart</h2>
@@ -190,7 +192,7 @@
     </p>
     <div class="actions">
       <a class="primary button" href="/courses">Add your first course</a>
-      <button type="button" class="secondary" onclick={() => study.start()}>Just start 25 min</button>
+      <button type="button" class="secondary" onclick={() => study.start()}>Just start {study.settings.focusMinutes} min</button>
     </div>
   {/if}
   </div>

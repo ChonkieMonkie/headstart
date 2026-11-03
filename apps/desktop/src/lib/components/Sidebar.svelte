@@ -32,6 +32,11 @@
     { href: null, label: "Week plan", icon: "M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" },
     { href: "/collection", label: "Collection", icon: "M12 3l2.6 5.4 5.9.7-4.4 4 1.2 5.9L12 16.1 6.7 19l1.2-5.9-4.4-4 5.9-.7z" },
     { href: "/crates", label: "Crates", icon: "M3 8l9-4.5L21 8v8.5L12 21l-9-4.5zM3 8l9 4.5L21 8M12 12.5V21" },
+    {
+      href: "/settings",
+      label: "Settings",
+      icon: "M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6M12 2.8l1.6 2.3 2.8-.4.9 2.7 2.6 1.1-.4 2.8 1.7 2.3-1.7 2.3.4 2.8-2.6 1.1-.9 2.7-2.8-.4L12 21.2l-1.6-2.3-2.8.4-.9-2.7-2.6-1.1.4-2.8L2.8 12l1.7-2.3-.4-2.8 2.6-1.1.9-2.7 2.8.4z",
+    },
   ];
 
   const current = (href: string) =>

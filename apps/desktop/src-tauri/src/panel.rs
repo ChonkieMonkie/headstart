@@ -42,6 +42,8 @@ pub fn create(app: &AppHandle) -> tauri::Result<WebviewWindow> {
         .inner_size(SIZE.width, SIZE.height)
         .resizable(false)
         .decorations(false)
+        // Transparent, so the page can draw rounded corners.
+        .transparent(true)
         .always_on_top(true)
         .skip_taskbar(true)
         .visible_on_all_workspaces(true)

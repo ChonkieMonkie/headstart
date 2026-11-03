@@ -23,6 +23,7 @@
 // - A breaking change needs a new EVENT_SCHEMA and an upgrade step for old events.
 
 import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
+import type { Settings } from "./settings.ts";
 
 export const EVENT_SCHEMA = 1;
 
@@ -128,7 +129,9 @@ export type StudyEvent =
   | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
   | { type: "item.crafted"; itemId: string; cost: number }
   | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }
-  | { type: "mascot.chosen"; mascot: MascotId };
+  | { type: "mascot.chosen"; mascot: MascotId }
+  /** Only the settings that changed. */
+  | { type: "settings.changed"; changes: Partial<Settings> };
 
 export type StudyEventType = StudyEvent["type"];
 

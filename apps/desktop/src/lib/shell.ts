@@ -92,6 +92,8 @@ export interface PanelSnapshot {
   crateProgress: number;
   crateEvery: number;
   cratesWaiting: number;
+  /** Length of a session started without a plan. */
+  focusMinutes: number;
   /** The mascot as it looks right now, or null before one is chosen. */
   mascot: {
     species: MascotId;

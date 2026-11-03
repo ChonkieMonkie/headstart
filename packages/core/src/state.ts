@@ -36,6 +36,7 @@ import {
   type SessionScore,
   scoreSession,
 } from "./rewards.ts";
+import { DEFAULT_SETTINGS, mergeSettings, type Settings } from "./settings.ts";
 import { type ActiveSession, focusedMs, targetMs } from "./timer.ts";
 
 const MINUTE = 60_000;
@@ -155,6 +156,7 @@ export interface ProgressState {
   /** To-dos in the order they were made. */
   todos: Map<string, Todo>;
   plans: Map<string, Plan>;
+  settings: Settings;
   lastEventAt: number | null;
 }
 
@@ -193,6 +195,7 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     tasks: new Map(),
     todos: new Map(),
     plans: new Map(),
+    settings: { ...DEFAULT_SETTINGS },
     lastEventAt: null,
   };
 }
@@ -386,6 +389,10 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
     case "plan.cancelled": {
       const plan = state.plans.get(event.planId);
       if (plan && plan.sessionId === null) plan.cancelled = true;
+      return;
+    }
+    case "settings.changed": {
+      state.settings = mergeSettings(state.settings, event.changes);
       return;
     }
     case "todo.created": {

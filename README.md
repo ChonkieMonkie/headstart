@@ -2,16 +2,18 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M4.5 (course to-dos)** is done: to-do lists per course that you hand to planned sessions, course codes, clearer course colours and a lighter Collection screen. Next up is M5: polish and the first release for friends.
+> Status: milestone **M5 (polish)** is done: a first-launch welcome, settings, a calendar date picker, planning straight from a course's to-do list, a rounded tray panel and a faster, calmer app. Stage 1 is complete; next comes stage 2 (habits, a week plan, more crates and plaques).
 
 ## What works today
 
+- **A short welcome** on first launch: pick a study buddy, add a first course and task, and start.
+- **Settings**: the length of unplanned sessions, whether breaks start by themselves, reminders before planned sessions, how many nudges a day, and a switch that keeps every animation still.
 - **A study buddy**: pick Inky the octopus, Axo the axolotl or Maple the red panda. Your buddy shows up on the Today screen, in the focus view, the compact timer and the tray panel. Its mood follows your day (focusing, on a break, celebrating, nudging you when a session is due, sleepy late at night), but never its colours: those belong to the skin.
 - **Study Crates**: open the crates you earn, with the odds and the pity guarantee shown before you open one. Each item is revealed on your own mascot and can be put on right away. Duplicates turn into **Stardust**.
 - **Collection**: a wardrobe for each mascot (skin, head, face, outfit, held item and aura), every item in the catalogue with what you have found so far, and five themed sets. Missing items can be crafted with Stardust, except legendary skins and seasonal items.
 - **154 items** to collect, from palette-swapped commons to animated legendaries. A few items only fit one mascot.
 - **Courses and tasks.** Courses can have a course code (shown as a small tag before the name) and an exam date with a countdown. Every task starts with a concrete **first to-do**, so starting never needs a decision.
-- **To-do lists** under every course and task, such as "Redo problem 3.7 d". Give to-dos to a planned session (or the one that is running) to decide what it is for; tick them off in the focus view or when the session is done. Whatever you did not get to goes back to the list.
+- **To-do lists** under every course and task, such as "Redo problem 3.7 d". Plan a session straight from a course or a to-do, or give to-dos to a planned session (or the one that is running) to decide what it is for; tick them off in the focus view or when the session is done. Whatever you did not get to goes back to the list.
 - **Today screen**: the next planned session with its to-dos, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
 - **Planned sessions with reminders**: a notification two minutes before, and one gentle nudge if a session has not started ten minutes in (at most three nudges a day). Starting a planned session on time earns a bonus.
 - **Session complete**: what you earned, then write down what you remember (free recall), rate your focus and set the next step. Recall notes are kept per course.

@@ -128,8 +128,8 @@ export interface Reminder {
 }
 
 export interface ReminderRules {
-  /** How long before a planned start the first reminder comes. */
-  soonMinutes: number;
+  /** How long before a planned start the first reminder comes, or null for none. */
+  soonMinutes: number | null;
   /** How long after a missed start the one gentle nudge comes. */
   lateMinutes: number;
   /** Nudges per day at most. Reminders before a start do not count. */
@@ -155,7 +155,7 @@ export function upcomingReminders(
     .filter((plan) => !plan.cancelled && plan.sessionId === null)
     .sort((a, b) => a.startAt - b.startAt);
   for (const plan of plans) {
-    const soon = plan.startAt - rules.soonMinutes * MINUTE;
+    const soon = rules.soonMinutes === null ? null : plan.startAt - rules.soonMinutes * MINUTE;
     const late = plan.startAt + rules.lateMinutes * MINUTE;
     const day = dayKey(plan.startAt);
     const nudges = nudgesPerDay.get(day) ?? 0;
@@ -163,7 +163,7 @@ export function upcomingReminders(
     const nudgeAllowed =
       nudges < rules.maxNudgesPerDay && late < plan.startAt + plan.minutes * MINUTE;
     if (nudgeAllowed) nudgesPerDay.set(day, nudges + 1);
-    if (soon >= now && soon < now + DAY)
+    if (soon !== null && soon >= now && soon < now + DAY)
       reminders.push({ id: `${plan.id}:soon`, kind: "soon", at: soon, plan });
     if (nudgeAllowed && late >= now && late < now + DAY) {
       reminders.push({ id: `${plan.id}:late`, kind: "late", at: late, plan });

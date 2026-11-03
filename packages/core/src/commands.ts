@@ -21,6 +21,7 @@
 import type { MascotId, Slot } from "@headstart/content";
 import { craftBlocker, itemFits, rollCrate } from "./crates.ts";
 import type { FocusRating, StudyEvent } from "./events.ts";
+import { checkSettings, type Settings } from "./settings.ts";
 import {
   type CoreContext,
   openPlanFor,
@@ -561,4 +562,22 @@ export function assignTodo(
     return reject("It is already in that session");
   }
   return accept({ type: "todo.assigned", todoId, ...checked });
+}
+
+// Settings
+
+export function changeSettings(
+  state: ProgressState,
+  changes: Partial<Settings>,
+): CommandResult<EventOf<"settings.changed">> {
+  const reason = checkSettings(changes);
+  if (reason) return reject(reason);
+  const changed: Partial<Settings> = {};
+  for (const [key, value] of Object.entries(changes) as [keyof Settings, unknown][]) {
+    if (value !== undefined && state.settings[key] !== value) {
+      (changed as Record<string, unknown>)[key] = value;
+    }
+  }
+  if (Object.keys(changed).length === 0) return reject("Nothing changed");
+  return accept({ type: "settings.changed", changes: changed });
 }

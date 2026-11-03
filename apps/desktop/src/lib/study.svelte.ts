@@ -31,6 +31,7 @@ import {
   type CoreContext,
   type Course,
   type CrateDrop,
+  changeSettings,
   chooseMascot,
   collectionCount,
   completeSession,
@@ -41,6 +42,7 @@ import {
   crateOdds,
   createTodo,
   createUlidFactory,
+  DEFAULT_SETTINGS,
   defaultContext,
   deleteTodo,
   type EarnedCrate,
@@ -67,9 +69,11 @@ import {
   planToStartNow,
   rateSession,
   remainingMs,
+  reminderRules,
   reopenTodo,
   resumeSession,
   type SetProgress,
+  type Settings,
   StudyEngine,
   type StudyEvent,
   type StudyStats,
@@ -193,6 +197,7 @@ export class Study {
   now = $state(Date.now());
 
   #newId = createUlidFactory();
+  #statsCache = new Map<string, StudyStats>();
   #preset: TimerPreset = TIMER_PRESETS.classic;
   #finishing = false;
   #ticker: ReturnType<typeof setInterval> | null = null;
@@ -304,9 +309,20 @@ export class Study {
     return state ? upcomingPlan(state, this.now) : null;
   }
 
+  /**
+   * Stats only change with the log or the day, so they are worked out once
+   * per change instead of on every tick of the clock.
+   */
   stats(days = 7): StudyStats | null {
     const state = this.state;
-    return state ? computeStats(state, { now: this.now, days }) : null;
+    if (!state) return null;
+    const key = `${this.version}:${days}:${localDayKey(this.now)}`;
+    const cached = this.#statsCache.get(key);
+    if (cached) return cached;
+    if (this.#statsCache.size > 8) this.#statsCache.clear();
+    const stats = computeStats(state, { now: this.now, days });
+    this.#statsCache.set(key, stats);
+    return stats;
   }
 
   /** Recall notes of a course, newest first. */
@@ -318,6 +334,17 @@ export class Study {
       .sort((a, b) => b.endedAt - a.endedAt)
       .slice(0, limit)
       .map((r) => ({ endedAt: r.endedAt, text: r.recallText ?? "" }));
+  }
+
+  // Settings
+
+  get settings(): Settings {
+    return this.state?.settings ?? DEFAULT_SETTINGS;
+  }
+
+  async saveSettings(changes: Partial<Settings>): Promise<string | null> {
+    const result = await this.run((s) => changeSettings(s, changes));
+    return result.ok || result.reason === "Nothing changed" ? null : result.reason;
   }
 
   // To-dos
@@ -427,9 +454,7 @@ export class Study {
           this.plansOn(today).some(
             (p) => p.status === "missed" && now - p.plan.startAt < 60 * MINUTE,
           )),
-      studiedToday: [...(state?.sessions.values() ?? [])].some(
-        (r) => localDayKey(r.endedAt) === today,
-      ),
+      studiedToday: (this.stats(1)?.todaySessions ?? 0) > 0,
       hour: new Date(now).getHours(),
     });
   }
@@ -563,7 +588,7 @@ export class Study {
       planId = planToStartNow(engine.state, Date.now(), engine.context.rewards)?.id;
     }
     const plan = planId ? engine.state.plans.get(planId) : undefined;
-    const minutes = options.minutes ?? plan?.minutes ?? TIMER_PRESETS.classic.focusMinutes;
+    const minutes = options.minutes ?? plan?.minutes ?? engine.state.settings.focusMinutes;
     const result = await engine.run((s) =>
       startSession(s, {
         sessionId: this.#newId(),
@@ -716,7 +741,9 @@ export class Study {
         };
       }
       const rest = breakAfter(this.#sessionsToday(), this.#preset);
-      this.breakTimer = { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long };
+      this.breakTimer = engine.state.settings.autoBreak
+        ? { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long }
+        : null;
       this.#sync();
       if (this.layout !== "normal") await this.setLayout("normal");
     } finally {
@@ -824,27 +851,29 @@ export class Study {
     const state = this.engine?.state;
     if (!state) return;
     this.#remindersAt = Date.now();
-    const reminders = upcomingReminders(state, Date.now()).map((reminder) => {
-      const course = this.course(reminder.plan.courseId);
-      const task = this.task(reminder.plan.taskId);
-      const what = task?.title ?? course?.name ?? "your session";
-      if (reminder.kind === "soon") {
+    const reminders = upcomingReminders(state, Date.now(), reminderRules(state.settings)).map(
+      (reminder) => {
+        const course = this.course(reminder.plan.courseId);
+        const task = this.task(reminder.plan.taskId);
+        const what = task?.title ?? course?.name ?? "your session";
+        if (reminder.kind === "soon") {
+          return {
+            id: reminder.id,
+            at: reminder.at,
+            title: `Starting at ${clockTime(reminder.plan.startAt)}`,
+            body: task?.nextStep
+              ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
+              : `Time for ${what}.`,
+          };
+        }
         return {
           id: reminder.id,
           at: reminder.at,
-          title: `Starting at ${clockTime(reminder.plan.startAt)}`,
-          body: task?.nextStep
-            ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
-            : `Time for ${what}.`,
+          title: `Still up for ${what}?`,
+          body: "How about just 5 minutes? You can stop after that.",
         };
-      }
-      return {
-        id: reminder.id,
-        at: reminder.at,
-        title: `Still up for ${what}?`,
-        body: "How about just 5 minutes? You can stop after that.",
-      };
-    });
+      },
+    );
     setReminders(reminders);
   }
 
@@ -902,6 +931,7 @@ export class Study {
       crateProgress: state?.crateProgress ?? 0,
       crateEvery: this.context.rewards.studyCrateEvery,
       cratesWaiting: state ? unopenedCrates(state).length : 0,
+      focusMinutes: this.settings.focusMinutes,
       mascot:
         state?.mascot != null
           ? {

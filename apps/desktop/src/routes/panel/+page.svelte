@@ -125,7 +125,7 @@
       {/if}
       <div class="buttons">
         <button type="button" class="primary" onclick={() => act("start")}>
-          {snapshot?.upNext?.startsNow ? "Start session" : "Start 25 min now"}
+          {snapshot?.upNext?.startsNow ? "Start session" : `Start ${snapshot?.focusMinutes ?? 25} min now`}
         </button>
         <button type="button" class="ghost" onclick={() => act("start-five")}>Just 5 minutes</button>
       </div>
@@ -178,9 +178,18 @@
     line-height: 1.35;
   }
 
+  /* The window is transparent; the panel draws its own rounded box. */
+  :global(html),
+  :global(body) {
+    background: transparent;
+  }
+
   .panel {
     height: 100vh;
     box-sizing: border-box;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 14px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 14px;

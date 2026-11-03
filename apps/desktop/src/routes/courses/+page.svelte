@@ -18,7 +18,17 @@
 
 <!-- Courses, their tasks and to-dos. Every task starts with a concrete first to-do, so starting never needs a decision. -->
 <script lang="ts">
-  import { archiveCourse, codeInName, completeTask, daysUntil, formatMinutes, reopenTask, updateCourse } from "@headstart/core";
+  import { tick } from "svelte";
+  import {
+    archiveCourse,
+    codeInName,
+    completeTask,
+    daysUntil,
+    formatMinutes,
+    reopenTask,
+    type Todo,
+    updateCourse,
+  } from "@headstart/core";
   import CourseForm from "$lib/components/CourseForm.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
@@ -29,8 +39,17 @@
 
   const { study } = useApp();
 
-  /** Which form is open: "course:new", "course:<id>", "task:new:<courseId>", "task:<id>", "plan:<taskId>", "archive:<id>". */
+  /** Which form is open: "course:new", "course:<id>", "task:new:<courseId>", "task:<id>", "plan:<taskId>", "plan-course:<courseId>", "archive:<id>". */
   let open = $state<string | null>(null);
+  /** What the course plan form starts with. */
+  let planFor = $state<{ taskId: string; todoIds: string[] }>({ taskId: "", todoIds: [] });
+
+  function planCourse(courseId: string, todo?: Todo): void {
+    planFor = { taskId: todo?.taskId ?? "", todoIds: todo ? [todo.id] : [] };
+    open = `plan-course:${courseId}`;
+    // The form opens under the course name; bring it into view.
+    tick().then(() => document.getElementById(`plan-${courseId}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+  }
   let showDone = $state<Record<string, boolean>>({});
 
   const focusByCourse = $derived(
@@ -85,6 +104,7 @@
           </p>
         </div>
         <div class="row-actions">
+          <button type="button" class="small" onclick={() => planCourse(course.id)}>Plan</button>
           <button type="button" class="small" onclick={() => (open = `course:${course.id}`)}>Edit</button>
           <button type="button" class="small ghost" onclick={() => (open = `archive:${course.id}`)}>Archive</button>
         </div>
@@ -117,6 +137,14 @@
       {/if}
     {/if}
 
+    {#if open === `plan-course:${course.id}`}
+      <div id="plan-{course.id}">
+        {#key planFor}
+          <PlanForm {study} courseId={course.id} taskId={planFor.taskId} todoIds={planFor.todoIds} onDone={close} />
+        {/key}
+      </div>
+    {/if}
+
     <ul class="tasks">
       {#each openTasks as task (task.id)}
         <li>
@@ -140,7 +168,7 @@
               </div>
             </div>
             <div class="task-todos">
-              <TodoList {study} courseId={course.id} taskId={task.id} />
+              <TodoList {study} courseId={course.id} taskId={task.id} onPlan={(todo) => planCourse(course.id, todo)} />
             </div>
             {#if open === `plan:${task.id}`}
               <PlanForm {study} taskId={task.id} onDone={close} />
@@ -152,7 +180,7 @@
 
     <div class="course-todos">
       <h3>Other to-dos</h3>
-      <TodoList {study} courseId={course.id} />
+      <TodoList {study} courseId={course.id} onPlan={(todo) => planCourse(course.id, todo)} />
     </div>
 
     {#if open === `task:new:${course.id}`}

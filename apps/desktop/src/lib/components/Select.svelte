@@ -68,6 +68,7 @@
 
   const uid = Math.random().toString(36).slice(2, 8);
   let open = $state(false);
+  let alignRight = $state(false);
   let active = $state(-1);
   let root: HTMLDivElement;
   let button: HTMLButtonElement;
@@ -80,6 +81,7 @@
   const selectedGroup = $derived(groups.find((g) => g.options.some((o) => o.value === value)) ?? null);
 
   function show(): void {
+    alignRight = root.getBoundingClientRect().left + 260 > window.innerWidth;
     open = true;
     active = Math.max(0, flat.findIndex((o) => o.value === value));
     queueMicrotask(() => scrollToActive());
@@ -185,7 +187,7 @@
       <span class="dot" style:background={selected?.color ?? selectedGroup?.color} aria-hidden="true"></span>
     {/if}
     <span class="value">
-      {#if selectedGroup?.label && selectedGroup.options.length > 1 && selected && selected.label !== selectedGroup.label}
+      {#if selectedGroup?.label && selected && selected.label !== selectedGroup.label}
         <span class="context">{selectedGroup.tag ?? selectedGroup.label} ·</span>
       {/if}
       {selected?.label ?? "Choose…"}
@@ -194,7 +196,7 @@
   </button>
 
   {#if open}
-    <ul class="list" role="listbox" id="list-{uid}" tabindex="-1" bind:this={list} aria-label={label}>
+    <ul class="list" class:right={alignRight} role="listbox" id="list-{uid}" tabindex="-1" bind:this={list} aria-label={label}>
       {#each groups as group, g (g)}
         {#if group.label}
           <li class="group" role="presentation">
@@ -353,6 +355,11 @@
     border-radius: 14px;
     background: var(--pop);
     box-shadow: var(--hs-shadow-pop);
+  }
+
+  .list.right {
+    left: auto;
+    right: 0;
   }
 
   .group {

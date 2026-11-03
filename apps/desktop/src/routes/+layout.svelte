@@ -28,6 +28,7 @@
   import { page } from "$app/state";
   import CompactTimer from "$lib/components/CompactTimer.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
+  import Onboarding from "$lib/components/Onboarding.svelte";
   import SessionComplete from "$lib/components/SessionComplete.svelte";
   import Sidebar from "$lib/components/Sidebar.svelte";
   import { provideApp } from "$lib/context.ts";
@@ -42,6 +43,18 @@
   const updater = isPanel ? null : new Updater();
   if (study && updater) provideApp({ study, updater });
   let version = $state("dev");
+  /** Shown once on a fresh install, decided when the saved progress has loaded. */
+  let onboarding = $state<boolean | null>(null);
+  $effect(() => {
+    if (study?.ready && onboarding === null) {
+      onboarding = study.mascot === null && study.courses.length === 0 && (study.state?.completedSessions ?? 0) === 0;
+    }
+  });
+
+  // "Reduce motion" in Settings stills every animation, like the system setting does.
+  $effect(() => {
+    document.documentElement.classList.toggle("hs-still", study?.settings.motion === "reduced");
+  });
 
   onMount(() => {
     // Pause every animation while the window cannot be seen (closed to the tray, minimised).
@@ -67,6 +80,8 @@
   {@render children()}
 {:else if study.layout === "compact" && (study.active || study.breakTimer)}
   <CompactTimer {study} />
+{:else if onboarding && !study.active}
+  <Onboarding {study} onDone={() => (onboarding = false)} />
 {:else if study.active}
   <FocusView {study} />
 {:else if study.completion}

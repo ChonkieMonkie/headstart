@@ -19,8 +19,9 @@
 <!-- Adds a course, or edits one: name, an optional course code, colour and an optional exam date. -->
 <script lang="ts">
   import { untrack } from "svelte";
-  import { COURSE_COLORS, type Course, createCourse, updateCourse } from "@headstart/core";
+  import { COURSE_COLORS, type Course, createCourse, localDayKey, updateCourse } from "@headstart/core";
   import type { Study } from "$lib/study.svelte.ts";
+  import DatePicker from "./DatePicker.svelte";
 
   let { study, course = null, onDone }: { study: Study; course?: Course | null; onDone: () => void } =
     $props();
@@ -64,10 +65,10 @@
     <span>Course code (optional)</span>
     <input type="text" class="code" bind:value={code} maxlength="16" placeholder="MA1234" autocomplete="off" spellcheck="false" />
   </label>
-  <label>
+  <div class="field">
     <span>Exam date (optional)</span>
-    <input type="date" bind:value={examDate} />
-  </label>
+    <DatePicker bind:value={examDate} label="Exam date" optional min={localDayKey(Date.now())} />
+  </div>
   <fieldset>
     <legend>Colour</legend>
     <div class="swatches">
@@ -97,6 +98,7 @@
   }
 
   label,
+  .field,
   legend {
     display: flex;
     flex-direction: column;
@@ -106,8 +108,7 @@
     color: var(--hs-ink-muted);
   }
 
-  input[type="text"],
-  input[type="date"] {
+  input[type="text"] {
     min-height: 42px;
     box-sizing: border-box;
     padding: 0 10px;

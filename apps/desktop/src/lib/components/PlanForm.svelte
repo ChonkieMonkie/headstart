@@ -23,13 +23,25 @@
   import { fromInputs, toTimeInput } from "$lib/format.ts";
   import { taskGroups } from "$lib/options.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import DatePicker from "./DatePicker.svelte";
   import Select from "./Select.svelte";
 
   let {
     study,
     taskId = "",
+    courseId = "",
+    todoIds = [],
     onDone,
-  }: { study: Study; taskId?: string; onDone: () => void } = $props();
+  }: {
+    study: Study;
+    /** Start with this task chosen. */
+    taskId?: string;
+    /** Or with this course chosen (when there is no task). */
+    courseId?: string;
+    /** To-dos ticked from the start. */
+    todoIds?: string[];
+    onDone: () => void;
+  } = $props();
 
   const LENGTHS = [5, 15, 25, 30, 45, 50, 60, 90];
   const HALF_HOUR = 30 * 60_000;
@@ -37,13 +49,13 @@
   const soon = Math.ceil((Date.now() + 10 * 60_000) / HALF_HOUR) * HALF_HOUR;
 
   // "task:<id>" or "course:<id>" or "" for a session without a course.
-  const initialTask = untrack(() => taskId);
-  let target = $state(initialTask ? `task:${initialTask}` : "");
+  const initial = untrack(() => ({ taskId, courseId, todoIds }));
+  let target = $state(initial.taskId ? `task:${initial.taskId}` : initial.courseId ? `course:${initial.courseId}` : "");
   let day = $state(localDayKey(soon));
   let time = $state(toTimeInput(soon));
   let minutes = $state(25);
   let error = $state<string | null>(null);
-  let chosen = $state(new Set<string>());
+  let chosen = $state(new Set<string>(initial.todoIds));
 
   const picked = $derived.by(() => {
     const [kind, id] = target.split(":");
@@ -101,10 +113,10 @@
     <span>What</span>
     <Select bind:value={target} groups={taskGroups(study, { none: "Free session, no course", courses: true })} label="What" onchange={() => (chosen = new Set())} />
   </div>
-  <label>
+  <div class="field">
     <span>Day</span>
-    <input type="date" bind:value={day} required />
-  </label>
+    <DatePicker bind:value={day} label="Day" min={localDayKey(Date.now())} quick={[{ label: "Today", days: 0 }, { label: "Tomorrow", days: 1 }]} />
+  </div>
   <label>
     <span>Start</span>
     <input type="time" bind:value={time} required />

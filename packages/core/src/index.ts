@@ -35,6 +35,7 @@ export * from "./ids.ts";
 export * from "./planner.ts";
 export * from "./rewards.ts";
 export * from "./rng.ts";
+export * from "./settings.ts";
 export * from "./simulation.ts";
 export * from "./state.ts";
 export * from "./stats.ts";

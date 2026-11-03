@@ -301,6 +301,14 @@ body {
   }
 }
 
+/* Set on the root when motion is reduced in Settings. */
+.hs-still *,
+.hs-still *::before,
+.hs-still *::after {
+  animation: none !important;
+  transition-duration: 0.01ms !important;
+}
+
 /* Set on the root while the window is hidden, so nothing animates unseen. */
 .hs-paused *,
 .hs-paused *::before,

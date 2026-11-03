@@ -31,13 +31,23 @@
     courseId,
     taskId = null,
     addLabel = "Add a to-do",
-  }: { study: Study; courseId: string; taskId?: string | null; addLabel?: string } = $props();
+    onPlan,
+  }: {
+    study: Study;
+    courseId: string;
+    taskId?: string | null;
+    addLabel?: string;
+    /** Opens the plan form with this to-do ticked. */
+    onPlan?: (todo: Todo) => void;
+  } = $props();
 
   let text = $state("");
   let editing = $state<string | null>(null);
   let draft = $state("");
   let showDone = $state(false);
   let error = $state<string | null>(null);
+  /** Bumped to reset the pickers after "Plan a new session…" was chosen. */
+  let resets = $state(0);
 
   const all = $derived(study.allTodosOf(courseId).filter((t) => t.taskId === taskId));
   const open = $derived(all.filter((t) => !t.done));
@@ -58,6 +68,7 @@
       const what = plan.taskId ? (study.task(plan.taskId)?.title ?? "") : "";
       options.push({ value: `plan:${plan.id}`, label: `${day} ${clockTime(plan.startAt)}`, hint: what || `${plan.minutes} min` });
     }
+    if (onPlan) options.push({ value: "new", label: "Plan a new session…" });
     return [{ label: "", options }];
   });
 
@@ -79,6 +90,11 @@
   }
 
   async function place(todo: Todo, value: string): Promise<void> {
+    if (value === "new") {
+      resets += 1;
+      onPlan?.(todo);
+      return;
+    }
     const [kind, id] = value.split(":");
     const target = kind === "plan" && id ? { planId: id } : kind === "session" && id ? { sessionId: id } : null;
     error = await study.assignTodo(todo.id, target);
@@ -132,13 +148,15 @@
           {/if}
           {#if (sessionGroups[0]?.options.length ?? 0) > 1}
             <span class="place">
-              <Select
-                value={placeOf(todo)}
-                groups={sessionGroups}
-                quiet={placeOf(todo) === ""}
-                label="Session for {todo.text}"
-                onchange={(v) => place(todo, v)}
-              />
+              {#key resets}
+                <Select
+                  value={placeOf(todo)}
+                  groups={sessionGroups}
+                  quiet={placeOf(todo) === ""}
+                  label="Session for {todo.text}"
+                  onchange={(v) => place(todo, v)}
+                />
+              {/key}
             </span>
           {/if}
           <button type="button" class="remove" aria-label="Remove {todo.text}" title="Remove" onclick={() => study.removeTodo(todo.id)}>
