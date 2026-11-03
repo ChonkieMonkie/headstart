@@ -14,45 +14,54 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// Menu bar (macOS) / system tray (Windows, Linux) icon and menu.
+// Menu bar (macOS) / system tray (Windows, Linux) icon and menu. A whole
+// session can be run from here: the menu changes with the session and the
+// countdown ticks in the menu bar (macOS) or the tooltip (Windows, Linux).
+
+use std::sync::Mutex;
 
 use tauri::{
-    AppHandle, Emitter,
+    AppHandle, Emitter, Manager, Wry,
     image::Image,
-    menu::{Menu, MenuItem, PredefinedMenuItem},
+    menu::{IsMenuItem, Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
 
-/// Events the tray sends to the UI.
-pub const EVENT_START_SESSION: &str = "tray://start-session";
+use crate::timer::{TimerKind, TimerSnapshot};
+
+const TRAY_ID: &str = "main";
+
+/// Menu actions the UI carries out, sent with the action id as payload:
+/// start, start-five, pause, resume, extend, end, skip-break, full, compact.
+pub const EVENT_ACTION: &str = "tray://action";
 pub const EVENT_CHECK_UPDATES: &str = "tray://check-updates";
 
-pub fn create(app: &AppHandle) -> tauri::Result<()> {
-    let open = MenuItem::with_id(app, "open", "Open Headstart", true, None::<&str>)?;
-    let start = MenuItem::with_id(app, "start", "Start session", true, None::<&str>)?;
-    let updates = MenuItem::with_id(app, "updates", "Check for updates", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Quit Headstart", true, None::<&str>)?;
-    let separator = PredefinedMenuItem::separator(app)?;
-    let menu = Menu::with_items(app, &[&open, &start, &separator, &updates, &quit])?;
+/// The live status line, and the last text shown, so the tray is only
+/// touched when the clock actually changes.
+#[derive(Default)]
+pub struct TrayState(Mutex<(Option<MenuItem<Wry>>, String)>);
 
-    let builder = TrayIconBuilder::with_id("main")
+pub fn create(app: &AppHandle) -> tauri::Result<()> {
+    let builder = TrayIconBuilder::with_id(TRAY_ID)
         .tooltip("Headstart")
-        .menu(&menu)
+        .menu(&build_menu(app, None)?)
         // macOS convention: clicking the menu bar icon opens its menu.
         // Windows and Linux: left click opens the app, right click the menu.
         .show_menu_on_left_click(cfg!(target_os = "macos"))
         .on_menu_event(|app, event| match event.id.as_ref() {
             "open" => crate::show_main_window(app),
-            "start" => {
-                crate::show_main_window(app);
-                let _ = app.emit(EVENT_START_SESSION, ());
-            }
             "updates" => {
                 crate::show_main_window(app);
                 let _ = app.emit(EVENT_CHECK_UPDATES, ());
             }
             "quit" => app.exit(0),
-            _ => {}
+            "full" | "compact" => {
+                crate::show_main_window(app);
+                let _ = app.emit(EVENT_ACTION, event.id.as_ref());
+            }
+            action => {
+                let _ = app.emit(EVENT_ACTION, action);
+            }
         })
         .on_tray_icon_event(|tray, event| {
             if cfg!(target_os = "macos") {
@@ -85,4 +94,110 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
 
     builder.build(app)?;
     Ok(())
+}
+
+/// Rebuilds the menu for a new session state.
+pub fn refresh(app: &AppHandle, timer: Option<&TimerSnapshot>) {
+    let Some(tray) = app.tray_by_id(TRAY_ID) else {
+        return;
+    };
+    if let Ok(menu) = build_menu(app, timer) {
+        let _ = tray.set_menu(Some(menu));
+    }
+    if let Ok(mut state) = app.state::<TrayState>().0.lock() {
+        state.1.clear();
+    };
+    match timer {
+        Some(timer) => tick(app, timer, crate::timer::now_ms()),
+        None => {
+            let _ = tray.set_title(None::<&str>);
+            let _ = tray.set_tooltip(Some("Headstart"));
+        }
+    }
+}
+
+/// Updates the countdown text. Called often; does nothing until it changes.
+pub fn tick(app: &AppHandle, timer: &TimerSnapshot, now: f64) {
+    let clock = timer.clock(now);
+    let title = match (timer.kind, timer.paused()) {
+        (TimerKind::Focus, true) => format!("❚❚ {clock}"),
+        (TimerKind::Break, _) => format!("☕ {clock}"),
+        _ => clock,
+    };
+    // Never hold the lock while touching the tray: those calls wait for the
+    // main thread, which may itself be waiting for this lock in `refresh`.
+    let tray_state = app.state::<TrayState>();
+    let status_item = {
+        let Ok(mut state) = tray_state.0.lock() else {
+            return;
+        };
+        if state.1 == title {
+            return;
+        }
+        state.1.clone_from(&title);
+        state.0.clone()
+    };
+    if let Some(item) = status_item {
+        let _ = item.set_text(timer.status(now));
+    }
+    if let Some(tray) = app.tray_by_id(TRAY_ID) {
+        let _ = tray.set_title(Some(&title));
+        let _ = tray.set_tooltip(Some(format!("Headstart: {}", timer.status(now))));
+    }
+}
+
+fn build_menu(app: &AppHandle, timer: Option<&TimerSnapshot>) -> tauri::Result<Menu<Wry>> {
+    let item = |id: &str, text: &str| MenuItem::with_id(app, id, text, true, None::<&str>);
+    let separator = || PredefinedMenuItem::separator(app);
+    let mut items: Vec<Box<dyn IsMenuItem<Wry>>> = Vec::new();
+    let mut status = None;
+
+    match timer {
+        None => {
+            items.push(Box::new(item("start", "Start focus session")?));
+            items.push(Box::new(item("start-five", "Just 5 minutes")?));
+            items.push(Box::new(separator()?));
+            items.push(Box::new(item("open", "Open Headstart")?));
+            items.push(Box::new(item("updates", "Check for updates")?));
+        }
+        Some(timer) => {
+            let line = MenuItem::with_id(
+                app,
+                "status",
+                timer.status(crate::timer::now_ms()),
+                false,
+                None::<&str>,
+            )?;
+            status = Some(line.clone());
+            items.push(Box::new(line));
+            items.push(Box::new(separator()?));
+            match timer.kind {
+                TimerKind::Focus => {
+                    items.push(Box::new(if timer.paused() {
+                        item("resume", "Resume")?
+                    } else {
+                        item("pause", "Pause")?
+                    }));
+                    items.push(Box::new(item("extend", "+5 minutes")?));
+                    items.push(Box::new(item("end", "End session")?));
+                    items.push(Box::new(separator()?));
+                    items.push(Box::new(item("full", "Full-screen focus")?));
+                    items.push(Box::new(item("compact", "Compact timer")?));
+                }
+                TimerKind::Break => {
+                    items.push(Box::new(item("skip-break", "Skip break")?));
+                    items.push(Box::new(separator()?));
+                }
+            }
+            items.push(Box::new(item("open", "Open Headstart")?));
+        }
+    }
+    items.push(Box::new(separator()?));
+    items.push(Box::new(item("quit", "Quit Headstart")?));
+
+    if let Ok(mut state) = app.state::<TrayState>().0.lock() {
+        state.0 = status;
+    }
+    let refs: Vec<&dyn IsMenuItem<Wry>> = items.iter().map(|i| i.as_ref()).collect();
+    Menu::with_items(app, &refs)
 }

@@ -2,7 +2,17 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M0 (foundations)**. The app installs, lives in the menu bar or system tray and updates itself. Study features arrive in the next milestones.
+> Status: milestone **M2 (tray and timer)** is done. You can run real focus sessions and earn XP and crates. The study screens (today's plan, courses, recall, stats) arrive in M3.
+
+## What works today
+
+- **Focus sessions** of 25 minutes, 50 minutes or "just 5 minutes", with pause, +5 min and ending early (time studied still counts; under a minute is not saved). A break starts on its own afterwards.
+- **Three focus layouts**: the normal window, **full screen** that stays on top (hold *Exit full screen* for 2 seconds to leave), and a **compact timer** that floats above other windows and can be dragged anywhere.
+- **Menu bar / system tray**: start, pause, extend and end a session without opening the window. On macOS the countdown ticks in the menu bar; on Windows and Linux it is in the tooltip and the menu.
+- **Notifications** when a session or break ends while Headstart is hidden. macOS asks for permission the first time.
+- **Global shortcut** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> (<kbd>⌥⇧H</kbd> on a Mac) starts a session from anywhere, or brings the running one to the front. On Wayland, where global shortcuts are limited, bind a system shortcut to `headstart --start` instead.
+- **Rewards**: XP and levels, a Study Crate every 3 sessions of 10+ minutes, and Stardust from duplicates. Crate odds are shown in the app together with the pity guarantee: an Epic is guaranteed within 15 crates and a Legendary within 60.
+- Everything is stored **locally** in an append-only event log (SQLite). Nothing leaves your computer.
 
 ## Installing (unsigned builds)
 
@@ -28,13 +38,19 @@ pnpm typecheck        # TypeScript and Svelte checks
 pnpm lint             # Biome lint and format check (pnpm format fixes)
 pnpm check:licenses   # make sure every dependency is GPL-compatible
 pnpm build            # build installers for the current OS
+pnpm --filter @headstart/core simulate   # simulate a semester: XP, levels and crate odds
+cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml   # Rust shell tests
 ```
+
+`pnpm --filter @headstart/desktop dev` serves only the UI on <http://localhost:1420>. In a plain browser it keeps progress in memory and skips the tray, notifications and window layouts, which is handy for working on screens.
 
 ### Repository layout
 
 ```
 apps/desktop/         Tauri 2 app: SvelteKit UI in src/, Rust shell in src-tauri/
-packages/core/        domain logic in pure TypeScript (timer, rewards, crates …)
+                      (tray, focus layouts, notifications, global shortcut)
+packages/core/        domain logic in pure TypeScript: event log, timer, XP, crates, pity
+packages/content/     items, crate odds and reward rules as JSON, validated at startup
 packages/ui/          design tokens, fonts and shared Svelte components
 scripts/              repository tooling, such as the licence check
 .github/workflows/    CI and release builds for all three operating systems

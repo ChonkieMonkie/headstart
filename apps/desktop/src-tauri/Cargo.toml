@@ -40,6 +40,8 @@ tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-updater = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri-plugin-notification = "2"
+tauri-plugin-global-shortcut = "2"
 
 # Size-focused release profile, see https://tauri.app/concept/size/
 [profile.release]

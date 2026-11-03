@@ -84,6 +84,16 @@ describe("study sessions", () => {
     expect(engine.state.active).toBeNull();
   });
 
+  it("count no more than the planned and extended time when completed late", async () => {
+    const { engine, advance } = await setup();
+    await engine.run((s) => startSession(s, { sessionId: "late", plannedMinutes: 25 }));
+    await engine.run((s) => extendSession(s, 5));
+    advance(180);
+    await engine.run((s) => completeSession(s));
+    expect(engine.state.sessions.get("late")?.score.focusMinutes).toBe(30);
+    expect(engine.state.focusMinutes).toBe(30);
+  });
+
   it("break the on-time streak on a late start, but not on an unplanned one", async () => {
     const { engine, study } = await setup();
     await study();

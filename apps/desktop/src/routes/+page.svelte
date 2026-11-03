@@ -16,13 +16,14 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Early home screen: proves the shell, tray, updater and saved progress work on every OS. -->
+<!-- Early home screen: start focus sessions, see progress and odds. The full Today screen arrives in M3. -->
 <script lang="ts">
-  import { APP_NAME, formatMinutes, formatPercent } from "@headstart/core";
+  import { formatDuration, formatMinutes, formatPercent } from "@headstart/core";
   import { Logo, rarityColors } from "@headstart/ui";
   import { getVersion } from "@tauri-apps/api/app";
-  import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
+  import CompactTimer from "$lib/components/CompactTimer.svelte";
+  import FocusView from "$lib/components/FocusView.svelte";
   import { Study } from "$lib/study.svelte.ts";
   import { inTauri } from "$lib/tauri.ts";
   import { Updater } from "$lib/updater.svelte.ts";
@@ -30,7 +31,7 @@
   const updater = new Updater();
   const study = new Study();
   let version = $state("dev");
-  let trayMessage = $state("");
+  const shortcut = /Mac/.test(navigator.userAgent) ? "⌥⇧H" : "Alt+Shift+H";
 
   const today = new Intl.DateTimeFormat("en-GB", {
     weekday: "long",
@@ -51,23 +52,23 @@
   const nav = ["Today", "Plan", "Courses", "Stats", "Collection", "Crates", "Settings"];
 
   onMount(() => {
+    study.onCheckUpdates = () => updater.check();
     study.open();
-    if (!inTauri) return;
-    getVersion().then((v) => {
-      version = v;
-    });
-    const unlisteners = [
-      listen("tray://check-updates", () => updater.check()),
-      listen("tray://start-session", () => {
-        trayMessage = "Focus sessions arrive in milestone M2.";
-      }),
-    ];
-    if (import.meta.env.PROD) updater.check();
-    return () => {
-      for (const unlisten of unlisteners) unlisten.then((fn) => fn());
-    };
+    if (inTauri) {
+      getVersion().then((v) => {
+        version = v;
+      });
+      if (import.meta.env.PROD) updater.check();
+    }
+    return () => study.close();
   });
 </script>
+
+{#if study.layout === "compact" && (study.active || study.breakTimer)}
+  <CompactTimer {study} />
+{:else if study.active}
+  <FocusView {study} />
+{:else}
 
 <div class="shell">
   <nav class="sidebar" aria-label="Main">
@@ -92,18 +93,56 @@
       <h1>{greeting}</h1>
     </header>
 
-    <section class="card" aria-labelledby="welcome-h">
+    {#if study.lastResult || study.breakTimer}
+      <section class="card result" aria-labelledby="result-h" aria-live="polite">
+        <div class="card-body">
+          {#if study.lastResult?.discarded}
+            <h2 id="result-h">Session ended</h2>
+            <p>It was under a minute, so nothing was saved. Start again whenever you are ready.</p>
+          {:else if study.lastResult}
+            <h2 id="result-h">Session complete: {study.lastResult.focusMinutes} min, +{study.lastResult.xp} XP</h2>
+            <p>
+              {study.lastResult.distractionFree ? "Distraction-free, nice. " : ""}{study.lastResult.crateEarned
+                ? "You earned a Study Crate! "
+                : ""}Write down what you remember while it is fresh. Recall arrives in the next milestone.
+            </p>
+          {:else}
+            <h2 id="result-h">Break time</h2>
+          {/if}
+          {#if study.breakTimer}
+            <p class="break">
+              {study.breakTimer.long ? "Long break" : "Break"}: {formatDuration(study.remaining)} left
+            </p>
+          {/if}
+        </div>
+        {#if study.breakTimer}
+          <div class="actions">
+            <button type="button" class="secondary" onclick={() => study.setLayout("compact")}>Compact timer</button>
+            <button type="button" class="secondary" onclick={() => study.skipBreak()}>Skip break</button>
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    <section class="card start" aria-labelledby="start-h">
       <Logo size={96} />
       <div class="card-body">
-        <h2 id="welcome-h">{APP_NAME} is up and running</h2>
+        <h2 id="start-h">{study.breakTimer ? "Ready for the next one?" : "Ready to start?"}</h2>
         <p>
-          This is an early build. It installs, lives in the menu bar or system tray, updates itself
-          and keeps your progress in a local database. The study screens arrive in the next
-          milestones.
+          Pick a length and go. You can also start from the menu bar or system tray, or press
+          <kbd>{shortcut}</kbd> anywhere.
         </p>
-        {#if trayMessage}
-          <p class="note" role="status">{trayMessage}</p>
-        {/if}
+        <div class="actions">
+          <button type="button" class="primary" disabled={!study.ready} onclick={() => study.start("classic")}>
+            Start 25 min
+          </button>
+          <button type="button" class="secondary" disabled={!study.ready} onclick={() => study.start("justFive")}>
+            Just 5 minutes
+          </button>
+          <button type="button" class="secondary" disabled={!study.ready} onclick={() => study.start("deep")}>
+            Deep work 50 min
+          </button>
+        </div>
       </div>
     </section>
 
@@ -201,6 +240,7 @@
     </section>
   </main>
 </div>
+{/if}
 
 <style>
   .shell {
@@ -310,10 +350,38 @@
     color: var(--hs-ink-muted);
   }
 
-  .note {
-    margin-top: 10px;
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .result .actions {
+    margin-top: 0;
+  }
+
+  .result {
+    border-color: var(--hs-accent);
+    background: var(--hs-accent-soft);
+  }
+
+  .break {
+    margin-top: 8px;
+    font-weight: 800;
     color: var(--hs-accent-strong);
-    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  kbd {
+    padding: 1px 6px;
+    border: 1px solid var(--hs-line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: var(--hs-ground);
+    font: inherit;
+    font-size: 0.9em;
+    font-weight: 800;
   }
 
   button {

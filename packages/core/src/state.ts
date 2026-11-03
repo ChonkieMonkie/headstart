@@ -36,7 +36,7 @@ import {
   type SessionScore,
   scoreSession,
 } from "./rewards.ts";
-import { type ActiveSession, focusedMs } from "./timer.ts";
+import { type ActiveSession, focusedMs, targetMs } from "./timer.ts";
 
 const MINUTE = 60_000;
 
@@ -240,9 +240,11 @@ function completeSession(
   focusRating: FocusRating | undefined,
   ctx: CoreContext,
 ): void {
+  // Time past the end is not counted: a session finished late (laptop asleep,
+  // app closed) is worth exactly its planned length. Use +5 min to go longer.
   const score = scoreSession(
     {
-      focusedMs: focusedMs(active, at),
+      focusedMs: Math.min(focusedMs(active, at), targetMs(active)),
       startedAt: active.startedAt,
       plannedStartAt: active.plannedStartAt,
       distractions,

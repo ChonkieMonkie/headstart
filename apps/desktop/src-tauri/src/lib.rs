@@ -17,17 +17,40 @@
 // The Tauri shell. It stays thin: windows, tray and OS integrations live here,
 // all study logic lives in the TypeScript `@headstart/core` package.
 
+mod focus;
+mod timer;
 mod tray;
 
-use tauri::{AppHandle, Manager, WindowEvent};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
+use tauri_plugin_global_shortcut::{Shortcut, ShortcutState};
 use tauri_plugin_sql::{Migration, MigrationKind};
+
+/// Starts a session from anywhere, or brings Headstart to the front during one.
+/// On Wayland, where global shortcuts are limited, bind a system shortcut to
+/// `headstart --start` instead.
+const START_SHORTCUT: &str = "Alt+Shift+H";
+const START_FLAG: &str = "--start";
+
+/// Sent to the UI when the shortcut (or `--start`) asks to start or show a session.
+const EVENT_START_OR_SHOW: &str = "app://start-or-show";
+
+/// Set when Headstart was launched with `--start`, until the UI picks it up.
+#[derive(Default)]
+struct LaunchStart(AtomicBool);
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let launch_start = std::env::args().any(|arg| arg == START_FLAG);
+
     tauri::Builder::default()
         // Must be registered first: a second launch focuses the running app instead.
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
             show_main_window(app);
+            if args.iter().any(|arg| arg == START_FLAG) {
+                let _ = app.emit(EVENT_START_OR_SHOW, ());
+            }
         }))
         .plugin(
             tauri_plugin_sql::Builder::default()
@@ -36,8 +59,30 @@ pub fn run() {
         )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, _shortcut, event| {
+                    if event.state == ShortcutState::Pressed {
+                        show_main_window(app);
+                        let _ = app.emit(EVENT_START_OR_SHOW, ());
+                    }
+                })
+                .build(),
+        )
+        .manage(timer::TimerState::default())
+        .manage(tray::TrayState::default())
+        .manage(focus::LayoutState::default())
+        .manage(LaunchStart(AtomicBool::new(launch_start)))
+        .invoke_handler(tauri::generate_handler![
+            timer::set_timer,
+            focus::set_focus_layout,
+            take_launch_start,
+        ])
         .setup(|app| {
             tray::create(app.handle())?;
+            timer::start_ticker(app.handle().clone());
+            register_shortcut(app.handle());
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -52,6 +97,28 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running Headstart");
+}
+
+/// A shortcut taken by another app must not stop Headstart from starting.
+fn register_shortcut(app: &AppHandle) {
+    use tauri_plugin_global_shortcut::GlobalShortcutExt;
+    let registered = START_SHORTCUT
+        .parse::<Shortcut>()
+        .map_err(|e| e.to_string())
+        .and_then(|shortcut| {
+            app.global_shortcut()
+                .register(shortcut)
+                .map_err(|e| e.to_string())
+        });
+    if let Err(error) = registered {
+        eprintln!("Could not register {START_SHORTCUT}: {error}");
+    }
+}
+
+/// True once if Headstart was launched with `--start`.
+#[tauri::command]
+fn take_launch_start(state: State<'_, LaunchStart>) -> bool {
+    state.0.swap(false, Ordering::SeqCst)
 }
 
 /// The local database. The frontend opens it with the same URL.
