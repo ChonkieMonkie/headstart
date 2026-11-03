@@ -730,7 +730,6 @@ export function renderMascot(look: MascotLook, mood: Mood = "idle"): string {
   return g({ transform: `translate(10 ${FEET_Y * 0.1}) scale(0.9)` }, parts);
 }
 
-
 /** "Maple the red panda, celebrating", for screen readers. */
 export function mascotLabel(species: MascotId, mood: Mood = "idle"): string {
   const moods: Record<Mood, string> = {
