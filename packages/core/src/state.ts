@@ -55,11 +55,45 @@ export interface SessionRecord {
   endedAt: number;
   plannedMinutes: number;
   score: SessionScore;
+  distractions: number;
   recallXp: number;
   recallText: string | null;
   focusRating: FocusRating | null;
+  planId: string | null;
   courseId: string | null;
   taskId: string | null;
+}
+
+export interface Course {
+  id: string;
+  name: string;
+  color: string;
+  /** Local date of the exam, "YYYY-MM-DD". */
+  examDate: string | null;
+  archived: boolean;
+  createdAt: number;
+}
+
+export interface Task {
+  id: string;
+  courseId: string;
+  title: string;
+  nextStep: string;
+  done: boolean;
+  createdAt: number;
+  completedAt: number | null;
+}
+
+/** A session planned for a set time. */
+export interface Plan {
+  id: string;
+  startAt: number;
+  minutes: number;
+  courseId: string | null;
+  taskId: string | null;
+  cancelled: boolean;
+  /** The session that carries it out, once started. */
+  sessionId: string | null;
 }
 
 export interface EarnedCrate {
@@ -92,6 +126,9 @@ export interface ProgressState {
   /** Item id → copies received, duplicates included. Owned means at least 1. */
   inventory: Map<string, number>;
   equipped: Record<MascotId, Partial<Record<Slot, string>>>;
+  courses: Map<string, Course>;
+  tasks: Map<string, Task>;
+  plans: Map<string, Plan>;
   lastEventAt: number | null;
 }
 
@@ -126,6 +163,9 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     pity: NO_PITY,
     inventory,
     equipped,
+    courses: new Map(),
+    tasks: new Map(),
+    plans: new Map(),
     lastEventAt: null,
   };
 }
@@ -143,6 +183,8 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
   switch (event.type) {
     case "session.started": {
       if (state.active) return;
+      const plan = event.planId ? state.plans.get(event.planId) : undefined;
+      if (plan && plan.sessionId === null) plan.sessionId = event.sessionId;
       state.active = {
         sessionId: event.sessionId,
         startedAt: at,
@@ -151,6 +193,7 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         pausedAt: null,
         pausedMs: 0,
         plannedStartAt: event.plannedStartAt ? Date.parse(event.plannedStartAt) : null,
+        planId: plan ? plan.id : null,
         courseId: event.courseId ?? null,
         taskId: event.taskId ?? null,
       };
@@ -175,7 +218,12 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       return;
     }
     case "session.abandoned": {
-      if (matching(state, event.sessionId)) state.active = null;
+      const active = matching(state, event.sessionId);
+      if (!active) return;
+      // An abandoned session leaves its plan open, so it can be started again.
+      const plan = active.planId ? state.plans.get(active.planId) : undefined;
+      if (plan?.sessionId === active.sessionId) plan.sessionId = null;
+      state.active = null;
       return;
     }
     case "session.completed": {
@@ -192,6 +240,95 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         record.recallXp = ctx.rewards.recallBonusXp;
         state.xp += record.recallXp;
       }
+      return;
+    }
+    case "session.rated": {
+      const record = state.sessions.get(event.sessionId);
+      if (record) record.focusRating = event.focusRating;
+      return;
+    }
+    case "course.created": {
+      if (state.courses.has(event.courseId)) return;
+      state.courses.set(event.courseId, {
+        id: event.courseId,
+        name: event.name,
+        color: event.color,
+        examDate: event.examDate ?? null,
+        archived: false,
+        createdAt: at,
+      });
+      return;
+    }
+    case "course.updated": {
+      const course = state.courses.get(event.courseId);
+      if (!course) return;
+      if (event.name !== undefined) course.name = event.name;
+      if (event.color !== undefined) course.color = event.color;
+      if (event.examDate !== undefined) course.examDate = event.examDate;
+      return;
+    }
+    case "course.archived": {
+      const course = state.courses.get(event.courseId);
+      if (course) course.archived = true;
+      return;
+    }
+    case "task.created": {
+      if (state.tasks.has(event.taskId) || !state.courses.has(event.courseId)) return;
+      state.tasks.set(event.taskId, {
+        id: event.taskId,
+        courseId: event.courseId,
+        title: event.title,
+        nextStep: event.nextStep,
+        done: false,
+        createdAt: at,
+        completedAt: null,
+      });
+      return;
+    }
+    case "task.updated": {
+      const task = state.tasks.get(event.taskId);
+      if (!task) return;
+      if (event.title !== undefined) task.title = event.title;
+      if (event.nextStep !== undefined) task.nextStep = event.nextStep;
+      return;
+    }
+    case "task.completed": {
+      const task = state.tasks.get(event.taskId);
+      if (task && !task.done) {
+        task.done = true;
+        task.completedAt = at;
+      }
+      return;
+    }
+    case "task.reopened": {
+      const task = state.tasks.get(event.taskId);
+      if (task) {
+        task.done = false;
+        task.completedAt = null;
+      }
+      return;
+    }
+    case "session.planned": {
+      if (state.plans.has(event.planId)) return;
+      state.plans.set(event.planId, {
+        id: event.planId,
+        startAt: Date.parse(event.startAt),
+        minutes: event.minutes,
+        courseId: event.courseId ?? null,
+        taskId: event.taskId ?? null,
+        cancelled: false,
+        sessionId: null,
+      });
+      return;
+    }
+    case "plan.moved": {
+      const plan = state.plans.get(event.planId);
+      if (plan && plan.sessionId === null) plan.startAt = Date.parse(event.startAt);
+      return;
+    }
+    case "plan.cancelled": {
+      const plan = state.plans.get(event.planId);
+      if (plan && plan.sessionId === null) plan.cancelled = true;
       return;
     }
     case "crate.opened": {
@@ -261,9 +398,11 @@ function completeSession(
     endedAt: at,
     plannedMinutes: Math.round(active.plannedMs / MINUTE),
     score,
+    distractions,
     recallXp: 0,
     recallText: null,
     focusRating: focusRating ?? null,
+    planId: active.planId,
     courseId: active.courseId,
     taskId: active.taskId,
   });

@@ -18,6 +18,7 @@
 // all study logic lives in the TypeScript `@headstart/core` package.
 
 mod focus;
+mod panel;
 mod timer;
 mod tray;
 
@@ -71,29 +72,38 @@ pub fn run() {
                 .build(),
         )
         .manage(timer::TimerState::default())
+        .manage(timer::ReminderState::default())
+        .manage(panel::PanelState::default())
         .manage(tray::TrayState::default())
         .manage(focus::LayoutState::default())
         .manage(LaunchStart(AtomicBool::new(launch_start)))
         .invoke_handler(tauri::generate_handler![
             timer::set_timer,
+            timer::set_reminders,
             focus::set_focus_layout,
             take_launch_start,
+            open_main_window,
+            hide_panel,
+            quit_app,
         ])
         .setup(|app| {
             tray::create(app.handle())?;
+            panel::create(app.handle())?;
             timer::start_ticker(app.handle().clone());
             register_shortcut(app.handle());
             Ok(())
         })
-        .on_window_event(|window, event| {
+        .on_window_event(|window, event| match event {
             // Closing the main window keeps Headstart running in the tray, so
             // reminders and the timer keep working. Quit lives in the tray menu.
-            if let WindowEvent::CloseRequested { api, .. } = event
-                && window.label() == "main"
-            {
+            WindowEvent::CloseRequested { api, .. } if window.label() == "main" => {
                 api.prevent_close();
                 let _ = window.hide();
             }
+            WindowEvent::Focused(false) if window.label() == panel::LABEL => {
+                panel::blurred(window.app_handle());
+            }
+            _ => {}
         })
         .run(tauri::generate_context!())
         .expect("error while running Headstart");
@@ -113,6 +123,22 @@ fn register_shortcut(app: &AppHandle) {
     if let Err(error) = registered {
         eprintln!("Could not register {START_SHORTCUT}: {error}");
     }
+}
+
+#[tauri::command]
+fn open_main_window(app: AppHandle) {
+    panel::hide(&app);
+    show_main_window(&app);
+}
+
+#[tauri::command]
+fn hide_panel(app: AppHandle) {
+    panel::hide(&app);
+}
+
+#[tauri::command]
+fn quit_app(app: AppHandle) {
+    app.exit(0);
 }
 
 /// True once if Headstart was launched with `--start`.

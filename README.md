@@ -2,14 +2,19 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M2 (tray and timer)** is done. You can run real focus sessions and earn XP and crates. The study screens (today's plan, courses, recall, stats) arrive in M3.
+> Status: milestone **M3 (study screens)** is done: Headstart is ready for daily studying. The mascot, wardrobe and crate opening arrive in M4.
 
 ## What works today
 
+- **Courses and tasks.** Courses can have an exam date with a countdown. Every task needs a concrete **next step**, so starting never needs a decision.
+- **Today screen**: the next planned session with its next step, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
+- **Planned sessions with reminders**: a notification two minutes before, and one gentle nudge if a session has not started ten minutes in (at most three nudges a day). Starting a planned session on time earns a bonus.
+- **Session complete**: what you earned, then write down what you remember (free recall), rate your focus and set the next step. Recall notes are kept per course.
+- **Stats**: focus time per day and per course, on-time start rate, streaks, distraction-free share and focus rating.
 - **Focus sessions** of 25 minutes, 50 minutes or "just 5 minutes", with pause, +5 min and ending early (time studied still counts; under a minute is not saved). A break starts on its own afterwards.
 - **Three focus layouts**: the normal window, **full screen** that stays on top (hold *Exit full screen* for 2 seconds to leave), and a **compact timer** that floats above other windows and can be dragged anywhere.
-- **Menu bar / system tray**: start, pause, extend and end a session without opening the window. On macOS the countdown ticks in the menu bar; on Windows and Linux it is in the tooltip and the menu.
-- **Notifications** when a session or break ends while Headstart is hidden. macOS asks for permission the first time.
+- **Menu bar / system tray**: left-click the icon for a small panel with the next session, the running timer and today's numbers; right-click for the menu. On macOS the countdown ticks in the menu bar; on Windows and Linux it is in the tooltip and the menu. Linux trays only offer the menu.
+- **Notifications** for planned sessions, and when a session or break ends while Headstart is hidden. macOS asks for permission the first time.
 - **Global shortcut** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> (<kbd>⌥⇧H</kbd> on a Mac) starts a session from anywhere, or brings the running one to the front. On Wayland, where global shortcuts are limited, bind a system shortcut to `headstart --start` instead.
 - **Rewards**: XP and levels, a Study Crate every 3 sessions of 10+ minutes, and Stardust from duplicates. Crate odds are shown in the app together with the pity guarantee: an Epic is guaranteed within 15 crates and a Legendary within 60.
 - Everything is stored **locally** in an append-only event log (SQLite). Nothing leaves your computer.

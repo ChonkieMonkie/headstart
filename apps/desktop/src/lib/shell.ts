@@ -18,7 +18,7 @@
 // Tauri, so the UI also runs in a plain browser with `pnpm dev`.
 
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { emit, listen } from "@tauri-apps/api/event";
 import { inTauri } from "./tauri.ts";
 
 export type FocusLayout = "normal" | "full" | "compact";
@@ -54,6 +54,71 @@ export async function setFocusLayout(layout: FocusLayout): Promise<void> {
   if (inTauri) await invoke("set_focus_layout", { layout });
 }
 
+export interface ShellReminder {
+  id: string;
+  at: number;
+  title: string;
+  body: string;
+}
+
+/** Replaces the reminders the shell will show as notifications. */
+export async function setReminders(reminders: ShellReminder[]): Promise<void> {
+  if (inTauri) await invoke("set_reminders", { reminders });
+}
+
+export async function openMainWindow(): Promise<void> {
+  if (inTauri) await invoke("open_main_window");
+}
+
+export async function hidePanel(): Promise<void> {
+  if (inTauri) await invoke("hide_panel");
+}
+
+export async function quitApp(): Promise<void> {
+  if (inTauri) await invoke("quit_app");
+}
+
+/** What the tray panel shows. The main window computes it; the panel only renders it. */
+export interface PanelSnapshot {
+  timer: TimerSnapshot | null;
+  /** The running session, or the next planned one. */
+  heading: string | null;
+  nextStep: string | null;
+  upNext: { time: string; course: string; task: string | null; startsNow: boolean } | null;
+  focusTodayMinutes: number;
+  sessionsToday: number;
+  crateProgress: number;
+  crateEvery: number;
+}
+
+const PANEL_SNAPSHOT = "panel://snapshot";
+const PANEL_READY = "panel://ready";
+const TRAY_ACTION = "tray://action";
+
+/** Main window: send the panel what to show. */
+export async function publishPanel(snapshot: PanelSnapshot): Promise<void> {
+  if (inTauri) await emit(PANEL_SNAPSHOT, snapshot);
+}
+
+/** Panel: receive snapshots, and ask for a fresh one right away. */
+export function listenToPanelSnapshots(handler: (snapshot: PanelSnapshot) => void): () => void {
+  if (!inTauri) return () => {};
+  const pending = listen<PanelSnapshot>(PANEL_SNAPSHOT, (e) => handler(e.payload));
+  requestPanelSnapshot();
+  return () => {
+    pending.then((fn) => fn());
+  };
+}
+
+export function requestPanelSnapshot(): void {
+  if (inTauri) emit(PANEL_READY);
+}
+
+/** Panel: carry out an action in the main window, exactly like the tray menu. */
+export async function sendAction(action: TrayAction): Promise<void> {
+  if (inTauri) await emit(TRAY_ACTION, action);
+}
+
 /** True once if the app was launched with `--start`. */
 export async function takeLaunchStart(): Promise<boolean> {
   return inTauri ? invoke<boolean>("take_launch_start") : false;
@@ -65,13 +130,15 @@ export interface ShellHandlers {
   /** The global shortcut or `headstart --start`. */
   onStartOrShow: () => void;
   onCheckUpdates: () => void;
+  onPanelReady: () => void;
 }
 
 /** Subscribes to the shell's events. Returns a function that unsubscribes. */
 export function listenToShell(handlers: ShellHandlers): () => void {
   if (!inTauri) return () => {};
   const pending = [
-    listen<TrayAction>("tray://action", (e) => handlers.onTrayAction(e.payload)),
+    listen<TrayAction>(TRAY_ACTION, (e) => handlers.onTrayAction(e.payload)),
+    listen(PANEL_READY, () => handlers.onPanelReady()),
     listen<TimerKind>("timer://done", (e) => handlers.onTimerDone(e.payload)),
     listen("app://start-or-show", () => handlers.onStartOrShow()),
     listen("tray://check-updates", () => handlers.onCheckUpdates()),

@@ -37,6 +37,7 @@ function session(overrides: Partial<ActiveSession> = {}): ActiveSession {
     pausedAt: null,
     pausedMs: 0,
     plannedStartAt: null,
+    planId: null,
     courseId: null,
     taskId: null,
     ...overrides,

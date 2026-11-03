@@ -45,9 +45,9 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
     let builder = TrayIconBuilder::with_id(TRAY_ID)
         .tooltip("Headstart")
         .menu(&build_menu(app, None)?)
-        // macOS convention: clicking the menu bar icon opens its menu.
-        // Windows and Linux: left click opens the app, right click the menu.
-        .show_menu_on_left_click(cfg!(target_os = "macos"))
+        // Left click opens the panel, right click the menu. Linux trays report
+        // no clicks and always open the menu.
+        .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
             "open" => crate::show_main_window(app),
             "updates" => {
@@ -56,6 +56,7 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
             }
             "quit" => app.exit(0),
             "full" | "compact" => {
+                crate::panel::hide(app);
                 crate::show_main_window(app);
                 let _ = app.emit(EVENT_ACTION, event.id.as_ref());
             }
@@ -64,16 +65,14 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
             }
         })
         .on_tray_icon_event(|tray, event| {
-            if cfg!(target_os = "macos") {
-                return;
-            }
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,
                 button_state: MouseButtonState::Up,
+                rect,
                 ..
             } = event
             {
-                crate::show_main_window(tray.app_handle());
+                crate::panel::toggle(tray.app_handle(), rect);
             }
         });
 

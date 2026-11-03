@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "panel",
+  "description": "The tray panel only shows a snapshot and sends actions to the main window. It has no access to the database.",
+  "windows": ["panel"],
+  "permissions": ["core:default"]
+}

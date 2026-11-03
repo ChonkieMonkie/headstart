@@ -15,15 +15,20 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // Opens the study engine for the UI (SQLite in the desktop app, memory in a
-// plain browser with `pnpm dev`) and runs focus sessions: the countdown,
-// breaks, focus layouts and the tray. Rules live in `@headstart/core`; this
-// class only wires them to the screen and the shell.
+// plain browser with `pnpm dev`) and runs the day: focus sessions, breaks,
+// focus layouts, the "session complete" step, reminders, the tray and its
+// panel. Rules live in `@headstart/core`; this class only wires them up.
 
 import {
   type ActiveSession,
   abandonSession,
   breakAfter,
+  type CommandResult,
+  type CoreContext,
+  type Course,
   completeSession,
+  completeTask,
+  computeStats,
   crateOdds,
   createUlidFactory,
   defaultContext,
@@ -36,20 +41,38 @@ import {
   localDayKey,
   MemoryEventStore,
   type OddsRow,
+  openTasks,
   owns,
+  type Plan,
+  type PlanView,
+  type ProgressState,
   pauseSession,
+  plansOn,
+  planToStartNow,
+  rateSession,
   remainingMs,
   resumeSession,
   StudyEngine,
+  type StudyEvent,
+  type StudyStats,
   startSession,
+  type Task,
   TIMER_PRESETS,
   type TimerPreset,
   unopenedCrates,
+  upcomingPlan,
+  upcomingReminders,
+  updateTask,
+  writeRecall,
 } from "@headstart/core";
+import { clockTime } from "./format.ts";
 import {
   type FocusLayout,
   listenToShell,
+  type PanelSnapshot,
+  publishPanel,
   setFocusLayout,
+  setReminders,
   setTimer,
   type TimerSnapshot,
   type TrayAction,
@@ -62,6 +85,7 @@ const MINUTE = 60_000;
 /** In the app the shell announces the end of a timer (and notifies). The UI
  * only steps in itself if that announcement is this late. */
 const SHELL_GRACE_MS = inTauri ? 3_000 : 0;
+const REMINDER_REFRESH_MS = 10 * MINUTE;
 const LAYOUT_KEY = "headstart.focusLayout";
 
 export type PresetId = keyof typeof TIMER_PRESETS;
@@ -75,9 +99,9 @@ export interface ProgressSummary {
   crateEvery: number;
   cratesWaiting: number;
   itemsOwned: number;
+  onTimeStreak: number;
   /** Study Crate odds, with Epic and Legendary pity counted from your history. */
   studyCrateOdds: OddsRow[];
-  sessionsToday: number;
 }
 
 export interface BreakTimer {
@@ -86,37 +110,75 @@ export interface BreakTimer {
   long: boolean;
 }
 
-/** What the last session earned, for the "session complete" card. */
-export interface SessionResult {
+/** What the session that just ended earned, for the "session complete" step. */
+export interface Completion {
+  sessionId: string;
   focusMinutes: number;
-  xp: number;
-  distractionFree: boolean;
+  baseXp: number;
+  onTimeXp: number;
+  distractionFreeXp: number;
+  recallBonusXp: number;
+  minRecallChars: number;
+  onTimeStreak: number;
+  onTime: boolean | null;
   crateEarned: boolean;
-  /** Too short to count: under a minute is discarded. */
-  discarded: boolean;
+  course: Course | null;
+  task: Task | null;
+}
+
+export interface StartOptions {
+  /** Carry out this planned session. */
+  planId?: string;
+  taskId?: string;
+  /** Length in minutes; defaults to the plan's length or 25. */
+  minutes?: number;
+  /** Without a plan or task: carry out the plan that is due now, if any. */
+  auto?: boolean;
+  /** Show the focus view. False when started from the tray. */
+  show?: boolean;
 }
 
 export class Study {
   engine: StudyEngine | null = null;
   ready = $state(false);
   error = $state<string | null>(null);
+  /** Bumped on every change to the log, so views that read the state update. */
+  version = $state(0);
   summary = $state<ProgressSummary | null>(null);
 
   /** The running session, copied out of the engine so the UI reacts to it. */
   active = $state<ActiveSession | null>(null);
   breakTimer = $state<BreakTimer | null>(null);
-  lastResult = $state<SessionResult | null>(null);
+  completion = $state<Completion | null>(null);
+  /** A short message for the Today screen, such as a discarded session. */
+  notice = $state<string | null>(null);
   distractions = $state(0);
   layout = $state<FocusLayout>("normal");
-  /** Ticks once a second while a timer runs. */
+  /** Ticks every second while a timer runs and every 30 seconds otherwise. */
   now = $state(Date.now());
 
   #newId = createUlidFactory();
   #preset: TimerPreset = TIMER_PRESETS.classic;
   #finishing = false;
   #ticker: ReturnType<typeof setInterval> | null = null;
+  #tickEvery = 0;
+  #remindersAt = 0;
   #stopListening: () => void = () => {};
   onCheckUpdates: () => void = () => {};
+
+  newId(): string {
+    return this.#newId();
+  }
+
+  /** The engine state. Read `version` first in reactive code so it re-runs. */
+  get state(): ProgressState | null {
+    this.version;
+    return this.engine?.state ?? null;
+  }
+
+  get context(): CoreContext {
+    return this.engine?.context ?? defaultContext;
+  }
 
   get remaining(): number {
     if (this.active) return remainingMs(this.active, this.now);
@@ -151,6 +213,74 @@ export class Study {
     return "normal";
   }
 
+  // Views over the state for the screens
+
+  get courses(): Course[] {
+    const state = this.state;
+    if (!state) return [];
+    return [...state.courses.values()]
+      .filter((c) => !c.archived)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get archivedCourses(): Course[] {
+    const state = this.state;
+    if (!state) return [];
+    return [...state.courses.values()].filter((c) => c.archived);
+  }
+
+  get openTasks(): Task[] {
+    const state = this.state;
+    return state ? openTasks(state) : [];
+  }
+
+  tasksOf(courseId: string): Task[] {
+    const state = this.state;
+    if (!state) return [];
+    return [...state.tasks.values()]
+      .filter((t) => t.courseId === courseId)
+      .sort((a, b) => a.createdAt - b.createdAt);
+  }
+
+  course(id: string | null): Course | null {
+    return id ? (this.state?.courses.get(id) ?? null) : null;
+  }
+
+  task(id: string | null): Task | null {
+    return id ? (this.state?.tasks.get(id) ?? null) : null;
+  }
+
+  plansOn(day: string): PlanView[] {
+    const state = this.state;
+    return state ? plansOn(state, day, this.now) : [];
+  }
+
+  get todayPlans(): PlanView[] {
+    return this.plansOn(localDayKey(this.now));
+  }
+
+  /** The next plan that can still be started, today or later. */
+  get upNext(): Plan | null {
+    const state = this.state;
+    return state ? upcomingPlan(state, this.now) : null;
+  }
+
+  stats(days = 7): StudyStats | null {
+    const state = this.state;
+    return state ? computeStats(state, { now: this.now, days }) : null;
+  }
+
+  /** Recall notes of a course, newest first. */
+  recallsOf(courseId: string, limit = 3): { endedAt: number; text: string }[] {
+    const state = this.state;
+    if (!state) return [];
+    return [...state.sessions.values()]
+      .filter((r) => r.courseId === courseId && r.recallText)
+      .sort((a, b) => b.endedAt - a.endedAt)
+      .slice(0, limit)
+      .map((r) => ({ endedAt: r.endedAt, text: r.recallText ?? "" }));
+  }
+
   async open(): Promise<void> {
     try {
       let store: EventStore;
@@ -169,19 +299,17 @@ export class Study {
         onTrayAction: (action) => this.#onTrayAction(action),
         onTimerDone: (kind) => (kind === "focus" ? this.#finish() : this.skipBreak()),
         onStartOrShow: () => {
-          if (!this.active) this.start("classic");
+          if (!this.active) this.start({ auto: true });
         },
         onCheckUpdates: () => this.onCheckUpdates(),
+        onPanelReady: () => publishPanel(this.#panelSnapshot()),
       });
-      this.#refresh();
       // A session left running when the app quit carries on, or finishes now.
       const running = this.engine.state.active;
-      if (running)
-        this.#preset =
-          running.plannedMs >= 50 * MINUTE ? TIMER_PRESETS.deep : TIMER_PRESETS.classic;
-      this.#sync();
+      if (running) this.#preset = presetFor(running.plannedMs / MINUTE);
+      this.#refresh();
       this.ready = true;
-      if (await takeLaunchStart()) await this.start("classic");
+      if (await takeLaunchStart()) await this.start({ auto: true });
     } catch (error) {
       this.error = error instanceof Error ? error.message : String(error);
     }
@@ -192,16 +320,39 @@ export class Study {
     if (this.#ticker) clearInterval(this.#ticker);
   }
 
-  async start(presetId: PresetId, options: { show?: boolean } = {}): Promise<void> {
-    if (!this.engine || this.engine.state.active) return;
-    const preset = TIMER_PRESETS[presetId];
-    const result = await this.engine.run((s) =>
-      startSession(s, { sessionId: this.#newId(), plannedMinutes: preset.focusMinutes }),
+  /** Runs a command and returns its result, so forms can show why it failed. */
+  async run<E extends StudyEvent>(
+    command: (state: ProgressState, ctx: CoreContext) => CommandResult<E>,
+  ): Promise<CommandResult<E>> {
+    if (!this.engine) return { ok: false, reason: "Still loading" };
+    return this.engine.run(command);
+  }
+
+  async start(options: StartOptions = {}): Promise<void> {
+    const engine = this.engine;
+    if (!engine || engine.state.active) return;
+    let planId = options.planId;
+    if (!planId && !options.taskId && options.auto) {
+      planId = planToStartNow(engine.state, Date.now(), engine.context.rewards)?.id;
+    }
+    const plan = planId ? engine.state.plans.get(planId) : undefined;
+    const minutes = options.minutes ?? plan?.minutes ?? TIMER_PRESETS.classic.focusMinutes;
+    const result = await engine.run((s) =>
+      startSession(s, {
+        sessionId: this.#newId(),
+        plannedMinutes: minutes,
+        ...(planId ? { planId } : {}),
+        ...(options.taskId ? { taskId: options.taskId } : {}),
+      }),
     );
-    if (!result.ok) return;
-    this.#preset = preset;
+    if (!result.ok) {
+      this.notice = result.reason;
+      return;
+    }
+    this.#preset = presetFor(minutes);
     this.distractions = 0;
-    this.lastResult = null;
+    this.completion = null;
+    this.notice = null;
     this.breakTimer = null;
     this.#sync();
     if (options.show !== false) await this.setLayout(this.preferredLayout);
@@ -232,13 +383,7 @@ export class Study {
     if (!this.engine?.state.active) return;
     if (focusedMs(this.engine.state.active, Date.now()) < MINUTE) {
       await this.engine.run(abandonSession);
-      this.lastResult = {
-        focusMinutes: 0,
-        xp: 0,
-        distractionFree: false,
-        crateEarned: false,
-        discarded: true,
-      };
+      this.notice = "Session ended. It was under a minute, so nothing was saved.";
       this.#sync();
       await this.setLayout("normal");
       return;
@@ -250,6 +395,37 @@ export class Study {
     if (!this.breakTimer) return;
     this.breakTimer = null;
     this.#sync();
+  }
+
+  /**
+   * Saves the "session complete" step: the recall, the focus rating and the
+   * next step for the task. Empty fields are simply skipped.
+   */
+  async saveCompletion(input: {
+    recall: string;
+    rating: number | null;
+    nextStep: string;
+    taskDone: boolean;
+  }): Promise<string | null> {
+    const completion = this.completion;
+    if (!completion) return null;
+    const { sessionId, task } = completion;
+    if (input.recall.trim()) {
+      const result = await this.run((s) => writeRecall(s, sessionId, input.recall.trim()));
+      if (!result.ok) return result.reason;
+    }
+    if (input.rating !== null) await this.run((s) => rateSession(s, sessionId, input.rating ?? 0));
+    if (task && input.nextStep.trim() && input.nextStep.trim() !== task.nextStep) {
+      const result = await this.run((s) => updateTask(s, task.id, { nextStep: input.nextStep }));
+      if (!result.ok) return result.reason;
+    }
+    if (task && input.taskDone) await this.run((s) => completeTask(s, task.id));
+    this.completion = null;
+    return null;
+  }
+
+  dismissCompletion(): void {
+    this.completion = null;
   }
 
   /** Switches the window layout. During a session the choice is remembered. */
@@ -277,13 +453,23 @@ export class Study {
       );
       if (!result.ok) return;
       const record = engine.state.sessions.get(active.sessionId);
-      this.lastResult = {
-        focusMinutes: record?.score.focusMinutes ?? 0,
-        xp: record?.score.totalXp ?? 0,
-        distractionFree: record?.score.distractionFree ?? false,
-        crateEarned: engine.state.crates.length > cratesBefore,
-        discarded: false,
-      };
+      const rules = engine.context.rewards;
+      if (record) {
+        this.completion = {
+          sessionId: record.sessionId,
+          focusMinutes: record.score.focusMinutes,
+          baseXp: record.score.baseXp,
+          onTimeXp: record.score.onTimeXp,
+          distractionFreeXp: record.score.distractionFreeXp,
+          recallBonusXp: rules.recallBonusXp,
+          minRecallChars: rules.minRecallChars,
+          onTimeStreak: engine.state.onTimeStreak,
+          onTime: record.score.onTime,
+          crateEarned: engine.state.crates.length > cratesBefore,
+          course: this.course(record.courseId),
+          task: this.task(record.taskId),
+        };
+      }
       const rest = breakAfter(this.#sessionsToday(), this.#preset);
       this.breakTimer = { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long };
       this.#sync();
@@ -296,10 +482,10 @@ export class Study {
   #onTrayAction(action: TrayAction): void {
     switch (action) {
       case "start":
-        this.start("classic", { show: false });
+        this.start({ auto: true, show: false });
         return;
       case "start-five":
-        this.start("justFive", { show: false });
+        this.start({ auto: true, minutes: TIMER_PRESETS.justFive.focusMinutes, show: false });
         return;
       case "pause":
         this.pause();
@@ -346,44 +532,75 @@ export class Study {
       crateEvery: context.rewards.studyCrateEvery,
       cratesWaiting: unopenedCrates(state).length,
       itemsOwned: context.catalog.filter((item) => owns(state, item.id)).length,
+      onTimeStreak: state.onTimeStreak,
       studyCrateOdds: crateOdds(context.crates.crates.study, context.crates, state.pity),
-      sessionsToday: this.#sessionsToday(),
     };
+    this.version += 1;
+    this.#syncReminders();
     this.#sync();
   }
 
-  /** Pushes the running timer to the tray and keeps the screen ticking. */
+  /** Pushes the running timer to the tray and panel, and keeps the screen ticking. */
   #sync(): void {
     this.now = Date.now();
-    const running = this.active !== null || this.breakTimer !== null;
-    if (running && !this.#ticker) this.#ticker = setInterval(() => this.#tick(), 1000);
-    if (!running && this.#ticker) {
-      clearInterval(this.#ticker);
-      this.#ticker = null;
+    const every = this.active !== null || this.breakTimer !== null ? 1000 : 30_000;
+    if (every !== this.#tickEvery) {
+      if (this.#ticker) clearInterval(this.#ticker);
+      this.#ticker = setInterval(() => this.#tick(), every);
+      this.#tickEvery = every;
     }
-    setTimer(this.#snapshot());
+    setTimer(this.#timerSnapshot());
+    publishPanel(this.#panelSnapshot());
   }
 
   #tick(): void {
     this.now = Date.now();
     // Normally the shell's `timer://done` ends the timer; this is the backup.
     if (this.active && isTimeUp(this.active, this.now - SHELL_GRACE_MS)) this.#finish();
-    else if (this.breakTimer && this.now - SHELL_GRACE_MS >= this.breakTimer.endsAt)
+    else if (this.breakTimer && this.now - SHELL_GRACE_MS >= this.breakTimer.endsAt) {
       this.skipBreak();
+    }
+    if (this.now - this.#remindersAt > REMINDER_REFRESH_MS) this.#syncReminders();
   }
 
-  #snapshot(): TimerSnapshot | null {
+  /** Hands the next day of reminders to the shell, which shows them on time. */
+  #syncReminders(): void {
+    const state = this.engine?.state;
+    if (!state) return;
+    this.#remindersAt = Date.now();
+    const reminders = upcomingReminders(state, Date.now()).map((reminder) => {
+      const course = this.course(reminder.plan.courseId);
+      const task = this.task(reminder.plan.taskId);
+      const what = task?.title ?? course?.name ?? "your session";
+      if (reminder.kind === "soon") {
+        return {
+          id: reminder.id,
+          at: reminder.at,
+          title: `Starting at ${clockTime(reminder.plan.startAt)}`,
+          body: task ? `${course?.name ?? task.title}: ${task.nextStep}` : `Time for ${what}.`,
+        };
+      }
+      return {
+        id: reminder.id,
+        at: reminder.at,
+        title: `Still up for ${what}?`,
+        body: "How about just 5 minutes? You can stop after that.",
+      };
+    });
+    setReminders(reminders);
+  }
+
+  #timerSnapshot(): TimerSnapshot | null {
     const now = Date.now();
     if (this.active) {
       const left = remainingMs(this.active, now);
-      const rest = breakAfter(this.#sessionsToday() + 1, this.#preset);
       const minutes = Math.round((this.active.plannedMs + this.active.extendedMs) / MINUTE);
       return {
         kind: "focus",
         endsAt: this.active.pausedAt === null ? now + left : null,
         remainingMs: left,
         doneTitle: `${minutes} minutes done!`,
-        doneBody: `Nice work. Time for a ${rest.minutes}-minute break.`,
+        doneBody: "Write down what you remember while it is fresh.",
       };
     }
     if (this.breakTimer) {
@@ -392,9 +609,46 @@ export class Study {
         endsAt: this.breakTimer.endsAt,
         remainingMs: this.breakTimer.endsAt - now,
         doneTitle: "Break is over",
-        doneBody: "The next session is ready when you are.",
+        doneBody: `Session ${this.#sessionsToday() + 1} is ready when you are.`,
       };
     }
     return null;
   }
+
+  #panelSnapshot(): PanelSnapshot {
+    const state = this.engine?.state;
+    const now = Date.now();
+    const stats = state ? computeStats(state, { now, days: 1 }) : null;
+    const running = this.active;
+    const runningTask = running ? this.task(running.taskId) : null;
+    const runningCourse = running ? this.course(running.courseId) : null;
+    const next = state && !running ? upcomingPlan(state, now) : null;
+    const nextTask = next ? this.task(next.taskId) : null;
+    const nextCourse = next ? this.course(next.courseId) : null;
+    const startsNow =
+      state && next ? planToStartNow(state, now, this.context.rewards)?.id === next.id : false;
+    return {
+      timer: this.#timerSnapshot(),
+      heading: running ? (runningTask?.title ?? runningCourse?.name ?? "Focus session") : null,
+      nextStep: (running ? runningTask : nextTask)?.nextStep ?? null,
+      upNext: next
+        ? {
+            time: clockTime(next.startAt),
+            course: nextCourse?.name ?? "Study session",
+            task: nextTask?.title ?? null,
+            startsNow,
+          }
+        : null,
+      focusTodayMinutes: stats?.todayMinutes ?? 0,
+      sessionsToday: stats?.todaySessions ?? 0,
+      crateProgress: state?.crateProgress ?? 0,
+      crateEvery: this.context.rewards.studyCrateEvery,
+    };
+  }
+}
+
+/** The break rhythm that fits a session length. */
+function presetFor(minutes: number): TimerPreset {
+  if (minutes <= TIMER_PRESETS.justFive.focusMinutes) return TIMER_PRESETS.justFive;
+  return minutes >= TIMER_PRESETS.deep.focusMinutes ? TIMER_PRESETS.deep : TIMER_PRESETS.classic;
 }

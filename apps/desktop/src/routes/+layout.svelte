@@ -16,11 +16,86 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
+<!--
+  The main window: one Study for every screen, plus the focus views that take
+  over the window during a session. The tray panel (/panel) is a separate
+  window and gets none of this.
+-->
 <script lang="ts">
   import "@headstart/ui/styles.css";
-  import type { Snippet } from "svelte";
+  import { getVersion } from "@tauri-apps/api/app";
+  import { onMount, type Snippet } from "svelte";
+  import { page } from "$app/state";
+  import CompactTimer from "$lib/components/CompactTimer.svelte";
+  import FocusView from "$lib/components/FocusView.svelte";
+  import SessionComplete from "$lib/components/SessionComplete.svelte";
+  import Sidebar from "$lib/components/Sidebar.svelte";
+  import { provideApp } from "$lib/context.ts";
+  import { Study } from "$lib/study.svelte.ts";
+  import { inTauri } from "$lib/tauri.ts";
+  import { Updater } from "$lib/updater.svelte.ts";
 
   let { children }: { children: Snippet } = $props();
+
+  const isPanel = page.url.pathname.startsWith("/panel");
+  const study = isPanel ? null : new Study();
+  const updater = isPanel ? null : new Updater();
+  if (study && updater) provideApp({ study, updater });
+  let version = $state("dev");
+
+  onMount(() => {
+    if (!study || !updater) return;
+    study.onCheckUpdates = () => updater.check();
+    study.open();
+    if (inTauri) {
+      getVersion().then((v) => {
+        version = v;
+      });
+      if (import.meta.env.PROD) updater.check();
+    }
+    return () => study.close();
+  });
 </script>
 
-{@render children()}
+{#if !study}
+  {@render children()}
+{:else if study.layout === "compact" && (study.active || study.breakTimer)}
+  <CompactTimer {study} />
+{:else if study.active}
+  <FocusView {study} />
+{:else if study.completion}
+  <SessionComplete {study} />
+{:else}
+  <div class="shell">
+    <Sidebar {version} />
+    <main>
+      {#if study.error}
+        <p class="load-error" role="alert">Could not open your saved progress: {study.error}</p>
+      {:else}
+        {@render children()}
+      {/if}
+    </main>
+  </div>
+{/if}
+
+<style>
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  main {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 30px 36px 48px;
+  }
+
+  .load-error {
+    margin: 0;
+    padding: 16px;
+    border-radius: var(--hs-radius-md);
+    background: #fdecea;
+    color: #8a1c13;
+    font-weight: 700;
+  }
+</style>

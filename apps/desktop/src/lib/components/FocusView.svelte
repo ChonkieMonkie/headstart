@@ -25,6 +25,9 @@
   let { study }: { study: Study } = $props();
 
   let confirmingEnd = $state(false);
+  const course = $derived(study.course(study.active?.courseId ?? null));
+  const task = $derived(study.task(study.active?.taskId ?? null));
+  const sessionsToday = $derived(study.stats(1)?.todaySessions ?? 0);
   const RADIUS = 140;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
   const minutesDone = $derived(
@@ -44,8 +47,11 @@
 <section class="focus" aria-label="Focus session">
   <header>
     <div>
-      <p class="eyebrow">Focus session</p>
-      <p class="sub">Session {(study.summary?.sessionsToday ?? 0) + 1} today</p>
+      <p class="eyebrow">
+        {#if course}<span class="dot" style:background={course.color} aria-hidden="true"></span>{/if}
+        {course?.name ?? "Focus session"}
+      </p>
+      <p class="sub">{task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today</p>
     </div>
     <div class="layout">
       {#if study.layout === "full"}
@@ -75,6 +81,10 @@
         <span class="label">{study.paused ? "Paused" : "until your break"}</span>
       </div>
     </div>
+
+    {#if task}
+      <p class="next-step"><span>Next step</span> {task.nextStep}</p>
+    {/if}
 
     {#if confirmingEnd}
       <div class="confirm" role="group" aria-label="End the session">
@@ -136,6 +146,33 @@
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--hs-focus-accent);
+  }
+
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+    border-radius: 999px;
+  }
+
+  .next-step {
+    max-width: 520px;
+    margin: 0;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: var(--hs-focus-surface);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .next-step span {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--hs-focus-accent);
   }

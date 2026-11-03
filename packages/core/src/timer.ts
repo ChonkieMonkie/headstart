@@ -30,6 +30,7 @@ export interface ActiveSession {
   /** Total time spent paused before the current pause. */
   pausedMs: number;
   plannedStartAt: number | null;
+  planId: string | null;
   courseId: string | null;
   taskId: string | null;
 }

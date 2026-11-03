@@ -18,6 +18,7 @@
 // owns the session; it sends a snapshot here whenever something changes. A
 // native thread does the ticking because a hidden web view may be throttled.
 
+use std::collections::HashSet;
 use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -84,6 +85,55 @@ impl TimerSnapshot {
     }
 }
 
+/// A notification at a set time, such as "starting at 09:00".
+#[derive(Debug, Clone, Deserialize)]
+pub struct Reminder {
+    /// Stable id: each reminder is shown once.
+    pub id: String,
+    /// Epoch ms.
+    pub at: f64,
+    pub title: String,
+    pub body: String,
+}
+
+/// Reminders older than this when the ticker sees them are dropped, for
+/// example after the computer slept through them.
+const REMINDER_GRACE_MS: f64 = 60_000.0;
+
+#[derive(Default)]
+struct Reminders {
+    pending: Vec<Reminder>,
+    shown: HashSet<String>,
+}
+
+#[derive(Default)]
+pub struct ReminderState(Mutex<Reminders>);
+
+#[tauri::command]
+pub fn set_reminders(state: State<'_, ReminderState>, reminders: Vec<Reminder>) {
+    if let Ok(mut inner) = state.0.lock() {
+        inner.pending = reminders;
+    }
+}
+
+/// The reminders that are due now and not shown yet, marked as shown.
+fn due_reminders(app: &AppHandle, now: f64) -> Vec<Reminder> {
+    let state = app.state::<ReminderState>();
+    let Ok(mut inner) = state.0.lock() else {
+        return Vec::new();
+    };
+    let due: Vec<Reminder> = inner
+        .pending
+        .iter()
+        .filter(|r| now >= r.at && now - r.at < REMINDER_GRACE_MS && !inner.shown.contains(&r.id))
+        .cloned()
+        .collect();
+    for reminder in &due {
+        inner.shown.insert(reminder.id.clone());
+    }
+    due
+}
+
 #[derive(Default)]
 struct Inner {
     snapshot: Option<TimerSnapshot>,
@@ -116,6 +166,9 @@ pub fn start_ticker(app: AppHandle) {
         loop {
             thread::sleep(Duration::from_millis(250));
             let now = now_ms();
+            for reminder in due_reminders(&app, now) {
+                notify(&app, &reminder.title, &reminder.body);
+            }
             let state = app.state::<TimerState>();
             let (snapshot, finished) = {
                 let Ok(mut inner) = state.0.lock() else {
@@ -147,15 +200,13 @@ fn notify_unless_watching(app: &AppHandle, snapshot: &TimerSnapshot) {
     let watching = app.get_webview_window("main").is_some_and(|window| {
         window.is_visible().unwrap_or(false) && window.is_focused().unwrap_or(false)
     });
-    if watching {
-        return;
+    if !watching {
+        notify(app, &snapshot.done_title, &snapshot.done_body);
     }
-    let shown = app
-        .notification()
-        .builder()
-        .title(&snapshot.done_title)
-        .body(&snapshot.done_body)
-        .show();
+}
+
+fn notify(app: &AppHandle, title: &str, body: &str) {
+    let shown = app.notification().builder().title(title).body(body).show();
     if let Err(error) = shown {
         eprintln!("Could not show a notification: {error}");
     }

@@ -44,6 +44,8 @@ export type StudyEvent =
       plannedMinutes: number;
       /** When the session was planned to start, if it was planned. Decides "on time". */
       plannedStartAt?: string;
+      /** The planned session this one carries out, if any. */
+      planId?: string;
       courseId?: string;
       taskId?: string;
     }
@@ -58,6 +60,46 @@ export type StudyEvent =
     }
   | { type: "session.abandoned"; sessionId: string }
   | { type: "recall.written"; sessionId: string; text: string }
+  /** How focused the session felt, given on the "session complete" screen. */
+  | { type: "session.rated"; sessionId: string; focusRating: FocusRating }
+  | {
+      type: "course.created";
+      courseId: string;
+      name: string;
+      color: string;
+      /** Local date of the exam, "YYYY-MM-DD". */
+      examDate?: string;
+    }
+  | {
+      type: "course.updated";
+      courseId: string;
+      name?: string;
+      color?: string;
+      /** A date sets the exam, null removes it. */
+      examDate?: string | null;
+    }
+  | { type: "course.archived"; courseId: string }
+  | {
+      type: "task.created";
+      taskId: string;
+      courseId: string;
+      title: string;
+      /** The concrete first action, so starting never needs a decision. */
+      nextStep: string;
+    }
+  | { type: "task.updated"; taskId: string; title?: string; nextStep?: string }
+  | { type: "task.completed"; taskId: string }
+  | { type: "task.reopened"; taskId: string }
+  | {
+      type: "session.planned";
+      planId: string;
+      startAt: string;
+      minutes: number;
+      courseId?: string;
+      taskId?: string;
+    }
+  | { type: "plan.moved"; planId: string; startAt: string }
+  | { type: "plan.cancelled"; planId: string }
   | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
   | { type: "item.crafted"; itemId: string; cost: number }
   | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }
