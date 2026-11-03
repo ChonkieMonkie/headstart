@@ -1,0 +1,12 @@
+{
+  "xpPerFocusMinute": 0.4,
+  "onTimeBonusXp": 5,
+  "recallBonusXp": 5,
+  "distractionFreeBonusXp": 3,
+  "onTimeWindowMinutes": { "early": 10, "late": 5 },
+  "minRecallChars": 20,
+  "minMinutesForCrate": 10,
+  "studyCrateEvery": 3,
+  "maxCrateSessionsPerDay": 9,
+  "level": { "base": 100, "exponent": 1.4 }
+}

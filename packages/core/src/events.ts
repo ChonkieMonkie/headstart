@@ -1,0 +1,85 @@
+// Headstart, a study companion that helps you get started, stay focused and keep going.
+// Copyright (C) 2026  ChonkieMonkie
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+// Everything that happens is stored as an immutable event. Everything shown in
+// the app (XP, level, inventory, streaks) is computed from these events.
+//
+// Rules for changing this file:
+// - Never change the meaning of an existing event type or field.
+// - Add new event types or optional fields freely.
+// - A breaking change needs a new EVENT_SCHEMA and an upgrade step for old events.
+
+import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
+
+export const EVENT_SCHEMA = 1;
+
+export type FocusRating = 1 | 2 | 3 | 4 | 5;
+
+/** One item that came out of a crate. Stored in the event so results never change later. */
+export interface CrateDrop {
+  /** Null when no item of the rolled rarity existed; the drop then became Stardust. */
+  itemId: string | null;
+  rarity: Rarity;
+  duplicate: boolean;
+  stardust: number;
+}
+
+export type StudyEvent =
+  | {
+      type: "session.started";
+      sessionId: string;
+      plannedMinutes: number;
+      /** When the session was planned to start, if it was planned. Decides "on time". */
+      plannedStartAt?: string;
+      courseId?: string;
+      taskId?: string;
+    }
+  | { type: "session.paused"; sessionId: string }
+  | { type: "session.resumed"; sessionId: string }
+  | { type: "session.extended"; sessionId: string; minutes: number }
+  | {
+      type: "session.completed";
+      sessionId: string;
+      distractions: number;
+      focusRating?: FocusRating;
+    }
+  | { type: "session.abandoned"; sessionId: string }
+  | { type: "recall.written"; sessionId: string; text: string }
+  | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
+  | { type: "item.crafted"; itemId: string; cost: number }
+  | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }
+  | { type: "mascot.chosen"; mascot: MascotId };
+
+export type StudyEventType = StudyEvent["type"];
+
+export interface EventEnvelope<E extends StudyEvent = StudyEvent> {
+  /** ULID: unique across devices and sortable by time. */
+  id: string;
+  deviceId: string;
+  /** Per-device counter, used to sync only what another device has not seen. */
+  seq: number;
+  /** ISO 8601 time the event happened. */
+  occurredAt: string;
+  schema: number;
+  event: E;
+}
+
+/** Orders events by time, then by id, which is the order they are applied in. */
+export function compareEvents(a: EventEnvelope, b: EventEnvelope): number {
+  if (a.occurredAt !== b.occurredAt) return a.occurredAt < b.occurredAt ? -1 : 1;
+  if (a.id !== b.id) return a.id < b.id ? -1 : 1;
+  return 0;
+}

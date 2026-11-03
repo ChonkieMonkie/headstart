@@ -1,0 +1,221 @@
+[
+  {
+    "id": "skin.inky.classic",
+    "name": "Classic",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["inky"],
+    "starter": true
+  },
+  {
+    "id": "skin.inky.coral",
+    "name": "Coral",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["inky"]
+  },
+  { "id": "skin.inky.mint", "name": "Mint", "slot": "skin", "rarity": "common", "fits": ["inky"] },
+  {
+    "id": "skin.inky.lilac",
+    "name": "Spotted Lilac",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "fits": ["inky"]
+  },
+  {
+    "id": "skin.inky.deep-sea",
+    "name": "Deep Sea",
+    "slot": "skin",
+    "rarity": "rare",
+    "fits": ["inky"],
+    "set": "deep-sea"
+  },
+  {
+    "id": "skin.inky.galaxy",
+    "name": "Galaxy",
+    "slot": "skin",
+    "rarity": "epic",
+    "fits": ["inky"],
+    "set": "space"
+  },
+  {
+    "id": "skin.inky.aurora",
+    "name": "Aurora",
+    "slot": "skin",
+    "rarity": "legendary",
+    "fits": ["inky"],
+    "animated": true,
+    "craftable": false
+  },
+
+  {
+    "id": "skin.axo.leucistic",
+    "name": "Leucistic",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["axo"],
+    "starter": true
+  },
+  {
+    "id": "skin.axo.wild",
+    "name": "Wild Type",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["axo"]
+  },
+  {
+    "id": "skin.axo.golden",
+    "name": "Golden",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "fits": ["axo"]
+  },
+  {
+    "id": "skin.axo.melanoid",
+    "name": "Melanoid",
+    "slot": "skin",
+    "rarity": "rare",
+    "fits": ["axo"]
+  },
+  {
+    "id": "skin.axo.glow",
+    "name": "Glow",
+    "slot": "skin",
+    "rarity": "epic",
+    "fits": ["axo"],
+    "set": "deep-sea"
+  },
+  {
+    "id": "skin.axo.starlight",
+    "name": "Starlight",
+    "slot": "skin",
+    "rarity": "legendary",
+    "fits": ["axo"],
+    "animated": true,
+    "craftable": false
+  },
+
+  {
+    "id": "skin.maple.classic",
+    "name": "Classic",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["maple"],
+    "starter": true
+  },
+  {
+    "id": "skin.maple.sandy",
+    "name": "Sandy",
+    "slot": "skin",
+    "rarity": "common",
+    "fits": ["maple"]
+  },
+  {
+    "id": "skin.maple.snowfall",
+    "name": "Snowfall",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "fits": ["maple"]
+  },
+  {
+    "id": "skin.maple.midnight",
+    "name": "Midnight",
+    "slot": "skin",
+    "rarity": "rare",
+    "fits": ["maple"],
+    "set": "space"
+  },
+  {
+    "id": "skin.maple.sakura",
+    "name": "Sakura",
+    "slot": "skin",
+    "rarity": "epic",
+    "fits": ["maple"]
+  },
+  {
+    "id": "skin.maple.wildfire",
+    "name": "Wildfire",
+    "slot": "skin",
+    "rarity": "legendary",
+    "fits": ["maple"],
+    "animated": true,
+    "craftable": false
+  },
+
+  { "id": "head.beanie-red", "name": "Red Beanie", "slot": "head", "rarity": "common" },
+  { "id": "head.beanie-mustard", "name": "Mustard Beanie", "slot": "head", "rarity": "common" },
+  { "id": "head.beanie-striped", "name": "Striped Beanie", "slot": "head", "rarity": "uncommon" },
+  {
+    "id": "head.grad-cap",
+    "name": "Grad Cap",
+    "slot": "head",
+    "rarity": "uncommon",
+    "set": "library"
+  },
+  {
+    "id": "head.headphones",
+    "name": "Headphones",
+    "slot": "head",
+    "rarity": "rare",
+    "fits": ["maple"],
+    "set": "library"
+  },
+  {
+    "id": "head.wizard-hat",
+    "name": "Wizard Hat",
+    "slot": "head",
+    "rarity": "epic",
+    "set": "space",
+    "animated": true
+  },
+  {
+    "id": "head.scholar-crown",
+    "name": "Scholar Crown",
+    "slot": "head",
+    "rarity": "legendary",
+    "set": "library",
+    "animated": true
+  },
+
+  {
+    "id": "face.round-glasses",
+    "name": "Round Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "set": "library"
+  },
+  { "id": "face.shades", "name": "Shades", "slot": "face", "rarity": "uncommon" },
+  { "id": "face.monocle", "name": "Monocle", "slot": "face", "rarity": "rare", "fits": ["inky"] },
+
+  { "id": "outfit.scarf-red", "name": "Red Scarf", "slot": "outfit", "rarity": "common" },
+  { "id": "outfit.scarf-blue", "name": "Blue Scarf", "slot": "outfit", "rarity": "common" },
+  { "id": "outfit.bow-tie", "name": "Bow Tie", "slot": "outfit", "rarity": "uncommon" },
+  { "id": "outfit.medal", "name": "Medal", "slot": "outfit", "rarity": "uncommon" },
+  {
+    "id": "outfit.forest-hoodie",
+    "name": "Forest Hoodie",
+    "slot": "outfit",
+    "rarity": "rare",
+    "fits": ["maple", "axo"]
+  },
+
+  { "id": "held.pencil", "name": "Pencil", "slot": "held", "rarity": "common", "set": "library" },
+  { "id": "held.book", "name": "Book", "slot": "held", "rarity": "common", "set": "library" },
+  {
+    "id": "held.coffee-mug",
+    "name": "Coffee Mug",
+    "slot": "held",
+    "rarity": "uncommon",
+    "set": "library"
+  },
+
+  { "id": "aura.soft-glow", "name": "Soft Glow", "slot": "aura", "rarity": "rare" },
+  { "id": "aura.sparkles", "name": "Sparkles", "slot": "aura", "rarity": "epic", "animated": true },
+  {
+    "id": "aura.orbit-of-focus",
+    "name": "Orbit of Focus",
+    "slot": "aura",
+    "rarity": "legendary",
+    "animated": true
+  }
+]

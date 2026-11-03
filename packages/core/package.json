@@ -2,7 +2,7 @@
   "name": "@headstart/core",
   "version": "0.0.0",
   "private": true,
-  "description": "Headstart domain logic: timer, rewards, crates, planning. Pure TypeScript, no UI or I/O.",
+  "description": "Headstart domain logic: timer, rewards, crates, event log. Pure TypeScript, no UI or I/O.",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "exports": {
@@ -10,7 +10,11 @@
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "simulate": "node scripts/simulate.ts"
+  },
+  "dependencies": {
+    "@headstart/content": "workspace:*"
   },
   "devDependencies": {
     "typescript": "~6.0.3",

@@ -1,0 +1,43 @@
+{
+  "crates": {
+    "study": {
+      "type": "study",
+      "name": "Study Crate",
+      "items": 1,
+      "odds": { "common": 62, "uncommon": 25, "rare": 9, "epic": 3.2, "legendary": 0.8 },
+      "pool": "standard"
+    },
+    "weekly": {
+      "type": "weekly",
+      "name": "Weekly Gift",
+      "items": 2,
+      "odds": { "common": 40, "uncommon": 33, "rare": 18, "epic": 7, "legendary": 2 },
+      "pool": "standard"
+    },
+    "streak": {
+      "type": "streak",
+      "name": "Streak Chest",
+      "items": 3,
+      "odds": { "common": 20, "uncommon": 35, "rare": 30, "epic": 12, "legendary": 3 },
+      "guaranteedMinRarity": "rare",
+      "pool": "standard"
+    },
+    "milestone": {
+      "type": "milestone",
+      "name": "Milestone Vault",
+      "items": 1,
+      "odds": { "common": 0, "uncommon": 0, "rare": 0, "epic": 85, "legendary": 15 },
+      "pool": "standard"
+    },
+    "exam": {
+      "type": "exam",
+      "name": "Exam Capsule",
+      "items": 2,
+      "odds": { "common": 0, "uncommon": 0, "rare": 60, "epic": 30, "legendary": 10 },
+      "pool": "seasonal"
+    }
+  },
+  "pity": { "epic": 15, "legendary": 60 },
+  "duplicateStardust": { "common": 5, "uncommon": 15, "rare": 50, "epic": 150, "legendary": 500 },
+  "craftCost": { "common": 40, "uncommon": 120, "rare": 400, "epic": 1200, "legendary": 4000 }
+}

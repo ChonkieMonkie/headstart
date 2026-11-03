@@ -3,5 +3,12 @@
   "identifier": "default",
   "description": "Permissions for the main window. Keep this list as small as possible.",
   "windows": ["main"],
-  "permissions": ["core:default", "updater:default", "process:allow-restart"]
+  "permissions": [
+    "core:default",
+    "updater:default",
+    "process:allow-restart",
+    "sql:allow-load",
+    "sql:allow-select",
+    "sql:allow-execute"
+  ]
 }

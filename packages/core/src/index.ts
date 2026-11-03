@@ -14,6 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { crateRules, items, rewardRules } from "@headstart/content";
+import type { CoreContext } from "./state.ts";
+
 export const APP_NAME = "Headstart";
 
-export { formatDuration } from "./time.ts";
+/** The context built from the shipped content. */
+export const defaultContext: CoreContext = {
+  rewards: rewardRules,
+  crates: crateRules,
+  catalog: items,
+};
+
+export * from "./commands.ts";
+export * from "./crates.ts";
+export * from "./engine.ts";
+export * from "./events.ts";
+export * from "./ids.ts";
+export * from "./rewards.ts";
+export * from "./rng.ts";
+export * from "./simulation.ts";
+export * from "./state.ts";
+export * from "./store.ts";
+export { formatDuration, formatMinutes } from "./time.ts";
+export * from "./timer.ts";

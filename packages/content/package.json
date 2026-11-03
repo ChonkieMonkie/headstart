@@ -1,0 +1,19 @@
+{
+  "name": "@headstart/content",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Headstart content as data: items, crates and reward rules.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "~5.0.5"
+  }
+}

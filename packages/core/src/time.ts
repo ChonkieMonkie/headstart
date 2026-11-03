@@ -30,3 +30,12 @@ export function formatDuration(ms: number): string {
   }
   return `${minutes}:${ss}`;
 }
+
+/** Formats a total amount of time for summaries: "45 min", "3 h", "3 h 20 min". */
+export function formatMinutes(totalMinutes: number): string {
+  const minutes = Math.max(0, Math.round(totalMinutes));
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (hours === 0) return `${rest} min`;
+  return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`;
+}

@@ -16,17 +16,19 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- M0 home screen: proves the shell, design tokens, tray and updater work on every OS. -->
+<!-- Early home screen: proves the shell, tray, updater and saved progress work on every OS. -->
 <script lang="ts">
-  import { APP_NAME } from "@headstart/core";
+  import { APP_NAME, formatMinutes } from "@headstart/core";
   import { Logo } from "@headstart/ui";
   import { getVersion } from "@tauri-apps/api/app";
   import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
+  import { Study } from "$lib/study.svelte.ts";
   import { inTauri } from "$lib/tauri.ts";
   import { Updater } from "$lib/updater.svelte.ts";
 
   const updater = new Updater();
+  const study = new Study();
   let version = $state("dev");
   let trayMessage = $state("");
 
@@ -47,6 +49,7 @@
   const nav = ["Today", "Plan", "Courses", "Stats", "Collection", "Crates", "Settings"];
 
   onMount(() => {
+    study.open();
     if (!inTauri) return;
     getVersion().then((v) => {
       version = v;
@@ -92,12 +95,46 @@
       <div class="card-body">
         <h2 id="welcome-h">{APP_NAME} is up and running</h2>
         <p>
-          This is the foundation build (milestone M0). It proves the app installs, lives in the
-          menu bar or system tray and updates itself on Windows, macOS and Linux. The study features
-          arrive in the next milestones.
+          This is an early build. It installs, lives in the menu bar or system tray, updates itself
+          and keeps your progress in a local database. The study screens arrive in the next
+          milestones.
         </p>
         {#if trayMessage}
           <p class="note" role="status">{trayMessage}</p>
+        {/if}
+      </div>
+    </section>
+
+    <section class="card progress" aria-labelledby="progress-h">
+      <div class="card-body">
+        <h2 id="progress-h">Your progress</h2>
+        {#if study.error}
+          <p role="alert">Could not open your saved progress: {study.error}</p>
+        {:else if study.summary}
+          {@const s = study.summary}
+          <div class="level">
+            <span class="level-number">Level {s.level.level}</span>
+            <span class="level-xp">{s.level.xpIntoLevel} / {s.level.xpForNextLevel} XP</span>
+          </div>
+          <div
+            class="bar"
+            role="progressbar"
+            aria-label="XP toward the next level"
+            aria-valuemin="0"
+            aria-valuemax={s.level.xpForNextLevel}
+            aria-valuenow={s.level.xpIntoLevel}
+          >
+            <div class="bar-fill" style:width="{(s.level.xpIntoLevel / s.level.xpForNextLevel) * 100}%"></div>
+          </div>
+          <dl class="stats">
+            <div><dt>Sessions</dt><dd>{s.sessions}</dd></div>
+            <div><dt>Focus time</dt><dd>{formatMinutes(s.focusMinutes)}</dd></div>
+            <div><dt>Next Study Crate</dt><dd>{s.crateProgress} of {s.crateEvery}</dd></div>
+            <div><dt>Stardust</dt><dd>{s.stardust}</dd></div>
+            <div><dt>Items</dt><dd>{s.itemsOwned}</dd></div>
+          </dl>
+        {:else}
+          <p>Loading…</p>
         {/if}
       </div>
     </section>
@@ -270,6 +307,57 @@
     border: 1px solid var(--hs-line);
     background: var(--hs-surface);
     color: var(--hs-ink);
+  }
+
+  .level {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 4px 0 8px;
+  }
+
+  .level-number {
+    font-family: var(--hs-font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+
+  .level-xp {
+    font-weight: 700;
+    color: var(--hs-ink-subtle);
+  }
+
+  .bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--hs-line);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--hs-accent);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin: 16px 0 0;
+  }
+
+  .stats dt {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--hs-ink-subtle);
+  }
+
+  .stats dd {
+    margin: 2px 0 0;
+    font-size: 1.2rem;
+    font-weight: 800;
   }
 
   button:disabled {

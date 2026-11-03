@@ -20,6 +20,7 @@
 mod tray;
 
 use tauri::{AppHandle, Manager, WindowEvent};
+use tauri_plugin_sql::{Migration, MigrationKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -28,6 +29,11 @@ pub fn run() {
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             show_main_window(app);
         }))
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations(DATABASE_URL, migrations())
+                .build(),
+        )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .setup(|app| {
@@ -46,6 +52,36 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running Headstart");
+}
+
+/// The local database. The frontend opens it with the same URL.
+const DATABASE_URL: &str = "sqlite:headstart.db";
+
+/// Schema changes, applied in order when the database opens. Never edit a
+/// migration that has shipped: add a new one instead.
+fn migrations() -> Vec<Migration> {
+    vec![Migration {
+        version: 1,
+        description: "event log",
+        sql: "
+            CREATE TABLE events (
+                id          TEXT PRIMARY KEY,
+                device_id   TEXT NOT NULL,
+                seq         INTEGER NOT NULL,
+                occurred_at TEXT NOT NULL,
+                schema      INTEGER NOT NULL,
+                type        TEXT NOT NULL,
+                payload     TEXT NOT NULL
+            );
+            CREATE INDEX events_by_time ON events (occurred_at, id);
+            CREATE UNIQUE INDEX events_by_device ON events (device_id, seq);
+            CREATE TABLE meta (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+        ",
+        kind: MigrationKind::Up,
+    }]
 }
 
 pub(crate) fn show_main_window(app: &AppHandle) {

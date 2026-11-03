@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, it } from "vitest";
-import { formatDuration } from "./time.ts";
+import { formatDuration, formatMinutes } from "./time.ts";
 
 describe("formatDuration", () => {
   it("formats minutes and seconds", () => {
@@ -34,5 +34,14 @@ describe("formatDuration", () => {
 
   it("clamps negative durations to zero", () => {
     expect(formatDuration(-5000)).toBe("0:00");
+  });
+});
+
+describe("formatMinutes", () => {
+  it("shows minutes, hours, or both", () => {
+    expect(formatMinutes(0)).toBe("0 min");
+    expect(formatMinutes(45)).toBe("45 min");
+    expect(formatMinutes(180)).toBe("3 h");
+    expect(formatMinutes(200)).toBe("3 h 20 min");
   });
 });
