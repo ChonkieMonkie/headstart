@@ -18,12 +18,14 @@
 // plain browser (`pnpm dev`), and exposes a small reactive summary.
 
 import {
+  crateOdds,
   createUlidFactory,
   defaultContext,
   type EventStore,
   type LevelInfo,
   levelInfo,
   MemoryEventStore,
+  type OddsRow,
   owns,
   StudyEngine,
   unopenedCrates,
@@ -40,6 +42,8 @@ export interface ProgressSummary {
   crateEvery: number;
   cratesWaiting: number;
   itemsOwned: number;
+  /** Study Crate odds, with Epic and Legendary pity counted from your history. */
+  studyCrateOdds: OddsRow[];
 }
 
 export class Study {
@@ -82,6 +86,7 @@ export class Study {
       crateEvery: context.rewards.studyCrateEvery,
       cratesWaiting: unopenedCrates(state).length,
       itemsOwned: context.catalog.filter((item) => owns(state, item.id)).length,
+      studyCrateOdds: crateOdds(context.crates.crates.study, context.crates, state.pity),
     };
   }
 }

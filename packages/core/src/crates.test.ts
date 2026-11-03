@@ -27,6 +27,8 @@ import { describe, expect, it } from "vitest";
 import {
   atLeast,
   craftBlocker,
+  crateOdds,
+  formatPercent,
   NO_PITY,
   nextPity,
   type PityState,
@@ -192,6 +194,50 @@ describe("pity counters", () => {
       sinceEpic: 0,
       sinceLegendary: 0,
     });
+  });
+});
+
+describe("odds shown in the app", () => {
+  const row = (type: CrateType, rarity: Rarity, pity: PityState = NO_PITY) =>
+    crateOdds(crateRules.crates[type], crateRules, pity).find((r) => r.rarity === rarity);
+
+  it("list the Study Crate chances with the Epic and Legendary guarantees", () => {
+    expect(row("study", "epic")).toEqual({
+      rarity: "epic",
+      percent: 3.2,
+      guaranteedWithin: 15,
+      guaranteedIn: 15,
+    });
+    expect(row("study", "legendary")).toEqual({
+      rarity: "legendary",
+      percent: 0.8,
+      guaranteedWithin: 60,
+      guaranteedIn: 60,
+    });
+    expect(row("study", "rare")?.guaranteedWithin).toBeNull();
+    expect(formatPercent(3.2)).toBe("3.2%");
+    expect(formatPercent(62)).toBe("62%");
+  });
+
+  it("count down with the pity counters, and match when the roll is forced", () => {
+    const pity = { sinceEpic: 14, sinceLegendary: 22 };
+    expect(row("study", "epic", pity)?.guaranteedIn).toBe(1);
+    expect(row("study", "legendary", pity)?.guaranteedIn).toBe(38);
+    const forced = rollCrate({
+      seed: "forced",
+      definition: crateRules.crates.study,
+      rules: crateRules,
+      pity,
+      owned: new Map(),
+      catalog: items,
+    });
+    expect(atLeast(forced.drops[0]?.rarity ?? "common", "epic")).toBe(true);
+  });
+
+  it("skip the Epic guarantee where every item is already Epic or better", () => {
+    expect(row("milestone", "epic")?.guaranteedWithin).toBeNull();
+    expect(row("milestone", "legendary")?.guaranteedWithin).toBe(60);
+    expect(row("milestone", "common")).toBeUndefined();
   });
 });
 

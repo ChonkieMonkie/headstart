@@ -18,8 +18,8 @@
 
 <!-- Early home screen: proves the shell, tray, updater and saved progress work on every OS. -->
 <script lang="ts">
-  import { APP_NAME, formatMinutes } from "@headstart/core";
-  import { Logo } from "@headstart/ui";
+  import { APP_NAME, formatMinutes, formatPercent } from "@headstart/core";
+  import { Logo, rarityColors } from "@headstart/ui";
   import { getVersion } from "@tauri-apps/api/app";
   import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
@@ -45,6 +45,8 @@
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   })();
+
+  const rarityName = (rarity: string) => rarity.charAt(0).toUpperCase() + rarity.slice(1);
 
   const nav = ["Today", "Plan", "Courses", "Stats", "Collection", "Crates", "Settings"];
 
@@ -138,6 +140,32 @@
         {/if}
       </div>
     </section>
+
+    {#if study.summary}
+      <section class="card" aria-labelledby="odds-h">
+        <div class="card-body">
+          <h2 id="odds-h">Study Crate odds</h2>
+          <p>Chance per crate. Bad luck has a ceiling, so Epic and Legendary are also guaranteed.</p>
+          <ul class="odds">
+            {#each study.summary.studyCrateOdds as row (row.rarity)}
+              <li>
+                <span class="dot" style:background={rarityColors[row.rarity].dot} aria-hidden="true"></span>
+                <span class="odds-name" style:color={rarityColors[row.rarity].fg}>{rarityName(row.rarity)}</span>
+                <span class="odds-pct">{formatPercent(row.percent)}</span>
+                {#if row.guaranteedWithin !== null}
+                  <span class="odds-pity">
+                    guaranteed within {row.guaranteedWithin} crates
+                    {#if row.guaranteedIn !== row.guaranteedWithin}
+                      <span class="odds-next">· next within {row.guaranteedIn}</span>
+                    {/if}
+                  </span>
+                {/if}
+              </li>
+            {/each}
+          </ul>
+        </div>
+      </section>
+    {/if}
 
     <section class="card update" aria-labelledby="update-h">
       <div class="card-body">
@@ -358,6 +386,46 @@
     margin: 2px 0 0;
     font-size: 1.2rem;
     font-weight: 800;
+  }
+
+  .odds {
+    margin-top: 14px;
+    gap: 8px;
+  }
+
+  .odds li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 2px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+  }
+
+  .odds-name {
+    min-width: 92px;
+    font-weight: 800;
+  }
+
+  .odds-pct {
+    min-width: 48px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .odds-pity {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--hs-ink-muted);
+  }
+
+  .odds-next {
+    color: var(--hs-accent-strong);
   }
 
   button:disabled {

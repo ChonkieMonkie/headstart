@@ -72,6 +72,51 @@ export function nextPity(pity: PityState, best: Rarity): PityState {
   };
 }
 
+export interface OddsRow {
+  rarity: Rarity;
+  /** Chance per item, as listed in the crate rules. */
+  percent: number;
+  /** Pity limit: at most this many crates in a row without this rarity, or null. */
+  guaranteedWithin: number | null;
+  /** Crates left until the guarantee kicks in, counting the next one, or null. */
+  guaranteedIn: number | null;
+}
+
+/**
+ * The odds to show for a crate. Epic and Legendary also carry the pity
+ * guarantee, since pity makes them more common than the listed chance alone.
+ */
+export function crateOdds(
+  definition: CrateDefinition,
+  rules: CrateRules,
+  pity: PityState = NO_PITY,
+): OddsRow[] {
+  const alwaysEpic = RARITIES.every((r) => atLeast(r, "epic") || definition.odds[r] <= 0);
+  return RARITIES.filter((rarity) => definition.odds[rarity] > 0).map((rarity) => {
+    const percent = definition.odds[rarity];
+    let within: number | null = null;
+    let since = 0;
+    if (rarity === "epic" && !alwaysEpic) {
+      within = rules.pity.epic;
+      since = pity.sinceEpic;
+    } else if (rarity === "legendary" && percent < 100) {
+      within = rules.pity.legendary;
+      since = pity.sinceLegendary;
+    }
+    return {
+      rarity,
+      percent,
+      guaranteedWithin: within,
+      guaranteedIn: within === null ? null : Math.max(1, within - since),
+    };
+  });
+}
+
+/** "3.2%", "62%". */
+export function formatPercent(percent: number): string {
+  return `${Number.isInteger(percent) ? percent : percent.toFixed(1)}%`;
+}
+
 export function itemFits(item: Item, mascot: MascotId): boolean {
   return !item.fits || item.fits.includes(mascot);
 }
