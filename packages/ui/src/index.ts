@@ -15,4 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 export { default as Logo } from "./Logo.svelte";
+export {
+  GEOMETRY,
+  MASCOT_NAMES,
+  MASCOT_SPECIES,
+  MASCOT_TINTS,
+  MOODS,
+  type Mood,
+} from "./mascot/geometry.ts";
+export { itemPreview, lookFor, previewSpecies, starterSkin } from "./mascot/look.ts";
+export { default as Mascot } from "./mascot/Mascot.svelte";
+export { type MascotLook, mascotLabel, renderMascot } from "./mascot/render.ts";
+export { default as StardustIcon } from "./StardustIcon.svelte";
 export { colors, fonts, type Rarity, rarityColors } from "./tokens.ts";

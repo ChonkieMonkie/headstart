@@ -18,7 +18,7 @@
 
 <!-- Main navigation with the level and Stardust at a glance. Screens that are not built yet are shown, but disabled. -->
 <script lang="ts">
-  import { Logo } from "@headstart/ui";
+  import { Logo, StardustIcon } from "@headstart/ui";
   import { page } from "$app/state";
   import { useApp } from "$lib/context.ts";
 
@@ -30,13 +30,14 @@
     { href: "/courses", label: "Courses", icon: "M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z" },
     { href: "/stats", label: "Stats", icon: "M5 20V12M10 20V6M15 20v-6M20 20V9" },
     { href: null, label: "Week plan", icon: "M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" },
-    { href: null, label: "Collection", icon: "M12 3l2.6 5.4 5.9.7-4.4 4 1.2 5.9L12 16.1 6.7 19l1.2-5.9-4.4-4 5.9-.7z" },
-    { href: null, label: "Crates", icon: "M3 8l9-4.5L21 8v8.5L12 21l-9-4.5zM3 8l9 4.5L21 8M12 12.5V21" },
+    { href: "/collection", label: "Collection", icon: "M12 3l2.6 5.4 5.9.7-4.4 4 1.2 5.9L12 16.1 6.7 19l1.2-5.9-4.4-4 5.9-.7z" },
+    { href: "/crates", label: "Crates", icon: "M3 8l9-4.5L21 8v8.5L12 21l-9-4.5zM3 8l9 4.5L21 8M12 12.5V21" },
   ];
 
   const current = (href: string) =>
     href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href);
   const level = $derived(study.summary?.level);
+  const waiting = $derived(study.summary?.cratesWaiting ?? 0);
 </script>
 
 <nav class="sidebar" aria-label="Main">
@@ -52,6 +53,9 @@
           <a class="nav-item" class:active={current(item.href)} href={item.href} aria-current={current(item.href) ? "page" : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d={item.icon} /></svg>
             {item.label}
+            {#if item.href === "/crates" && waiting > 0}
+              <span class="badge">{waiting}<span class="visually-hidden"> waiting</span></span>
+            {/if}
           </a>
         {:else}
           <span class="nav-item disabled" aria-disabled="true">
@@ -73,7 +77,7 @@
       <div class="bar" aria-hidden="true">
         <div class="bar-fill" style:width="{(level.xpIntoLevel / level.xpForNextLevel) * 100}%"></div>
       </div>
-      <p class="stardust">{study.summary?.stardust ?? 0} Stardust</p>
+      <p class="stardust">{study.summary?.stardust ?? 0} <StardustIcon size={14} /> Stardust</p>
     </div>
   {/if}
 
@@ -185,6 +189,28 @@
     stroke-linejoin: round;
   }
 
+  .badge {
+    margin-left: auto;
+    min-width: 22px;
+    padding: 2px 7px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: #f5c542;
+    color: var(--hs-ink);
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .soon {
     margin-left: auto;
     padding: 2px 8px;
@@ -235,6 +261,9 @@
   }
 
   .stardust {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin: 0;
   }
 

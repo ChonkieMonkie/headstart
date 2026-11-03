@@ -154,6 +154,7 @@ describe("crates", () => {
       slot: "head",
       rarity: "rare",
       season: "2026-autumn",
+      art: { shape: "cap", colors: ["#2A9D8F", "#1E6E64"] },
     };
     const withSeason = rollCrate({
       seed: "exam",

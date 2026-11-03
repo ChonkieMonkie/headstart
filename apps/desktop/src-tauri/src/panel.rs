@@ -27,7 +27,7 @@ use tauri::{
 };
 
 pub const LABEL: &str = "panel";
-const SIZE: LogicalSize<f64> = LogicalSize::new(340.0, 460.0);
+const SIZE: LogicalSize<f64> = LogicalSize::new(340.0, 540.0);
 /// Gap between the tray icon and the panel, in logical pixels.
 const GAP: f64 = 6.0;
 

@@ -2,10 +2,14 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M3 (study screens)** is done: Headstart is ready for daily studying. The mascot, wardrobe and crate opening arrive in M4.
+> Status: milestone **M4 (mascot and collection)** is done: study buddies, a wardrobe, Study Crates you can open and a starter catalogue of 154 items. Next up: to-do lists per course (M4.5), then polish and the first release for friends (M5).
 
 ## What works today
 
+- **A study buddy**: pick Inky the octopus, Axo the axolotl or Maple the red panda. Your buddy shows up on the Today screen, in the focus view, the compact timer and the tray panel. Its mood follows your day (focusing, on a break, celebrating, nudging you when a session is due, sleepy late at night), but never its colours: those belong to the skin.
+- **Study Crates**: open the crates you earn, with the odds and the pity guarantee shown before you open one. Each item is revealed on your own mascot and can be put on right away. Duplicates turn into **Stardust**.
+- **Collection**: a wardrobe for each mascot (skin, head, face, outfit, held item and aura), every item in the catalogue with what you have found so far, and five themed sets. Missing items can be crafted with Stardust, except legendary skins and seasonal items.
+- **154 items** to collect, from palette-swapped commons to animated legendaries. A few items only fit one mascot.
 - **Courses and tasks.** Courses can have an exam date with a countdown. Every task needs a concrete **next step**, so starting never needs a decision.
 - **Today screen**: the next planned session with its next step, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
 - **Planned sessions with reminders**: a notification two minutes before, and one gentle nudge if a session has not started ten minutes in (at most three nudges a day). Starting a planned session on time earns a bonus.
@@ -16,7 +20,7 @@ A study companion for Windows, macOS and Linux that helps you **get started**, *
 - **Menu bar / system tray**: left-click the icon for a small panel with the next session, the running timer and today's numbers; right-click for the menu. On macOS the countdown ticks in the menu bar; on Windows and Linux it is in the tooltip and the menu. Linux trays only offer the menu.
 - **Notifications** for planned sessions, and when a session or break ends while Headstart is hidden. macOS asks for permission the first time.
 - **Global shortcut** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> (<kbd>⌥⇧H</kbd> on a Mac) starts a session from anywhere, or brings the running one to the front. On Wayland, where global shortcuts are limited, bind a system shortcut to `headstart --start` instead.
-- **Rewards**: XP and levels, a Study Crate every 3 sessions of 10+ minutes, and Stardust from duplicates. Crate odds are shown in the app together with the pity guarantee: an Epic is guaranteed within 15 crates and a Legendary within 60.
+- **Rewards**: XP and levels, and a Study Crate every 3 sessions of 10+ minutes (up to 9 sessions a day count). An Epic is guaranteed within 15 crates and a Legendary within 60.
 - Everything is stored **locally** in an append-only event log (SQLite). Nothing leaves your computer.
 
 ## Installing (unsigned builds)
@@ -44,6 +48,7 @@ pnpm lint             # Biome lint and format check (pnpm format fixes)
 pnpm check:licenses   # make sure every dependency is GPL-compatible
 pnpm build            # build installers for the current OS
 pnpm --filter @headstart/core simulate   # simulate a semester: XP, levels and crate odds
+pnpm --filter @headstart/ui preview:catalog catalog.html   # draw every item on every mascot it fits
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml   # Rust shell tests
 ```
 
@@ -55,8 +60,9 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml   # Rust shell test
 apps/desktop/         Tauri 2 app: SvelteKit UI in src/, Rust shell in src-tauri/
                       (tray, focus layouts, notifications, global shortcut)
 packages/core/        domain logic in pure TypeScript: event log, timer, XP, crates, pity
-packages/content/     items, crate odds and reward rules as JSON, validated at startup
-packages/ui/          design tokens, fonts and shared Svelte components
+packages/content/     items (with how each is drawn), sets, crate odds and reward rules as JSON,
+                      validated at startup
+packages/ui/          design tokens, fonts, the mascot renderer and shared Svelte components
 scripts/              repository tooling, such as the licence check
 .github/workflows/    CI and release builds for all three operating systems
 ```

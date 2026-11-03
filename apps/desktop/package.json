@@ -15,6 +15,7 @@
     "icons": "tauri icon ../../packages/ui/assets/app-icon.svg"
   },
   "dependencies": {
+    "@headstart/content": "workspace:*",
     "@headstart/core": "workspace:*",
     "@headstart/ui": "workspace:*",
     "@tauri-apps/api": "^2",

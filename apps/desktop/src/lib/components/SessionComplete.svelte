@@ -20,6 +20,8 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { formatDuration } from "@headstart/core";
+  import { Mascot, MASCOT_TINTS } from "@headstart/ui";
+  import { goto } from "$app/navigation";
   import { plural } from "$lib/format.ts";
   import type { Study } from "$lib/study.svelte.ts";
 
@@ -51,10 +53,11 @@
     return `${plural(done.focusMinutes, "minute")}${what}.${streak}`;
   });
 
-  async function save(): Promise<void> {
+  async function save(thenOpenCrate = false): Promise<void> {
     saving = true;
     error = await study.saveCompletion({ recall, rating, nextStep, taskDone });
     saving = false;
+    if (!error && thenOpenCrate) await goto("/crates");
   }
 </script>
 
@@ -62,8 +65,15 @@
   <main class="complete" aria-labelledby="complete-h">
     <div class="column">
       <header>
-        <h1 id="complete-h">Session complete!</h1>
-        <p class="lead">{headline}</p>
+        {#if study.look && study.mascot}
+          <div class="buddy" style:background={MASCOT_TINTS[study.mascot]}>
+            <Mascot look={study.look} mood="celebrate" size={140} />
+          </div>
+        {/if}
+        <div>
+          <h1 id="complete-h">Session complete!</h1>
+          <p class="lead">{headline}</p>
+        </div>
       </header>
 
       <section class="card" aria-label="What you earned">
@@ -93,7 +103,7 @@
         {/if}
         <p class="crate">
           {#if done.crateEarned}
-            <strong>Study Crate earned!</strong> Crates can be opened in an upcoming update.
+            <strong>Study Crate earned!</strong> Save below and open it right away, or later from Crates.
           {:else}
             Next Study Crate: {study.summary?.crateProgress ?? 0} of {study.summary?.crateEvery ?? 3} sessions
           {/if}
@@ -152,7 +162,12 @@
         {/if}
 
         <div class="actions">
-          <button type="submit" class="primary" disabled={saving}>Save and continue</button>
+          {#if done.crateEarned}
+            <button type="button" class="primary" disabled={saving} onclick={() => save(true)}>Save and open crate</button>
+            <button type="submit" class="secondary" disabled={saving}>Save and continue</button>
+          {:else}
+            <button type="submit" class="primary" disabled={saving}>Save and continue</button>
+          {/if}
           <button type="button" class="secondary" onclick={() => study.dismissCompletion()}>Skip</button>
           {#if study.breakTimer}
             <span class="break" aria-live="off">
@@ -180,6 +195,22 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+  }
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .buddy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 20px;
   }
 
   h1 {

@@ -27,12 +27,143 @@ export type MascotId = (typeof MASCOTS)[number];
 export const CRATE_TYPES = ["study", "weekly", "streak", "milestone", "exam"] as const;
 export type CrateType = (typeof CRATE_TYPES)[number];
 
+/** Slots that hold something the mascot wears or holds, as opposed to its skin. */
+export type WearSlot = Exclude<Slot, "skin">;
+
+/**
+ * Every shape the mascot renderer can draw, by slot, with the number of
+ * colours it takes. Commons are palette swaps of simple shapes; rarer items
+ * get their own shapes, so rarity follows design complexity.
+ */
+export const WEAR_SHAPES = {
+  head: {
+    beanie: 2,
+    "beanie-striped": 2,
+    cap: 2,
+    "bucket-hat": 2,
+    beret: 2,
+    headband: 2,
+    bow: 2,
+    "flower-crown": 3,
+    "party-hat": 3,
+    "grad-cap": 3,
+    headphones: 3,
+    sprout: 2,
+    "propeller-cap": 3,
+    "bright-idea": 2,
+    wizard: 3,
+    crown: 3,
+    halo: 2,
+  },
+  face: {
+    "round-glasses": 1,
+    "square-glasses": 1,
+    "reading-glasses": 1,
+    freckles: 1,
+    shades: 2,
+    "heart-shades": 1,
+    "star-shades": 1,
+    monocle: 1,
+    goggles: 2,
+    visor: 2,
+    "prism-glasses": 1,
+  },
+  outfit: {
+    scarf: 2,
+    "plaid-scarf": 3,
+    "bow-tie": 2,
+    necktie: 2,
+    medal: 4,
+    bandana: 2,
+    lanyard: 2,
+    lei: 3,
+    hoodie: 3,
+    backpack: 3,
+    cape: 3,
+    "starlit-cape": 2,
+  },
+  held: {
+    pencil: 2,
+    book: 2,
+    mug: 2,
+    highlighter: 2,
+    flashcards: 2,
+    calculator: 2,
+    globe: 2,
+    "tea-cup": 2,
+    magnifier: 2,
+    quill: 2,
+    telescope: 2,
+    flask: 2,
+    lantern: 2,
+    "golden-quill": 2,
+  },
+  aura: {
+    glow: 1,
+    leaves: 2,
+    sparkles: 2,
+    bubbles: 1,
+    notes: 1,
+    snow: 1,
+    orbit: 2,
+    "stardust-storm": 2,
+  },
+} as const satisfies Record<WearSlot, Record<string, number>>;
+
+export type WearShape<S extends WearSlot = WearSlot> = keyof (typeof WEAR_SHAPES)[S] & string;
+
+/** How a wearable item is drawn: one of the renderer's shapes in its own colours. */
+export interface WearArt {
+  shape: string;
+  /** "#RRGGBB" colours, as many as the shape takes. */
+  colors: string[];
+}
+
+export const SKIN_PATTERNS = ["none", "spots", "stars", "petals", "stripes"] as const;
+export type SkinPattern = (typeof SKIN_PATTERNS)[number];
+
+/** Colour animations for legendary skins. The keyframes live with the renderer. */
+export const SKIN_ANIMATIONS = ["aurora", "starlight", "wildfire"] as const;
+export type SkinAnimation = (typeof SKIN_ANIMATIONS)[number];
+
+/** How a skin is drawn. All colours are "#RRGGBB". */
+export interface SkinArt {
+  body: string;
+  shade: string;
+  accent: string;
+  /** Belly and highlights. Falls back to `cream`. */
+  light?: string;
+  /** Face markings (Maple). Falls back to `light`. */
+  cream?: string;
+  /** Legs and arms (Maple). Falls back to `body`. */
+  limb?: string;
+  pattern?: SkinPattern;
+  /** Pattern colour. */
+  spot?: string;
+  animation?: SkinAnimation;
+}
+
+/** A themed group of items. Finishing one is a goal of its own. */
+export interface ItemSet {
+  id: string;
+  name: string;
+  description: string;
+  /** "#RRGGBB" tint used behind the set's card. */
+  tint: string;
+  /** "#RRGGBB" colour of the set's progress bar. */
+  color: string;
+}
+
 export interface Item {
   /** Permanent id. Never rename or reuse one: inventories refer to it forever. */
   id: string;
   name: string;
   slot: Slot;
   rarity: Rarity;
+  /** One line shown when the item drops or is looked at. */
+  description?: string;
+  /** How the item is drawn: a `SkinArt` for skins, a `WearArt` for everything else. */
+  art: SkinArt | WearArt;
   /** Mascots the item fits. Missing means it fits every mascot. */
   fits?: MascotId[];
   /** Themed set the item belongs to. */

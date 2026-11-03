@@ -4,218 +4,1900 @@
     "name": "Classic",
     "slot": "skin",
     "rarity": "common",
+    "description": "Inky's own purple, fresh from the deep.",
     "fits": ["inky"],
-    "starter": true
+    "starter": true,
+    "art": {
+      "body": "#8A7CF2",
+      "shade": "#6A5BD6",
+      "light": "#B9B0F9",
+      "accent": "#F3C6E8"
+    }
   },
   {
     "id": "skin.inky.coral",
     "name": "Coral",
     "slot": "skin",
     "rarity": "common",
-    "fits": ["inky"]
+    "description": "Warm as a reef in the sun.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#FF8F6B",
+      "shade": "#E06A48",
+      "light": "#FFC0A8",
+      "accent": "#FFE0D3"
+    }
   },
-  { "id": "skin.inky.mint", "name": "Mint", "slot": "skin", "rarity": "common", "fits": ["inky"] },
+  {
+    "id": "skin.inky.mint",
+    "name": "Mint",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "Cool, calm and ready to read.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#7DD8C0",
+      "shade": "#4FB79B",
+      "light": "#BDEDE0",
+      "accent": "#E6FAF4"
+    }
+  },
+  {
+    "id": "skin.inky.sky",
+    "name": "Sky",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "A clear-day blue.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#6FB7F0",
+      "shade": "#4C95D4",
+      "light": "#B5DBF8",
+      "accent": "#E3F2FD"
+    }
+  },
+  {
+    "id": "skin.inky.lemon",
+    "name": "Lemon",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "Bright enough to wake you up.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#F3D36B",
+      "shade": "#D9B348",
+      "light": "#FAE9AE",
+      "accent": "#FFF6D6"
+    }
+  },
   {
     "id": "skin.inky.lilac",
     "name": "Spotted Lilac",
     "slot": "skin",
     "rarity": "uncommon",
-    "fits": ["inky"]
+    "description": "Soft lilac with white spots.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#C7AEF2",
+      "shade": "#A585DD",
+      "light": "#E4D7F9",
+      "accent": "#FFFFFF",
+      "pattern": "spots",
+      "spot": "#FFFFFF"
+    }
+  },
+  {
+    "id": "skin.inky.bubblegum",
+    "name": "Bubblegum",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "description": "Pink with candy stripes.",
+    "fits": ["inky"],
+    "art": {
+      "body": "#F59AC4",
+      "shade": "#DB76A6",
+      "light": "#FBCDE2",
+      "accent": "#FFE6F1",
+      "pattern": "stripes",
+      "spot": "#FFFFFF"
+    }
   },
   {
     "id": "skin.inky.deep-sea",
     "name": "Deep Sea",
     "slot": "skin",
     "rarity": "rare",
+    "description": "Glowing spots from the ocean floor.",
     "fits": ["inky"],
-    "set": "deep-sea"
+    "set": "deep-sea",
+    "art": {
+      "body": "#2F4E85",
+      "shade": "#1F3866",
+      "light": "#4C6CA6",
+      "accent": "#7FF0E0",
+      "pattern": "spots",
+      "spot": "#7FF0E0"
+    }
   },
   {
     "id": "skin.inky.galaxy",
     "name": "Galaxy",
     "slot": "skin",
     "rarity": "epic",
+    "description": "A whole night sky, stars included.",
     "fits": ["inky"],
-    "set": "space"
+    "set": "space",
+    "art": {
+      "body": "#2B2452",
+      "shade": "#1B163A",
+      "light": "#463D7A",
+      "accent": "#9C8CFF",
+      "pattern": "stars",
+      "spot": "#FFFFFF"
+    }
   },
   {
     "id": "skin.inky.aurora",
     "name": "Aurora",
     "slot": "skin",
     "rarity": "legendary",
+    "description": "Shifts through the colours of the northern lights.",
     "fits": ["inky"],
     "animated": true,
-    "craftable": false
+    "craftable": false,
+    "art": {
+      "body": "#3FC1C9",
+      "shade": "#2A9AA2",
+      "light": "#9FE6EA",
+      "accent": "#FFFFFF",
+      "pattern": "spots",
+      "spot": "#FFFFFF",
+      "animation": "aurora"
+    }
   },
-
   {
     "id": "skin.axo.leucistic",
     "name": "Leucistic",
     "slot": "skin",
     "rarity": "common",
+    "description": "The classic pink axolotl.",
     "fits": ["axo"],
-    "starter": true
+    "starter": true,
+    "art": {
+      "body": "#F7B9CF",
+      "shade": "#E594B2",
+      "light": "#FDE3EC",
+      "accent": "#E2557F"
+    }
   },
   {
     "id": "skin.axo.wild",
     "name": "Wild Type",
     "slot": "skin",
     "rarity": "common",
-    "fits": ["axo"]
+    "description": "Speckled olive, like in the wild.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#7C8B5A",
+      "shade": "#63714A",
+      "light": "#A9B58A",
+      "accent": "#5A6B3E",
+      "pattern": "spots",
+      "spot": "#4F5C36"
+    }
+  },
+  {
+    "id": "skin.axo.copper",
+    "name": "Copper",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "A warm copper glow.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#E39A6B",
+      "shade": "#C77B4E",
+      "light": "#F5C9AA",
+      "accent": "#B5523A"
+    }
+  },
+  {
+    "id": "skin.axo.lavender",
+    "name": "Lavender",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "Soft purple with violet gills.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#C9B6F2",
+      "shade": "#A894DB",
+      "light": "#E7DDFB",
+      "accent": "#8B6FD6"
+    }
   },
   {
     "id": "skin.axo.golden",
     "name": "Golden",
     "slot": "skin",
     "rarity": "uncommon",
-    "fits": ["axo"]
+    "description": "Golden with peach gills.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#F6D27A",
+      "shade": "#E0B256",
+      "light": "#FCEBBE",
+      "accent": "#F08A5D"
+    }
+  },
+  {
+    "id": "skin.axo.speckled",
+    "name": "Speckled",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "description": "Cream with freckly spots.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#F2E6D0",
+      "shade": "#D9C9AC",
+      "light": "#FBF5EA",
+      "accent": "#E2557F",
+      "pattern": "spots",
+      "spot": "#8A7A5E"
+    }
   },
   {
     "id": "skin.axo.melanoid",
     "name": "Melanoid",
     "slot": "skin",
     "rarity": "rare",
-    "fits": ["axo"]
+    "description": "Dark and sleek with violet gills.",
+    "fits": ["axo"],
+    "art": {
+      "body": "#3E4252",
+      "shade": "#2C2F3B",
+      "light": "#5E6478",
+      "accent": "#7A68A8"
+    }
   },
   {
     "id": "skin.axo.glow",
     "name": "Glow",
     "slot": "skin",
     "rarity": "epic",
+    "description": "Lights up the dark like deep-sea plankton.",
     "fits": ["axo"],
-    "set": "deep-sea"
+    "set": "deep-sea",
+    "art": {
+      "body": "#C9F27A",
+      "shade": "#A6D457",
+      "light": "#E8FBC4",
+      "accent": "#3FD99A",
+      "pattern": "spots",
+      "spot": "#F7FFE0"
+    }
   },
   {
     "id": "skin.axo.starlight",
     "name": "Starlight",
     "slot": "skin",
     "rarity": "legendary",
+    "description": "Gills that shimmer like distant stars.",
     "fits": ["axo"],
+    "set": "space",
     "animated": true,
-    "craftable": false
+    "craftable": false,
+    "art": {
+      "body": "#2B2E6E",
+      "shade": "#1F2156",
+      "light": "#4A4E9C",
+      "accent": "#8E7BFF",
+      "pattern": "stars",
+      "spot": "#FFFFFF",
+      "animation": "starlight"
+    }
   },
-
   {
     "id": "skin.maple.classic",
     "name": "Classic",
     "slot": "skin",
     "rarity": "common",
+    "description": "Maple's own russet red.",
     "fits": ["maple"],
-    "starter": true
+    "starter": true,
+    "art": {
+      "body": "#D8653A",
+      "shade": "#B54E2B",
+      "cream": "#F7E6CF",
+      "limb": "#6A3826",
+      "accent": "#9A4426"
+    }
   },
   {
     "id": "skin.maple.sandy",
     "name": "Sandy",
     "slot": "skin",
     "rarity": "common",
-    "fits": ["maple"]
+    "description": "Light and sandy.",
+    "fits": ["maple"],
+    "art": {
+      "body": "#D9A066",
+      "shade": "#B98149",
+      "cream": "#FBF1DF",
+      "limb": "#7A5638",
+      "accent": "#B5824C"
+    }
+  },
+  {
+    "id": "skin.maple.cocoa",
+    "name": "Cocoa",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "Rich brown, like hot chocolate.",
+    "fits": ["maple"],
+    "set": "cosy",
+    "art": {
+      "body": "#9A5B3C",
+      "shade": "#7A432A",
+      "cream": "#F2DFC7",
+      "limb": "#4A2617",
+      "accent": "#6E3A23"
+    }
+  },
+  {
+    "id": "skin.maple.ginger",
+    "name": "Ginger",
+    "slot": "skin",
+    "rarity": "common",
+    "description": "Bright orange and full of energy.",
+    "fits": ["maple"],
+    "art": {
+      "body": "#EB8A3C",
+      "shade": "#C96D25",
+      "cream": "#FCEBD5",
+      "limb": "#7A3A16",
+      "accent": "#B85A1F"
+    }
   },
   {
     "id": "skin.maple.snowfall",
     "name": "Snowfall",
     "slot": "skin",
     "rarity": "uncommon",
-    "fits": ["maple"]
+    "description": "White as fresh snow.",
+    "fits": ["maple"],
+    "art": {
+      "body": "#E9EDF3",
+      "shade": "#C9D1DD",
+      "cream": "#FFFFFF",
+      "limb": "#7B8494",
+      "accent": "#B7C0CE"
+    }
+  },
+  {
+    "id": "skin.maple.mossy",
+    "name": "Mossy",
+    "slot": "skin",
+    "rarity": "uncommon",
+    "description": "Green with leafy stripes.",
+    "fits": ["maple"],
+    "set": "garden",
+    "art": {
+      "body": "#8FB36A",
+      "shade": "#6E9150",
+      "cream": "#EFF5E1",
+      "limb": "#3F5A2B",
+      "accent": "#5E7F43",
+      "pattern": "stripes",
+      "spot": "#EFF5E1"
+    }
   },
   {
     "id": "skin.maple.midnight",
     "name": "Midnight",
     "slot": "skin",
     "rarity": "rare",
+    "description": "Deep blue with a few stars.",
     "fits": ["maple"],
-    "set": "space"
+    "set": "space",
+    "art": {
+      "body": "#34416A",
+      "shade": "#252F50",
+      "cream": "#C8D3EA",
+      "limb": "#161C30",
+      "accent": "#53648F",
+      "pattern": "stars",
+      "spot": "#DDE6F7"
+    }
   },
   {
     "id": "skin.maple.sakura",
     "name": "Sakura",
     "slot": "skin",
     "rarity": "epic",
-    "fits": ["maple"]
+    "description": "Pink with falling cherry blossom petals.",
+    "fits": ["maple"],
+    "set": "garden",
+    "art": {
+      "body": "#F3A6BE",
+      "shade": "#DA7F9E",
+      "cream": "#FFF2F6",
+      "limb": "#A0516E",
+      "accent": "#E38AA8",
+      "pattern": "petals",
+      "spot": "#FFFFFF"
+    }
   },
   {
     "id": "skin.maple.wildfire",
     "name": "Wildfire",
     "slot": "skin",
     "rarity": "legendary",
+    "description": "Flickers like a campfire, embers and all.",
     "fits": ["maple"],
     "animated": true,
-    "craftable": false
+    "craftable": false,
+    "art": {
+      "body": "#E8572A",
+      "shade": "#B83A1A",
+      "cream": "#FFE3B0",
+      "limb": "#5A1E12",
+      "accent": "#F59E2B",
+      "animation": "wildfire"
+    }
   },
-
-  { "id": "head.beanie-red", "name": "Red Beanie", "slot": "head", "rarity": "common" },
-  { "id": "head.beanie-mustard", "name": "Mustard Beanie", "slot": "head", "rarity": "common" },
-  { "id": "head.beanie-striped", "name": "Striped Beanie", "slot": "head", "rarity": "uncommon" },
+  {
+    "id": "head.beanie-red",
+    "name": "Red Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#E5533D", "#F6E7D8"]
+    }
+  },
+  {
+    "id": "head.beanie-mustard",
+    "name": "Mustard Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#E9A93A", "#FFF1D6"]
+    }
+  },
+  {
+    "id": "head.beanie-teal",
+    "name": "Teal Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#2A9D8F", "#E3F4F1"]
+    }
+  },
+  {
+    "id": "head.beanie-lilac",
+    "name": "Lilac Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#A88BE8", "#F1ECFD"]
+    }
+  },
+  {
+    "id": "head.beanie-forest",
+    "name": "Forest Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "set": "cosy",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#4E7A40", "#EAF1E2"]
+    }
+  },
+  {
+    "id": "head.beanie-charcoal",
+    "name": "Charcoal Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#4A4F63", "#E2E6EF"]
+    }
+  },
+  {
+    "id": "head.beanie-pink",
+    "name": "Pink Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#F28AB0", "#FFF0F5"]
+    }
+  },
+  {
+    "id": "head.beanie-sky",
+    "name": "Sky Beanie",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A warm knit for cold library mornings.",
+    "art": {
+      "shape": "beanie",
+      "colors": ["#5B9FE0", "#E8F2FC"]
+    }
+  },
+  {
+    "id": "head.beanie-striped",
+    "name": "Striped Beanie",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Orange and purple stripes, bobble on top.",
+    "art": {
+      "shape": "beanie-striped",
+      "colors": ["#F2A541", "#5B4BD6"]
+    }
+  },
+  {
+    "id": "head.beanie-candy",
+    "name": "Candy Stripe Beanie",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Red and white, like a candy cane.",
+    "art": {
+      "shape": "beanie-striped",
+      "colors": ["#F7F2EA", "#E5533D"]
+    }
+  },
+  {
+    "id": "head.beanie-ocean",
+    "name": "Ocean Stripe Beanie",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Blue and white, like a sailor's knit.",
+    "set": "deep-sea",
+    "art": {
+      "shape": "beanie-striped",
+      "colors": ["#2F7FD8", "#E3EEFA"]
+    }
+  },
+  {
+    "id": "head.cap-blue",
+    "name": "Blue Cap",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Keeps the glare off your notes.",
+    "art": {
+      "shape": "cap",
+      "colors": ["#2F7FD8", "#1D5FA8"]
+    }
+  },
+  {
+    "id": "head.cap-green",
+    "name": "Green Cap",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Keeps the glare off your notes.",
+    "art": {
+      "shape": "cap",
+      "colors": ["#2F9E6E", "#1E6B4A"]
+    }
+  },
+  {
+    "id": "head.cap-sunny",
+    "name": "Sunny Cap",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Keeps the glare off your notes.",
+    "art": {
+      "shape": "cap",
+      "colors": ["#F5C542", "#E0A72E"]
+    }
+  },
+  {
+    "id": "head.cap-berry",
+    "name": "Berry Cap",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Keeps the glare off your notes.",
+    "art": {
+      "shape": "cap",
+      "colors": ["#C2417A", "#8E2C59"]
+    }
+  },
+  {
+    "id": "head.bucket-khaki",
+    "name": "Khaki Bucket Hat",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For field trips and sunny study breaks.",
+    "art": {
+      "shape": "bucket-hat",
+      "colors": ["#C9B48A", "#8E6136"]
+    }
+  },
+  {
+    "id": "head.bucket-denim",
+    "name": "Denim Bucket Hat",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For field trips and sunny study breaks.",
+    "art": {
+      "shape": "bucket-hat",
+      "colors": ["#5B7FB5", "#F6E7D8"]
+    }
+  },
+  {
+    "id": "head.bucket-peach",
+    "name": "Peach Bucket Hat",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For field trips and sunny study breaks.",
+    "art": {
+      "shape": "bucket-hat",
+      "colors": ["#F7B58F", "#E5533D"]
+    }
+  },
+  {
+    "id": "head.beret-red",
+    "name": "Red Beret",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Very artistic. Very serious.",
+    "art": {
+      "shape": "beret",
+      "colors": ["#C8403A", "#A2302B"]
+    }
+  },
+  {
+    "id": "head.beret-navy",
+    "name": "Navy Beret",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Very artistic. Very serious.",
+    "art": {
+      "shape": "beret",
+      "colors": ["#2E3A6B", "#222B52"]
+    }
+  },
+  {
+    "id": "head.beret-mustard",
+    "name": "Mustard Beret",
+    "slot": "head",
+    "rarity": "common",
+    "description": "Very artistic. Very serious.",
+    "art": {
+      "shape": "beret",
+      "colors": ["#D9A23A", "#B98428"]
+    }
+  },
+  {
+    "id": "head.headband-red",
+    "name": "Sport Headband",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For study sessions that feel like a workout.",
+    "art": {
+      "shape": "headband",
+      "colors": ["#E5533D", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "head.headband-mint",
+    "name": "Mint Headband",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For study sessions that feel like a workout.",
+    "art": {
+      "shape": "headband",
+      "colors": ["#7DD8C0", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "head.headband-purple",
+    "name": "Purple Headband",
+    "slot": "head",
+    "rarity": "common",
+    "description": "For study sessions that feel like a workout.",
+    "art": {
+      "shape": "headband",
+      "colors": ["#7B68E0", "#F5C542"]
+    }
+  },
+  {
+    "id": "head.bow-pink",
+    "name": "Pink Bow",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A neat little bow, tied just so.",
+    "art": {
+      "shape": "bow",
+      "colors": ["#F28AB0", "#C9447F"]
+    }
+  },
+  {
+    "id": "head.bow-red",
+    "name": "Red Bow",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A neat little bow, tied just so.",
+    "art": {
+      "shape": "bow",
+      "colors": ["#E5533D", "#B13A2A"]
+    }
+  },
+  {
+    "id": "head.bow-sky",
+    "name": "Sky Bow",
+    "slot": "head",
+    "rarity": "common",
+    "description": "A neat little bow, tied just so.",
+    "art": {
+      "shape": "bow",
+      "colors": ["#7FB8F0", "#3E7FC4"]
+    }
+  },
+  {
+    "id": "head.daisy-crown",
+    "name": "Daisy Crown",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Picked on the way to the library.",
+    "set": "garden",
+    "art": {
+      "shape": "flower-crown",
+      "colors": ["#5E8F4E", "#FFFFFF", "#FBE3A0"]
+    }
+  },
+  {
+    "id": "head.rose-crown",
+    "name": "Rose Crown",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Pink and red flowers on a green vine.",
+    "set": "garden",
+    "art": {
+      "shape": "flower-crown",
+      "colors": ["#5E8F4E", "#F28AB0", "#E5533D"]
+    }
+  },
+  {
+    "id": "head.party-hat",
+    "name": "Party Hat",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "For the day the exam is over.",
+    "art": {
+      "shape": "party-hat",
+      "colors": ["#5B4BD6", "#F5C542", "#E9579A"]
+    }
+  },
+  {
+    "id": "head.party-hat-confetti",
+    "name": "Confetti Party Hat",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Teal, cream and a gold pompom.",
+    "art": {
+      "shape": "party-hat",
+      "colors": ["#2A9D8F", "#F7F2EA", "#F5C542"]
+    }
+  },
   {
     "id": "head.grad-cap",
     "name": "Grad Cap",
     "slot": "head",
     "rarity": "uncommon",
-    "set": "library"
+    "description": "One day you will throw it in the air.",
+    "set": "library",
+    "art": {
+      "shape": "grad-cap",
+      "colors": ["#2A9D8F", "#1E6E64", "#F5C542"]
+    }
+  },
+  {
+    "id": "head.grad-cap-midnight",
+    "name": "Midnight Grad Cap",
+    "slot": "head",
+    "rarity": "uncommon",
+    "description": "Navy with a gold tassel.",
+    "set": "library",
+    "art": {
+      "shape": "grad-cap",
+      "colors": ["#3A3F66", "#262A47", "#E8B64A"]
+    }
   },
   {
     "id": "head.headphones",
     "name": "Headphones",
     "slot": "head",
     "rarity": "rare",
+    "description": "Coral ear cups for long sessions.",
     "fits": ["maple"],
-    "set": "library"
+    "set": "library",
+    "art": {
+      "shape": "headphones",
+      "colors": ["#3B3F52", "#E76F51", "#F6B39F"]
+    }
+  },
+  {
+    "id": "head.headphones-lilac",
+    "name": "Lilac Headphones",
+    "slot": "head",
+    "rarity": "rare",
+    "description": "Soft lilac cups that shut out the noise.",
+    "fits": ["maple"],
+    "set": "library",
+    "art": {
+      "shape": "headphones",
+      "colors": ["#3B3F52", "#A88BE8", "#E1D7FB"]
+    }
+  },
+  {
+    "id": "head.sprout",
+    "name": "Sprout",
+    "slot": "head",
+    "rarity": "rare",
+    "description": "Something is growing. Probably knowledge.",
+    "set": "garden",
+    "art": {
+      "shape": "sprout",
+      "colors": ["#5E8F4E", "#7DC46A"]
+    }
+  },
+  {
+    "id": "head.propeller-cap",
+    "name": "Propeller Cap",
+    "slot": "head",
+    "rarity": "epic",
+    "description": "The propeller spins faster when you think hard.",
+    "animated": true,
+    "art": {
+      "shape": "propeller-cap",
+      "colors": ["#E5533D", "#F5C542", "#2F7FD8"]
+    }
+  },
+  {
+    "id": "head.bright-idea",
+    "name": "Bright Idea",
+    "slot": "head",
+    "rarity": "epic",
+    "description": "A light bulb that never goes out.",
+    "animated": true,
+    "art": {
+      "shape": "bright-idea",
+      "colors": ["#FFD95A", "#9AA3B5"]
+    }
   },
   {
     "id": "head.wizard-hat",
     "name": "Wizard Hat",
     "slot": "head",
     "rarity": "epic",
+    "description": "Twinkling stars for spells and proofs.",
     "set": "space",
-    "animated": true
+    "animated": true,
+    "art": {
+      "shape": "wizard",
+      "colors": ["#4B3FA8", "#3A2F8F", "#F5C542"]
+    }
   },
   {
     "id": "head.scholar-crown",
     "name": "Scholar Crown",
     "slot": "head",
     "rarity": "legendary",
+    "description": "For those who never skip a review.",
     "set": "library",
-    "animated": true
+    "animated": true,
+    "art": {
+      "shape": "crown",
+      "colors": ["#F2C14E", "#E0A72E", "#E9579A"]
+    }
   },
-
+  {
+    "id": "head.halo",
+    "name": "Halo of Insight",
+    "slot": "head",
+    "rarity": "legendary",
+    "description": "Floats gently above a well-rested mind.",
+    "animated": true,
+    "art": {
+      "shape": "halo",
+      "colors": ["#FFE08A", "#FFF3C9"]
+    }
+  },
   {
     "id": "face.round-glasses",
     "name": "Round Glasses",
     "slot": "face",
     "rarity": "common",
-    "set": "library"
+    "description": "Classic round frames for reading.",
+    "set": "library",
+    "art": {
+      "shape": "round-glasses",
+      "colors": ["#2A1F2D"]
+    }
   },
-  { "id": "face.shades", "name": "Shades", "slot": "face", "rarity": "uncommon" },
-  { "id": "face.monocle", "name": "Monocle", "slot": "face", "rarity": "rare", "fits": ["inky"] },
-
-  { "id": "outfit.scarf-red", "name": "Red Scarf", "slot": "outfit", "rarity": "common" },
-  { "id": "outfit.scarf-blue", "name": "Blue Scarf", "slot": "outfit", "rarity": "common" },
-  { "id": "outfit.bow-tie", "name": "Bow Tie", "slot": "outfit", "rarity": "uncommon" },
-  { "id": "outfit.medal", "name": "Medal", "slot": "outfit", "rarity": "uncommon" },
+  {
+    "id": "face.round-tortoise",
+    "name": "Tortoise Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Round frames in a bolder colour.",
+    "art": {
+      "shape": "round-glasses",
+      "colors": ["#8E5A2B"]
+    }
+  },
+  {
+    "id": "face.round-red",
+    "name": "Red Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Round frames in a bolder colour.",
+    "art": {
+      "shape": "round-glasses",
+      "colors": ["#D9483B"]
+    }
+  },
+  {
+    "id": "face.round-blue",
+    "name": "Blue Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Round frames in a bolder colour.",
+    "art": {
+      "shape": "round-glasses",
+      "colors": ["#2F7FD8"]
+    }
+  },
+  {
+    "id": "face.round-gold",
+    "name": "Gold Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Round frames in a bolder colour.",
+    "art": {
+      "shape": "round-glasses",
+      "colors": ["#D4A23A"]
+    }
+  },
+  {
+    "id": "face.square-glasses",
+    "name": "Square Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Sharp frames for sharp thinking.",
+    "art": {
+      "shape": "square-glasses",
+      "colors": ["#2A1F2D"]
+    }
+  },
+  {
+    "id": "face.square-mint",
+    "name": "Mint Square Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Sharp frames for sharp thinking.",
+    "art": {
+      "shape": "square-glasses",
+      "colors": ["#2A9D8F"]
+    }
+  },
+  {
+    "id": "face.square-berry",
+    "name": "Berry Square Glasses",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Sharp frames for sharp thinking.",
+    "art": {
+      "shape": "square-glasses",
+      "colors": ["#C2417A"]
+    }
+  },
+  {
+    "id": "face.reading-glasses",
+    "name": "Reading Glasses",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "Half-moon lenses for the small print.",
+    "set": "library",
+    "art": {
+      "shape": "reading-glasses",
+      "colors": ["#B07A3A"]
+    }
+  },
+  {
+    "id": "face.freckles",
+    "name": "Freckles",
+    "slot": "face",
+    "rarity": "common",
+    "description": "A sprinkle of freckles.",
+    "art": {
+      "shape": "freckles",
+      "colors": ["#B5673E"]
+    }
+  },
+  {
+    "id": "face.rosy-freckles",
+    "name": "Rosy Freckles",
+    "slot": "face",
+    "rarity": "common",
+    "description": "Pink freckles, like after a long walk.",
+    "art": {
+      "shape": "freckles",
+      "colors": ["#E0708F"]
+    }
+  },
+  {
+    "id": "face.shades",
+    "name": "Shades",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "Too cool for distractions.",
+    "art": {
+      "shape": "shades",
+      "colors": ["#1E2340", "#8FB4FF"]
+    }
+  },
+  {
+    "id": "face.rose-shades",
+    "name": "Rose Shades",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "Everything looks rosy through these.",
+    "art": {
+      "shape": "shades",
+      "colors": ["#7A2E4E", "#FFB3CF"]
+    }
+  },
+  {
+    "id": "face.mirror-shades",
+    "name": "Mirror Shades",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "Blue mirrored lenses.",
+    "art": {
+      "shape": "shades",
+      "colors": ["#2F6FA8", "#BDEBFF"]
+    }
+  },
+  {
+    "id": "face.heart-shades",
+    "name": "Heart Shades",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "For when you love the subject.",
+    "art": {
+      "shape": "heart-shades",
+      "colors": ["#E9579A"]
+    }
+  },
+  {
+    "id": "face.ruby-heart-shades",
+    "name": "Ruby Heart Shades",
+    "slot": "face",
+    "rarity": "uncommon",
+    "description": "Deep red hearts.",
+    "art": {
+      "shape": "heart-shades",
+      "colors": ["#C8303A"]
+    }
+  },
+  {
+    "id": "face.star-shades",
+    "name": "Star Shades",
+    "slot": "face",
+    "rarity": "rare",
+    "description": "Gold stars for a star student.",
+    "set": "space",
+    "art": {
+      "shape": "star-shades",
+      "colors": ["#F5B82E"]
+    }
+  },
+  {
+    "id": "face.monocle",
+    "name": "Monocle",
+    "slot": "face",
+    "rarity": "rare",
+    "description": "Distinguished. Inky insists.",
+    "fits": ["inky"],
+    "art": {
+      "shape": "monocle",
+      "colors": ["#E8B64A"]
+    }
+  },
+  {
+    "id": "face.dive-goggles",
+    "name": "Dive Goggles",
+    "slot": "face",
+    "rarity": "rare",
+    "description": "For diving deep into a subject.",
+    "fits": ["inky", "axo"],
+    "set": "deep-sea",
+    "art": {
+      "shape": "goggles",
+      "colors": ["#2A9D8F", "#F2C14E"]
+    }
+  },
+  {
+    "id": "face.star-gazer-visor",
+    "name": "Star-Gazer Visor",
+    "slot": "face",
+    "rarity": "epic",
+    "description": "A light shimmers across the visor.",
+    "set": "space",
+    "animated": true,
+    "art": {
+      "shape": "visor",
+      "colors": ["#C9CED8", "#7FD3FF"]
+    }
+  },
+  {
+    "id": "face.prism-glasses",
+    "name": "Prism Glasses",
+    "slot": "face",
+    "rarity": "legendary",
+    "description": "Lenses that cycle through every colour.",
+    "animated": true,
+    "art": {
+      "shape": "prism-glasses",
+      "colors": ["#F2C14E"]
+    }
+  },
+  {
+    "id": "outfit.scarf-red",
+    "name": "Red Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#E5533D", "#F6E7D8"]
+    }
+  },
+  {
+    "id": "outfit.scarf-blue",
+    "name": "Blue Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#2F7FD8", "#E3EEFA"]
+    }
+  },
+  {
+    "id": "outfit.scarf-mustard",
+    "name": "Mustard Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#E9A93A", "#FFF1D6"]
+    }
+  },
+  {
+    "id": "outfit.scarf-green",
+    "name": "Green Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#4E9F5B", "#E6F4E3"]
+    }
+  },
+  {
+    "id": "outfit.scarf-lilac",
+    "name": "Lilac Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#9B84E3", "#F1ECFD"]
+    }
+  },
+  {
+    "id": "outfit.scarf-grey",
+    "name": "Grey Scarf",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Long, striped and very cosy.",
+    "art": {
+      "shape": "scarf",
+      "colors": ["#7B8494", "#ECEEF2"]
+    }
+  },
+  {
+    "id": "outfit.plaid-scarf",
+    "name": "Plaid Scarf",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "Red tartan for autumn walks.",
+    "set": "cosy",
+    "art": {
+      "shape": "plaid-scarf",
+      "colors": ["#C8403A", "#2E3A6B", "#F2C14E"]
+    }
+  },
+  {
+    "id": "outfit.plaid-scarf-highland",
+    "name": "Highland Plaid Scarf",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "Green tartan with a red line.",
+    "set": "cosy",
+    "art": {
+      "shape": "plaid-scarf",
+      "colors": ["#3E6B46", "#1F3A2A", "#E5533D"]
+    }
+  },
+  {
+    "id": "outfit.bow-tie",
+    "name": "Bow Tie",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "Pink, dapper and slightly too big.",
+    "art": {
+      "shape": "bow-tie",
+      "colors": ["#E9579A", "#B83A72"]
+    }
+  },
+  {
+    "id": "outfit.bow-tie-navy",
+    "name": "Navy Bow Tie",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "For formal study occasions.",
+    "art": {
+      "shape": "bow-tie",
+      "colors": ["#2E3A6B", "#1C2447"]
+    }
+  },
+  {
+    "id": "outfit.bow-tie-red",
+    "name": "Red Bow Tie",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "A bright red bow tie.",
+    "art": {
+      "shape": "bow-tie",
+      "colors": ["#D9483B", "#A2302B"]
+    }
+  },
+  {
+    "id": "outfit.tie-school",
+    "name": "School Tie",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Navy with gold stripes.",
+    "set": "library",
+    "art": {
+      "shape": "necktie",
+      "colors": ["#2E3A6B", "#E8B64A"]
+    }
+  },
+  {
+    "id": "outfit.tie-red",
+    "name": "Red Tie",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Red with cream stripes.",
+    "art": {
+      "shape": "necktie",
+      "colors": ["#C8403A", "#F6E7D8"]
+    }
+  },
+  {
+    "id": "outfit.tie-green",
+    "name": "Green Tie",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Green with gold stripes.",
+    "art": {
+      "shape": "necktie",
+      "colors": ["#2F7A55", "#F2C14E"]
+    }
+  },
+  {
+    "id": "outfit.medal-bronze",
+    "name": "Bronze Medal",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Third place still counts.",
+    "art": {
+      "shape": "medal",
+      "colors": ["#8E6136", "#E76F51", "#D08A4E", "#9A5B2E"]
+    }
+  },
+  {
+    "id": "outfit.medal",
+    "name": "Medal",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "Gold, for showing up.",
+    "art": {
+      "shape": "medal",
+      "colors": ["#E76F51", "#2A9D8F", "#F2C14E", "#C98F12"]
+    }
+  },
+  {
+    "id": "outfit.medal-silver",
+    "name": "Silver Medal",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "So close to gold.",
+    "art": {
+      "shape": "medal",
+      "colors": ["#2F7FD8", "#E3EEFA", "#D5DAE5", "#9AA3B5"]
+    }
+  },
+  {
+    "id": "outfit.bandana-red",
+    "name": "Red Bandana",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "A spotted neckerchief.",
+    "art": {
+      "shape": "bandana",
+      "colors": ["#D9483B", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "outfit.bandana-blue",
+    "name": "Blue Bandana",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "A spotted neckerchief.",
+    "art": {
+      "shape": "bandana",
+      "colors": ["#2F6FB8", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "outfit.bandana-sunflower",
+    "name": "Sunflower Bandana",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "A spotted neckerchief.",
+    "art": {
+      "shape": "bandana",
+      "colors": ["#F2C14E", "#B35C00"]
+    }
+  },
+  {
+    "id": "outfit.lanyard",
+    "name": "Student Lanyard",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "Your library card, always close.",
+    "set": "library",
+    "art": {
+      "shape": "lanyard",
+      "colors": ["#5B4BD6", "#5B4BD6"]
+    }
+  },
+  {
+    "id": "outfit.lanyard-teal",
+    "name": "Teal Lanyard",
+    "slot": "outfit",
+    "rarity": "common",
+    "description": "A teal lanyard with your student card.",
+    "set": "library",
+    "art": {
+      "shape": "lanyard",
+      "colors": ["#2A9D8F", "#2A9D8F"]
+    }
+  },
+  {
+    "id": "outfit.flower-lei",
+    "name": "Flower Lei",
+    "slot": "outfit",
+    "rarity": "uncommon",
+    "description": "A string of fresh flowers.",
+    "set": "garden",
+    "art": {
+      "shape": "lei",
+      "colors": ["#5E8F4E", "#F28AB0", "#F5C542"]
+    }
+  },
   {
     "id": "outfit.forest-hoodie",
     "name": "Forest Hoodie",
     "slot": "outfit",
     "rarity": "rare",
-    "fits": ["maple", "axo"]
+    "description": "A green hoodie, just like Maple's first one.",
+    "fits": ["maple", "axo"],
+    "art": {
+      "shape": "hoodie",
+      "colors": ["#5E8F4E", "#4E7A40", "#76A864"]
+    }
   },
-
-  { "id": "held.pencil", "name": "Pencil", "slot": "held", "rarity": "common", "set": "library" },
-  { "id": "held.book", "name": "Book", "slot": "held", "rarity": "common", "set": "library" },
+  {
+    "id": "outfit.berry-hoodie",
+    "name": "Berry Hoodie",
+    "slot": "outfit",
+    "rarity": "rare",
+    "description": "A berry-red hoodie for chilly evenings.",
+    "fits": ["maple", "axo"],
+    "set": "cosy",
+    "art": {
+      "shape": "hoodie",
+      "colors": ["#B5476E", "#943A59", "#D0668B"]
+    }
+  },
+  {
+    "id": "outfit.ocean-hoodie",
+    "name": "Ocean Hoodie",
+    "slot": "outfit",
+    "rarity": "rare",
+    "description": "A deep blue hoodie.",
+    "fits": ["maple", "axo"],
+    "set": "deep-sea",
+    "art": {
+      "shape": "hoodie",
+      "colors": ["#3E7FC4", "#2F66A3", "#62A0DE"]
+    }
+  },
+  {
+    "id": "outfit.study-backpack",
+    "name": "Study Backpack",
+    "slot": "outfit",
+    "rarity": "rare",
+    "description": "Room for every book on the reading list.",
+    "fits": ["maple", "axo"],
+    "set": "library",
+    "art": {
+      "shape": "backpack",
+      "colors": ["#E5533D", "#8E2C22", "#F2C14E"]
+    }
+  },
+  {
+    "id": "outfit.scholars-cape",
+    "name": "Scholar's Cape",
+    "slot": "outfit",
+    "rarity": "epic",
+    "description": "Billows a little when you walk into an exam.",
+    "animated": true,
+    "art": {
+      "shape": "cape",
+      "colors": ["#5B4BD6", "#F5C542", "#F2C14E"]
+    }
+  },
+  {
+    "id": "outfit.starlit-cape",
+    "name": "Starlit Cape",
+    "slot": "outfit",
+    "rarity": "legendary",
+    "description": "A cape full of twinkling stars.",
+    "set": "space",
+    "animated": true,
+    "art": {
+      "shape": "starlit-cape",
+      "colors": ["#1E2350", "#FFE08A"]
+    }
+  },
+  {
+    "id": "held.pencil",
+    "name": "Pencil",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Sharpened and ready.",
+    "set": "library",
+    "art": {
+      "shape": "pencil",
+      "colors": ["#F2C14E", "#F28AA0"]
+    }
+  },
+  {
+    "id": "held.pencil-blue",
+    "name": "Blue Pencil",
+    "slot": "held",
+    "rarity": "common",
+    "description": "A colourful pencil for colourful notes.",
+    "art": {
+      "shape": "pencil",
+      "colors": ["#5B9FE0", "#F28AA0"]
+    }
+  },
+  {
+    "id": "held.pencil-green",
+    "name": "Green Pencil",
+    "slot": "held",
+    "rarity": "common",
+    "description": "A colourful pencil for colourful notes.",
+    "art": {
+      "shape": "pencil",
+      "colors": ["#5FB36A", "#F28AA0"]
+    }
+  },
+  {
+    "id": "held.pencil-purple",
+    "name": "Purple Pencil",
+    "slot": "held",
+    "rarity": "common",
+    "description": "A colourful pencil for colourful notes.",
+    "art": {
+      "shape": "pencil",
+      "colors": ["#9B84E3", "#F28AA0"]
+    }
+  },
+  {
+    "id": "held.book",
+    "name": "Book",
+    "slot": "held",
+    "rarity": "common",
+    "description": "The course book. You have read chapter one.",
+    "set": "library",
+    "art": {
+      "shape": "book",
+      "colors": ["#4F86C6", "#3A6AA3"]
+    }
+  },
+  {
+    "id": "held.book-red",
+    "name": "Red Book",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Another book for the pile.",
+    "art": {
+      "shape": "book",
+      "colors": ["#D9483B", "#A2302B"]
+    }
+  },
+  {
+    "id": "held.book-green",
+    "name": "Green Book",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Another book for the pile.",
+    "art": {
+      "shape": "book",
+      "colors": ["#4E9F5B", "#357A42"]
+    }
+  },
+  {
+    "id": "held.book-sunny",
+    "name": "Sunny Book",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Another book for the pile.",
+    "art": {
+      "shape": "book",
+      "colors": ["#E9A93A", "#C2861F"]
+    }
+  },
   {
     "id": "held.coffee-mug",
     "name": "Coffee Mug",
     "slot": "held",
     "rarity": "uncommon",
-    "set": "library"
+    "description": "Fuel for morning sessions.",
+    "set": "library",
+    "art": {
+      "shape": "mug",
+      "colors": ["#2A9D8F", "#6B3A26"]
+    }
   },
-
-  { "id": "aura.soft-glow", "name": "Soft Glow", "slot": "aura", "rarity": "rare" },
-  { "id": "aura.sparkles", "name": "Sparkles", "slot": "aura", "rarity": "epic", "animated": true },
+  {
+    "id": "held.cocoa-mug",
+    "name": "Cocoa Mug",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Hot chocolate for evening reviews.",
+    "set": "cosy",
+    "art": {
+      "shape": "mug",
+      "colors": ["#E5533D", "#8B4A2E"]
+    }
+  },
+  {
+    "id": "held.matcha-mug",
+    "name": "Matcha Mug",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Green tea, calm focus.",
+    "set": "garden",
+    "art": {
+      "shape": "mug",
+      "colors": ["#F6F1E6", "#8DBF5A"]
+    }
+  },
+  {
+    "id": "held.highlighter-yellow",
+    "name": "Yellow Highlighter",
+    "slot": "held",
+    "rarity": "common",
+    "description": "For the parts that will be on the exam.",
+    "art": {
+      "shape": "highlighter",
+      "colors": ["#F7E04A", "#D9B21C"]
+    }
+  },
+  {
+    "id": "held.highlighter-pink",
+    "name": "Pink Highlighter",
+    "slot": "held",
+    "rarity": "common",
+    "description": "For the parts that will be on the exam.",
+    "art": {
+      "shape": "highlighter",
+      "colors": ["#FF8FC0", "#E0669E"]
+    }
+  },
+  {
+    "id": "held.highlighter-green",
+    "name": "Green Highlighter",
+    "slot": "held",
+    "rarity": "common",
+    "description": "For the parts that will be on the exam.",
+    "art": {
+      "shape": "highlighter",
+      "colors": ["#8FE36A", "#5FB33E"]
+    }
+  },
+  {
+    "id": "held.flashcards",
+    "name": "Flashcards",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Question on the front, answer on the back.",
+    "set": "library",
+    "art": {
+      "shape": "flashcards",
+      "colors": ["#FFFFFF", "#5B4BD6"]
+    }
+  },
+  {
+    "id": "held.flashcards-pastel",
+    "name": "Pastel Flashcards",
+    "slot": "held",
+    "rarity": "common",
+    "description": "Cream cards with red ink.",
+    "art": {
+      "shape": "flashcards",
+      "colors": ["#FFF3C9", "#E5533D"]
+    }
+  },
+  {
+    "id": "held.calculator",
+    "name": "Calculator",
+    "slot": "held",
+    "rarity": "uncommon",
+    "description": "Allowed in the exam. Probably.",
+    "art": {
+      "shape": "calculator",
+      "colors": ["#3B3F52", "#BFE3C6"]
+    }
+  },
+  {
+    "id": "held.globe",
+    "name": "Globe",
+    "slot": "held",
+    "rarity": "uncommon",
+    "description": "The whole world in one hand.",
+    "art": {
+      "shape": "globe",
+      "colors": ["#5B9FE0", "#5FB36A"]
+    }
+  },
+  {
+    "id": "held.tea-cup",
+    "name": "Tea Cup",
+    "slot": "held",
+    "rarity": "uncommon",
+    "description": "A proper cup with a saucer.",
+    "set": "cosy",
+    "art": {
+      "shape": "tea-cup",
+      "colors": ["#F7F2EA", "#A9D3E8"]
+    }
+  },
+  {
+    "id": "held.magnifier",
+    "name": "Magnifying Glass",
+    "slot": "held",
+    "rarity": "rare",
+    "description": "For looking very closely at the details.",
+    "set": "library",
+    "art": {
+      "shape": "magnifier",
+      "colors": ["#D4A23A", "#8E6136"]
+    }
+  },
+  {
+    "id": "held.quill",
+    "name": "Quill",
+    "slot": "held",
+    "rarity": "rare",
+    "description": "Old-fashioned, but it writes beautifully.",
+    "set": "library",
+    "art": {
+      "shape": "quill",
+      "colors": ["#F7F2EA", "#2A1F2D"]
+    }
+  },
+  {
+    "id": "held.telescope",
+    "name": "Telescope",
+    "slot": "held",
+    "rarity": "rare",
+    "description": "For seeing far ahead, like your exam date.",
+    "set": "space",
+    "art": {
+      "shape": "telescope",
+      "colors": ["#2E3A6B", "#D4A23A"]
+    }
+  },
+  {
+    "id": "held.bubbling-flask",
+    "name": "Bubbling Flask",
+    "slot": "held",
+    "rarity": "epic",
+    "description": "Something is bubbling. Hopefully on purpose.",
+    "animated": true,
+    "art": {
+      "shape": "flask",
+      "colors": ["#7FE0A8", "#B07A3A"]
+    }
+  },
+  {
+    "id": "held.study-lantern",
+    "name": "Study Lantern",
+    "slot": "held",
+    "rarity": "epic",
+    "description": "A warm light for late reading.",
+    "set": "cosy",
+    "animated": true,
+    "art": {
+      "shape": "lantern",
+      "colors": ["#3B3F52", "#FFD27A"]
+    }
+  },
+  {
+    "id": "held.golden-quill",
+    "name": "Golden Quill",
+    "slot": "held",
+    "rarity": "legendary",
+    "description": "Leaves a trail of sparkles on every page.",
+    "set": "library",
+    "animated": true,
+    "art": {
+      "shape": "golden-quill",
+      "colors": ["#F2C14E", "#FFF3C9"]
+    }
+  },
+  {
+    "id": "aura.soft-glow",
+    "name": "Soft Glow",
+    "slot": "aura",
+    "rarity": "rare",
+    "description": "A warm golden glow.",
+    "art": {
+      "shape": "glow",
+      "colors": ["#F5B82E"]
+    }
+  },
+  {
+    "id": "aura.mint-glow",
+    "name": "Mint Glow",
+    "slot": "aura",
+    "rarity": "rare",
+    "description": "A cool, fresh glow.",
+    "art": {
+      "shape": "glow",
+      "colors": ["#3FD9A6"]
+    }
+  },
+  {
+    "id": "aura.rose-glow",
+    "name": "Rose Glow",
+    "slot": "aura",
+    "rarity": "rare",
+    "description": "A soft pink glow.",
+    "art": {
+      "shape": "glow",
+      "colors": ["#F27BAA"]
+    }
+  },
+  {
+    "id": "aura.falling-leaves",
+    "name": "Falling Leaves",
+    "slot": "aura",
+    "rarity": "rare",
+    "description": "Autumn leaves drifting past.",
+    "set": "cosy",
+    "animated": true,
+    "art": {
+      "shape": "leaves",
+      "colors": ["#E0803A", "#9A4426"]
+    }
+  },
+  {
+    "id": "aura.sparkles",
+    "name": "Sparkles",
+    "slot": "aura",
+    "rarity": "epic",
+    "description": "Twinkling stars all around.",
+    "animated": true,
+    "art": {
+      "shape": "sparkles",
+      "colors": ["#8B5CF6", "#F5B82E"]
+    }
+  },
+  {
+    "id": "aura.bubbles",
+    "name": "Bubbles",
+    "slot": "aura",
+    "rarity": "epic",
+    "description": "Bubbles rising, like deep under water.",
+    "set": "deep-sea",
+    "animated": true,
+    "art": {
+      "shape": "bubbles",
+      "colors": ["#3FA9D6"]
+    }
+  },
+  {
+    "id": "aura.study-tunes",
+    "name": "Study Tunes",
+    "slot": "aura",
+    "rarity": "epic",
+    "description": "Music notes floating by.",
+    "animated": true,
+    "art": {
+      "shape": "notes",
+      "colors": ["#5B4BD6"]
+    }
+  },
+  {
+    "id": "aura.first-snow",
+    "name": "First Snow",
+    "slot": "aura",
+    "rarity": "epic",
+    "description": "Snowflakes falling softly.",
+    "set": "cosy",
+    "animated": true,
+    "art": {
+      "shape": "snow",
+      "colors": ["#6F9FD6"]
+    }
+  },
   {
     "id": "aura.orbit-of-focus",
     "name": "Orbit of Focus",
     "slot": "aura",
     "rarity": "legendary",
-    "animated": true
+    "description": "Planets circle a truly focused mind.",
+    "set": "space",
+    "animated": true,
+    "art": {
+      "shape": "orbit",
+      "colors": ["#E8890C", "#F5C542"]
+    }
+  },
+  {
+    "id": "aura.stardust-storm",
+    "name": "Stardust Storm",
+    "slot": "aura",
+    "rarity": "legendary",
+    "description": "A swirl of Stardust that never settles.",
+    "set": "space",
+    "animated": true,
+    "art": {
+      "shape": "stardust-storm",
+      "colors": ["#A99BFF", "#F5B82E"]
+    }
   }
 ]

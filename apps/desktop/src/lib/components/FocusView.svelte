@@ -19,6 +19,7 @@
 <!-- The running session: a big countdown and the few controls a focused person needs. Used in the normal window and in full screen. -->
 <script lang="ts">
   import { formatDuration } from "@headstart/core";
+  import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
   import HoldButton from "./HoldButton.svelte";
 
@@ -64,6 +65,12 @@
   </header>
 
   <div class="center">
+    <div class="stage">
+    {#if study.look}
+      <div class="buddy">
+        <Mascot look={study.look} mood={study.mood} size={200} />
+      </div>
+    {/if}
     <div class="ring">
       <svg viewBox="0 0 320 320" aria-hidden="true">
         <circle cx="160" cy="160" r={RADIUS} class="track" />
@@ -80,6 +87,7 @@
         <span class="clock" role="timer" aria-live="off">{formatDuration(study.remaining)}</span>
         <span class="label">{study.paused ? "Paused" : "until your break"}</span>
       </div>
+    </div>
     </div>
 
     {#if task}
@@ -196,6 +204,24 @@
     align-items: center;
     justify-content: center;
     gap: 26px;
+  }
+
+  .stage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .buddy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: #252a50;
   }
 
   .ring {

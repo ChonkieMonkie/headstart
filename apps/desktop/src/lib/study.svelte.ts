@@ -17,22 +17,31 @@
 // Opens the study engine for the UI (SQLite in the desktop app, memory in a
 // plain browser with `pnpm dev`) and runs the day: focus sessions, breaks,
 // focus layouts, the "session complete" step, reminders, the tray and its
-// panel. Rules live in `@headstart/core`; this class only wires them up.
+// panel, the mascot and its collection. Rules live in `@headstart/core`; this
+// class only wires them up.
 
+import { items as catalog, type Item, type MascotId, type Slot, sets } from "@headstart/content";
 import {
   type ActiveSession,
   abandonSession,
   breakAfter,
+  type CollectionCount,
   type CommandResult,
   type CoreContext,
   type Course,
+  type CrateDrop,
+  chooseMascot,
+  collectionCount,
   completeSession,
   completeTask,
   computeStats,
+  craftItem,
   crateOdds,
   createUlidFactory,
   defaultContext,
+  type EarnedCrate,
   type EventStore,
+  equipItem,
   extendSession,
   focusedMs,
   isTimeUp,
@@ -41,8 +50,10 @@ import {
   localDayKey,
   MemoryEventStore,
   type OddsRow,
+  openCrate,
   openTasks,
   owns,
+  type PityState,
   type Plan,
   type PlanView,
   type ProgressState,
@@ -52,9 +63,11 @@ import {
   rateSession,
   remainingMs,
   resumeSession,
+  type SetProgress,
   StudyEngine,
   type StudyEvent,
   type StudyStats,
+  setProgress,
   startSession,
   type Task,
   TIMER_PRESETS,
@@ -65,7 +78,9 @@ import {
   updateTask,
   writeRecall,
 } from "@headstart/core";
+import { lookFor, MASCOT_NAMES, type MascotLook, type Mood } from "@headstart/ui";
 import { clockTime } from "./format.ts";
+import { mascotLine, mascotMood } from "./mascot.ts";
 import {
   type FocusLayout,
   listenToShell,
@@ -124,6 +139,13 @@ export interface Completion {
   crateEarned: boolean;
   course: Course | null;
   task: Task | null;
+}
+
+/** A crate that was just opened, for the reveal screen. */
+export interface OpenedCrate {
+  crateId: string;
+  drops: (CrateDrop & { item: Item | null })[];
+  stardust: number;
 }
 
 export interface StartOptions {
@@ -279,6 +301,119 @@ export class Study {
       .sort((a, b) => b.endedAt - a.endedAt)
       .slice(0, limit)
       .map((r) => ({ endedAt: r.endedAt, text: r.recallText ?? "" }));
+  }
+
+  // The mascot and the collection
+
+  get mascot(): MascotId | null {
+    return this.state?.mascot ?? null;
+  }
+
+  /** What the chosen mascot looks like with what it has on. */
+  get look(): MascotLook | null {
+    const state = this.state;
+    const mascot = state?.mascot;
+    return state && mascot ? lookFor(mascot, state.equipped[mascot], catalog) : null;
+  }
+
+  equippedOf(mascot: MascotId): Partial<Record<Slot, string>> {
+    return this.state?.equipped[mascot] ?? {};
+  }
+
+  get mood(): Mood {
+    const state = this.state;
+    const now = this.now;
+    const today = localDayKey(now);
+    return mascotMood({
+      focusing: this.active !== null,
+      paused: this.paused,
+      onBreak: this.breakTimer !== null,
+      justFinished: this.completion !== null,
+      sessionDue:
+        state !== null &&
+        (planToStartNow(state, now, this.context.rewards) !== null ||
+          this.plansOn(today).some(
+            (p) => p.status === "missed" && now - p.plan.startAt < 60 * MINUTE,
+          )),
+      studiedToday: [...(state?.sessions.values() ?? [])].some(
+        (r) => localDayKey(r.endedAt) === today,
+      ),
+      hour: new Date(now).getHours(),
+    });
+  }
+
+  /** What the mascot says on the Today screen and in the tray panel. */
+  get mascotLine(): string {
+    const mood = this.mood;
+    const name = this.mascot ? MASCOT_NAMES[this.mascot] : "Your study buddy";
+    const plan = this.upNext;
+    const task = plan ? this.task(plan.taskId) : null;
+    const course = plan ? this.course(plan.courseId) : null;
+    return mascotLine({
+      mood,
+      name,
+      next: task?.title ?? course?.name ?? null,
+      nextTime: plan ? clockTime(plan.startAt) : null,
+    });
+  }
+
+  owned(itemId: string): number {
+    return this.state?.inventory.get(itemId) ?? 0;
+  }
+
+  get catalog(): readonly Item[] {
+    return catalog;
+  }
+
+  item(id: string | null): Item | null {
+    return id ? (catalog.find((i) => i.id === id) ?? null) : null;
+  }
+
+  get collection(): CollectionCount {
+    const state = this.state;
+    return state ? collectionCount(state, catalog) : { owned: 0, total: catalog.length };
+  }
+
+  get sets(): SetProgress[] {
+    const state = this.state;
+    return state ? setProgress(state, catalog, sets) : [];
+  }
+
+  setOf(item: Item): SetProgress | null {
+    return this.sets.find((p) => p.set.id === item.set) ?? null;
+  }
+
+  get waitingCrates(): EarnedCrate[] {
+    const state = this.state;
+    return state ? unopenedCrates(state) : [];
+  }
+
+  get pity(): PityState {
+    return this.state?.pity ?? { sinceEpic: 0, sinceLegendary: 0 };
+  }
+
+  async chooseMascot(mascot: MascotId): Promise<void> {
+    await this.run(() => chooseMascot(mascot));
+  }
+
+  async equip(mascot: MascotId, slot: Slot, itemId: string | null): Promise<string | null> {
+    const result = await this.run((s, c) => equipItem(s, mascot, slot, itemId, c));
+    return result.ok ? null : result.reason;
+  }
+
+  async craft(itemId: string): Promise<string | null> {
+    const result = await this.run((s, c) => craftItem(s, itemId, c));
+    return result.ok ? null : result.reason;
+  }
+
+  /** Opens the oldest waiting crate, or the given one. */
+  async openCrate(crateId?: string): Promise<OpenedCrate | string> {
+    const id = crateId ?? this.waitingCrates[0]?.id;
+    if (!id) return "No crate is waiting";
+    const result = await this.run((s, c) => openCrate(s, id, c));
+    if (!result.ok) return result.reason;
+    const drops = result.event.drops.map((drop) => ({ ...drop, item: this.item(drop.itemId) }));
+    return { crateId: id, drops, stardust: drops.reduce((sum, d) => sum + d.stardust, 0) };
   }
 
   async open(): Promise<void> {
@@ -643,6 +778,16 @@ export class Study {
       sessionsToday: stats?.todaySessions ?? 0,
       crateProgress: state?.crateProgress ?? 0,
       crateEvery: this.context.rewards.studyCrateEvery,
+      cratesWaiting: state ? unopenedCrates(state).length : 0,
+      mascot:
+        state?.mascot != null
+          ? {
+              species: state.mascot,
+              equipped: { ...state.equipped[state.mascot] },
+              mood: this.mood,
+              line: this.mascotLine,
+            }
+          : null,
     };
   }
 }

@@ -22,6 +22,7 @@ import {
   MASCOTS,
   RARITIES,
   rewardRules,
+  sets,
   validateCrateRules,
   validateItems,
 } from "./index.ts";
@@ -61,13 +62,38 @@ describe("shipped content", () => {
     }
   });
 
+  it("has a big enough starter catalogue, with every rarity in every slot but skins", () => {
+    expect(items.length).toBeGreaterThanOrEqual(150);
+    for (const slot of ["head", "face", "outfit", "held"] as const) {
+      for (const rarity of RARITIES) {
+        expect(
+          items.some((i) => i.slot === slot && i.rarity === rarity),
+          `${slot} ${rarity}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("puts at least five items in every set", () => {
+    for (const set of sets) {
+      expect(items.filter((i) => i.set === set.id).length, set.id).toBeGreaterThanOrEqual(5);
+    }
+  });
+
   it("gives 10 XP for a full 25-minute session", () => {
     expect(25 * rewardRules.xpPerFocusMinute).toBe(10);
   });
 });
 
 describe("validation", () => {
-  const item = { id: "head.test", name: "Test", slot: "head", rarity: "common" };
+  const item = {
+    id: "head.test",
+    name: "Test",
+    slot: "head",
+    rarity: "common",
+    art: { shape: "beanie", colors: ["#E5533D", "#F6E7D8"] },
+  };
+  const skinArt = { body: "#8A7CF2", shade: "#6A5BD6", light: "#B9B0F9", accent: "#F3C6E8" };
 
   it("rejects duplicate ids", () => {
     expect(() => validateItems([item, item])).toThrow(ContentError);
@@ -80,8 +106,30 @@ describe("validation", () => {
 
   it("rejects skins that fit more than one mascot", () => {
     expect(() =>
-      validateItems([{ ...item, id: "skin.test", slot: "skin", fits: ["inky", "axo"] }]),
+      validateItems([
+        { ...item, id: "skin.test", slot: "skin", fits: ["inky", "axo"], art: skinArt },
+      ]),
     ).toThrow(/exactly one mascot/);
+  });
+
+  it("rejects art the renderer cannot draw", () => {
+    expect(() => validateItems([{ ...item, art: { shape: "top-hat", colors: [] } }])).toThrow(
+      /shape/,
+    );
+    expect(() =>
+      validateItems([{ ...item, art: { shape: "beanie", colors: ["#E5533D"] } }]),
+    ).toThrow(/exactly 2 colours/);
+    expect(() =>
+      validateItems([{ ...item, art: { shape: "beanie", colors: ["red", "#F6E7D8"] } }]),
+    ).toThrow(/#RRGGBB/);
+    expect(() =>
+      validateItems([{ ...item, id: "skin.test", slot: "skin", fits: ["inky"], art: item.art }]),
+    ).toThrow(/skin colours|colour/);
+  });
+
+  it("rejects items in a set that does not exist", () => {
+    expect(() => validateItems([{ ...item, set: "nowhere" }], sets)).toThrow(/unknown set/);
+    expect(validateItems([{ ...item, set: "library" }], sets)).toHaveLength(1);
   });
 
   it("rejects crate odds that do not add up to 100", () => {

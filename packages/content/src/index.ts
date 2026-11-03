@@ -17,7 +17,13 @@
 import cratesJson from "../data/crates.json" with { type: "json" };
 import itemsJson from "../data/items.json" with { type: "json" };
 import rewardsJson from "../data/rewards.json" with { type: "json" };
-import { validateCrateRules, validateItems, validateRewardRules } from "./validate.ts";
+import setsJson from "../data/sets.json" with { type: "json" };
+import {
+  validateCrateRules,
+  validateItems,
+  validateRewardRules,
+  validateSets,
+} from "./validate.ts";
 
 export * from "./types.ts";
 export {
@@ -25,10 +31,14 @@ export {
   validateCrateRules,
   validateItems,
   validateRewardRules,
+  validateSets,
 } from "./validate.ts";
 
+/** Themed item sets. */
+export const sets = validateSets(setsJson);
+
 /** The item catalogue, validated when the module loads. */
-export const items = validateItems(itemsJson);
+export const items = validateItems(itemsJson, sets);
 
 /** Crate definitions, odds, pity limits and Stardust values. */
 export const crateRules = validateCrateRules(cratesJson);

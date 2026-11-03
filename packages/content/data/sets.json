@@ -1,0 +1,37 @@
+[
+  {
+    "id": "library",
+    "name": "Library",
+    "description": "Study gear for long, quiet sessions.",
+    "tint": "#E9E1D3",
+    "color": "#8E6136"
+  },
+  {
+    "id": "deep-sea",
+    "name": "Deep Sea",
+    "description": "Treasures from the bottom of the ocean.",
+    "tint": "#D6E6F5",
+    "color": "#2F7FD8"
+  },
+  {
+    "id": "space",
+    "name": "Space",
+    "description": "For students who aim for the stars.",
+    "tint": "#DCD7FB",
+    "color": "#5B4BD6"
+  },
+  {
+    "id": "cosy",
+    "name": "Cosy",
+    "description": "Warm things for dark autumn evenings.",
+    "tint": "#FBE3D0",
+    "color": "#B35C00"
+  },
+  {
+    "id": "garden",
+    "name": "Garden",
+    "description": "Fresh, green and growing.",
+    "tint": "#E3F1DC",
+    "color": "#3E7A3A"
+  }
+]

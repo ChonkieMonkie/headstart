@@ -18,7 +18,9 @@
 
 <!-- The tray panel window. It renders a snapshot from the main window and sends actions back; it never touches the database. -->
 <script lang="ts">
+  import { items } from "@headstart/content";
   import { formatDuration, formatMinutes } from "@headstart/core";
+  import { lookFor, Mascot } from "@headstart/ui";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { onMount } from "svelte";
   import {
@@ -37,6 +39,8 @@
   let now = $state(Date.now());
 
   const timer = $derived(snapshot?.timer ?? null);
+  const buddy = $derived(snapshot?.mascot ?? null);
+  const look = $derived(buddy ? lookFor(buddy.species, buddy.equipped, items) : null);
   const remaining = $derived(timer ? (timer.endsAt === null ? timer.remainingMs : timer.endsAt - now) : 0);
 
   onMount(() => {
@@ -70,6 +74,12 @@
 <svelte:window {onkeydown} />
 
 <div class="panel">
+  {#if buddy && look}
+    <div class="buddy-row">
+      <div class="buddy"><Mascot {look} mood={buddy.mood} size={66} /></div>
+      <p class="bubble">{buddy.line}</p>
+    </div>
+  {/if}
   {#if timer?.kind === "focus"}
     <section class="now" aria-label="Session in progress">
       <p class="eyebrow">{timer.endsAt === null ? "Paused" : "Focusing"}</p>
@@ -126,7 +136,11 @@
     <dl class="today">
       <div><dt>Focus today</dt><dd>{formatMinutes(snapshot.focusTodayMinutes)}</dd></div>
       <div><dt>Sessions</dt><dd>{snapshot.sessionsToday}</dd></div>
-      <div><dt>Next crate</dt><dd>{snapshot.crateProgress} of {snapshot.crateEvery}</dd></div>
+      {#if snapshot.cratesWaiting > 0}
+        <div><dt>Crates</dt><dd>{snapshot.cratesWaiting} waiting</dd></div>
+      {:else}
+        <div><dt>Next crate</dt><dd>{snapshot.crateProgress} of {snapshot.crateEvery}</dd></div>
+      {/if}
     </dl>
   {/if}
 
@@ -137,6 +151,33 @@
 </div>
 
 <style>
+  .buddy-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .buddy {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #252a50;
+  }
+
+  .bubble {
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 14px 14px 14px 4px;
+    background: var(--hs-focus-surface);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
   .panel {
     height: 100vh;
     box-sizing: border-box;

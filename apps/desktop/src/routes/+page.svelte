@@ -19,6 +19,8 @@
 <!-- Today: what is up next, how the day is going and the day's plan. -->
 <script lang="ts">
   import { cancelPlan, daysUntil, formatDuration, formatMinutes, movePlan, TIMER_PRESETS } from "@headstart/core";
+  import { Mascot, MASCOT_TINTS } from "@headstart/ui";
+  import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
   import { useApp } from "$lib/context.ts";
   import { clockTime, examLabel, plural } from "$lib/format.ts";
@@ -97,7 +99,28 @@
   </section>
 {/if}
 
+{#if study.ready && !study.mascot}
+  <BuddyPicker {study} />
+{/if}
+
+{#if study.waitingCrates.length > 0}
+  <a class="crate-banner" href="/crates">
+    <strong>{study.waitingCrates.length === 1 ? "A Study Crate is" : `${study.waitingCrates.length} Study Crates are`} waiting</strong>
+    <span>Open it</span>
+  </a>
+{/if}
+
 <section class="card up-next" aria-labelledby="next-h">
+  <div class="up-next-row">
+  {#if study.look && study.mascot}
+    <div class="buddy" style:background={MASCOT_TINTS[study.mascot]}>
+      <Mascot look={study.look} mood={study.mood} size={176} />
+    </div>
+  {/if}
+  <div class="up-next-body">
+  {#if study.look}
+    <p class="bubble">{study.mascotLine}</p>
+  {/if}
   {#if next}
     <p class="eyebrow">Next session · {clockTime(next.startAt)} to {clockTime(next.startAt + next.minutes * MINUTE)}</p>
     <h2 id="next-h">
@@ -168,6 +191,8 @@
       <button type="button" class="secondary" onclick={() => study.start()}>Just start 25 min</button>
     </div>
   {/if}
+  </div>
+  </div>
 </section>
 
 {#if stats}
@@ -187,7 +212,9 @@
     <div class="tile">
       <p class="tile-label">Next Study Crate</p>
       <p class="tile-value">{study.summary?.crateProgress ?? 0} of {study.summary?.crateEvery ?? 3}</p>
-      <p class="tile-note">Sessions of 10 minutes or more</p>
+      <p class="tile-note">
+        {#if study.waitingCrates.length > 0}<a href="/crates">Open your crate</a>{:else}Sessions of 10 minutes or more{/if}
+      </p>
     </div>
     <div class="tile">
       <p class="tile-label">Last 7 days</p>
@@ -320,6 +347,63 @@
   .up-next {
     border-color: var(--hs-accent);
     box-shadow: 0 0 0 3px var(--hs-accent-soft);
+  }
+
+  .up-next-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .up-next-body {
+    flex: 1 1 320px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .buddy {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 196px;
+    height: 196px;
+    border-radius: 18px;
+  }
+
+  .bubble {
+    align-self: flex-start;
+    margin: 0;
+    padding: 10px 16px;
+    border-radius: 16px 16px 16px 4px;
+    background: var(--hs-accent-soft);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .crate-banner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    border-radius: var(--hs-radius-md);
+    background: var(--hs-focus-ground);
+    color: var(--hs-focus-text);
+    text-decoration: none;
+  }
+
+  .crate-banner span {
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: #f5c542;
+    color: var(--hs-focus-ground);
+    font-weight: 800;
   }
 
   .eyebrow {

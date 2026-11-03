@@ -21,11 +21,18 @@ import {
   CRATE_TYPES,
   type CrateRules,
   type Item,
+  type ItemSet,
   MASCOTS,
   RARITIES,
   type RarityTable,
   type RewardRules,
+  SKIN_ANIMATIONS,
+  SKIN_PATTERNS,
+  type SkinArt,
   SLOTS,
+  type Slot,
+  WEAR_SHAPES,
+  type WearArt,
 } from "./types.ts";
 
 export class ContentError extends Error {
@@ -64,8 +71,76 @@ function rarityTable(value: unknown, where: string): RarityTable {
 }
 
 const ID_PATTERN = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+const HEX_COLOR = /^#[0-9A-Fa-f]{6}$/;
 
-export function validateItems(value: unknown): Item[] {
+function color(value: unknown, where: string): string {
+  if (typeof value !== "string" || !HEX_COLOR.test(value)) {
+    fail(where, `expected a "#RRGGBB" colour, got ${JSON.stringify(value)}`);
+  }
+  return value;
+}
+
+function text(value: unknown, where: string): string {
+  if (typeof value !== "string" || value.trim() === "") fail(where, "expected some text");
+  return value;
+}
+
+function skinArt(value: unknown, where: string): SkinArt {
+  if (!isObject(value)) fail(where, "expected skin colours");
+  const art: SkinArt = {
+    body: color(value.body, `${where}.body`),
+    shade: color(value.shade, `${where}.shade`),
+    accent: color(value.accent, `${where}.accent`),
+  };
+  for (const key of ["light", "cream", "limb", "spot"] as const) {
+    if (value[key] !== undefined) art[key] = color(value[key], `${where}.${key}`);
+  }
+  if (art.light === undefined && art.cream === undefined) {
+    fail(where, "needs a light or a cream colour");
+  }
+  if (value.pattern !== undefined) {
+    art.pattern = oneOf(value.pattern, SKIN_PATTERNS, `${where}.pattern`);
+  }
+  if (value.animation !== undefined) {
+    art.animation = oneOf(value.animation, SKIN_ANIMATIONS, `${where}.animation`);
+  }
+  return art;
+}
+
+function wearArt(value: unknown, slot: Exclude<Slot, "skin">, where: string): WearArt {
+  if (!isObject(value)) fail(where, "expected { shape, colors }");
+  const shapes: Record<string, number> = WEAR_SHAPES[slot];
+  const shape = oneOf(value.shape, Object.keys(shapes), `${where}.shape`);
+  const colors = value.colors;
+  const count = shapes[shape] ?? 0;
+  if (!Array.isArray(colors) || colors.length !== count) {
+    fail(`${where}.colors`, `${shape} takes exactly ${count} colours`);
+  }
+  return { shape, colors: colors.map((c, i) => color(c, `${where}.colors[${i}]`)) };
+}
+
+export function validateSets(value: unknown): ItemSet[] {
+  if (!Array.isArray(value)) fail("sets", "expected an array");
+  const seen = new Set<string>();
+  return value.map((raw, index) => {
+    const where = `sets[${index}]`;
+    if (!isObject(raw)) fail(where, "expected an object");
+    const id = raw.id;
+    if (typeof id !== "string" || !ID_PATTERN.test(id)) fail(where, "id must be lowercase");
+    if (seen.has(id)) fail(where, `duplicate id "${id}"`);
+    seen.add(id);
+    return {
+      id,
+      name: text(raw.name, `sets.${id}.name`),
+      description: text(raw.description, `sets.${id}.description`),
+      tint: color(raw.tint, `sets.${id}.tint`),
+      color: color(raw.color, `sets.${id}.color`),
+    };
+  });
+}
+
+/** Checks the catalogue. With `sets`, every item's set must be one of them. */
+export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[] {
   if (!Array.isArray(value)) fail("items", "expected an array");
   const seen = new Set<string>();
   const starterSkins = new Set<string>();
@@ -81,12 +156,20 @@ export function validateItems(value: unknown): Item[] {
     if (typeof raw.name !== "string" || raw.name.trim() === "")
       fail(`items.${id}`, "name is required");
 
+    const slot = oneOf(raw.slot, SLOTS, `items.${id}.slot`);
     const item: Item = {
       id,
       name: raw.name,
-      slot: oneOf(raw.slot, SLOTS, `items.${id}.slot`),
+      slot,
       rarity: oneOf(raw.rarity, RARITIES, `items.${id}.rarity`),
+      art:
+        slot === "skin"
+          ? skinArt(raw.art, `items.${id}.art`)
+          : wearArt(raw.art, slot, `items.${id}.art`),
     };
+    if (raw.description !== undefined) {
+      item.description = text(raw.description, `items.${id}.description`);
+    }
     if (raw.fits !== undefined) {
       if (!Array.isArray(raw.fits) || raw.fits.length === 0)
         fail(`items.${id}.fits`, "expected a non-empty list");
@@ -105,6 +188,9 @@ export function validateItems(value: unknown): Item[] {
         if (typeof v !== "boolean") fail(`items.${id}.${key}`, "expected true or false");
         item[key] = v;
       }
+    }
+    if (item.set !== undefined && sets && !sets.some((set) => set.id === item.set)) {
+      fail(`items.${id}.set`, `unknown set "${item.set}"`);
     }
     if (item.slot === "skin" && item.fits?.length !== 1) {
       fail(`items.${id}`, "a skin must fit exactly one mascot");

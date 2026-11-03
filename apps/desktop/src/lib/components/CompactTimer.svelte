@@ -19,6 +19,7 @@
 <!-- The small floating timer. The whole window is a drag handle except its buttons. -->
 <script lang="ts">
   import { formatDuration } from "@headstart/core";
+  import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
 
   let { study }: { study: Study } = $props();
@@ -33,6 +34,11 @@
     <div class="bar-fill" style:width="{study.progress * 100}%"></div>
   </div>
   <div class="row" data-tauri-drag-region>
+    {#if study.look}
+      <div class="buddy" data-tauri-drag-region>
+        <Mascot look={study.look} mood={study.mood} size={50} label="" />
+      </div>
+    {/if}
     <div class="readout" data-tauri-drag-region>
       <span class="clock" role="timer" data-tauri-drag-region>{formatDuration(study.remaining)}</span>
       <span class="label" data-tauri-drag-region>{label}</span>
@@ -76,6 +82,22 @@
     user-select: none;
   }
 
+  .buddy {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #252a50;
+  }
+
+  /* Let drags on the mascot reach the drag region behind it. */
+  .buddy :global(svg) {
+    pointer-events: none;
+  }
+
   .bar {
     height: 4px;
     border-radius: 999px;
@@ -96,6 +118,8 @@
   }
 
   .readout {
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
   }

@@ -26,6 +26,7 @@ export const defaultContext: CoreContext = {
   catalog: items,
 };
 
+export * from "./collection.ts";
 export * from "./commands.ts";
 export * from "./crates.ts";
 export * from "./engine.ts";

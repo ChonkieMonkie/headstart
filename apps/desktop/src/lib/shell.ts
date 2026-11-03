@@ -17,6 +17,8 @@
 // Typed bridge to the Rust shell (src-tauri). Every call is a no-op outside
 // Tauri, so the UI also runs in a plain browser with `pnpm dev`.
 
+import type { MascotId, Slot } from "@headstart/content";
+import type { Mood } from "@headstart/ui";
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
 import { inTauri } from "./tauri.ts";
@@ -89,6 +91,14 @@ export interface PanelSnapshot {
   sessionsToday: number;
   crateProgress: number;
   crateEvery: number;
+  cratesWaiting: number;
+  /** The mascot as it looks right now, or null before one is chosen. */
+  mascot: {
+    species: MascotId;
+    equipped: Partial<Record<Slot, string>>;
+    mood: Mood;
+    line: string;
+  } | null;
 }
 
 const PANEL_SNAPSHOT = "panel://snapshot";
