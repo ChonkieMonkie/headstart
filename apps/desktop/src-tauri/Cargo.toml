@@ -43,6 +43,11 @@ serde_json = "1"
 tauri-plugin-notification = "2"
 tauri-plugin-global-shortcut = "2"
 
+# The menu bar title uses a font with digits of equal width (see tray.rs).
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSButton", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSStatusBarButton", "NSStatusItem", "NSView"] }
+
 # Size-focused release profile, see https://tauri.app/concept/size/
 [profile.release]
 codegen-units = 1

@@ -177,6 +177,20 @@
     stroke-linejoin: round;
   }
 
+  /* Hover and press feedback, a little lighter on the dark surface. */
+  button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  .primary:not(:disabled):hover {
+    background: color-mix(in srgb, var(--hs-focus-accent) 82%, #fff);
+  }
+
+  .icon:not(:disabled):hover {
+    border-color: #5a6094;
+    background: rgb(255 255 255 / 0.08);
+  }
+
   button:focus-visible {
     outline: 3px solid var(--hs-focus-accent);
     outline-offset: 2px;

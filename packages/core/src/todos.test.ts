@@ -27,6 +27,7 @@ import {
   deleteTodo,
   planSession,
   reopenTodo,
+  retargetSession,
   startSession,
   updateCourse,
   updateTask,
@@ -34,7 +35,7 @@ import {
 } from "./commands.ts";
 import { StudyEngine } from "./engine.ts";
 import { defaultContext } from "./index.ts";
-import { COURSE_COLORS, openTodos, todosForPlan, todosForSession } from "./planner.ts";
+import { COURSE_COLORS, openTodos, planForTask, todosForPlan, todosForSession } from "./planner.ts";
 import { currentCourseColor, firstTodoId } from "./state.ts";
 import { MemoryEventStore } from "./store.ts";
 
@@ -236,5 +237,66 @@ describe("course colours", () => {
       expect(COURSE_COLORS as readonly string[]).toContain(currentCourseColor(old));
     }
     for (const color of COURSE_COLORS) expect(currentCourseColor(color)).toBe(color);
+  });
+});
+
+describe("starting a task with a plan for it", () => {
+  async function planned(taskId: string | null, courseId: string, minutesFromStart: number) {
+    const ctx = await setup();
+    await ctx.run((s) =>
+      planSession(s, {
+        planId: "p1",
+        startAt: new Date(START + minutesFromStart * MINUTE),
+        minutes: 25,
+        courseId,
+        ...(taskId ? { taskId } : {}),
+      }),
+    );
+    await ctx.run((s) =>
+      createTodo(s, {
+        todoId: "d1",
+        courseId,
+        ...(taskId ? { taskId } : {}),
+        text: "Redo 3.7 d",
+        target: { planId: "p1" },
+      }),
+    );
+    return ctx;
+  }
+
+  it("finds today's plan for the task, or for its course", async () => {
+    const forTask = await planned("t1", "la", 180);
+    expect(planForTask(forTask.engine.state, "t1", forTask.now)?.id).toBe("p1");
+    const forCourse = await planned(null, "la", 180);
+    expect(planForTask(forCourse.engine.state, "t1", forCourse.now)?.id).toBe("p1");
+    const otherCourse = await planned(null, "st", 180);
+    expect(planForTask(otherCourse.engine.state, "t1", otherCourse.now)).toBeNull();
+  });
+
+  it("brings the plan's to-dos when started hours early, without scoring the start", async () => {
+    const { engine, run, now } = await planned("t1", "la", 180);
+    const planId = planForTask(engine.state, "t1", now)?.id ?? "none";
+    await run((s) =>
+      startSession(s, { sessionId: "s1", plannedMinutes: 25, planId, adoptPlan: true }),
+    );
+    expect(todosForSession(engine.state, "s1").map((t) => t.id)).toEqual(["d1"]);
+    expect(engine.state.active?.plannedStartAt).toBeNull();
+    expect(engine.state.plans.get("p1")?.sessionId).toBe("s1");
+  });
+});
+
+describe("changing course during a session", () => {
+  it("moves the whole session to the new course and task", async () => {
+    const { engine, run, later } = await setup();
+    await run((s) =>
+      createTask(s, { taskId: "t2", courseId: "st", title: "Exercises", nextStep: "Do 2.1" }),
+    );
+    await run((s) => startSession(s, { sessionId: "s1", plannedMinutes: 25, taskId: "t1" }));
+    expect(retargetSession(engine.state, { courseId: "la", taskId: "t1" }).ok).toBe(false);
+    await run((s) => retargetSession(s, { courseId: null, taskId: "t2" }));
+    expect(engine.state.active).toMatchObject({ courseId: "st", taskId: "t2" });
+    later(25);
+    await run((s) => completeSession(s, { distractions: 0 }));
+    expect(engine.state.sessions.get("s1")).toMatchObject({ courseId: "st", taskId: "t2" });
   });
 });

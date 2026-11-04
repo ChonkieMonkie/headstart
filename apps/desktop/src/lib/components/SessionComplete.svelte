@@ -161,7 +161,10 @@
                 <li>
                   <label class="check">
                     <input type="checkbox" checked={ticked.has(todo.id)} onchange={(e) => tick(todo.id, e.currentTarget.checked)} />
-                    {todo.text}
+                    <span>
+                      {todo.text}
+                      {#if todo.taskId && study.task(todo.taskId)}<small class="todo-task">{study.task(todo.taskId)?.title}</small>{/if}
+                    </span>
                   </label>
                 </li>
               {/each}
@@ -196,7 +199,7 @@
           {:else}
             <button type="submit" class="primary" disabled={saving}>Save and continue</button>
           {/if}
-          <button type="button" class="secondary" onclick={() => study.dismissCompletion()}>Skip</button>
+          <button type="button" class="secondary" onclick={() => study.dismissCompletion()}>Skip notes</button>
           {#if study.breakTimer}
             <span class="break" aria-live="off">
               {study.breakTimer.long ? "Long break" : "Break"}: {formatDuration(study.remaining)} left
@@ -413,6 +416,13 @@
     font-weight: 700;
   }
 
+  .todo-task {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hs-ink-muted);
+  }
+
   .check input {
     width: 18px;
     height: 18px;
@@ -467,6 +477,23 @@
     margin: 0;
     color: #b42318;
     font-weight: 700;
+  }
+
+  /* Hover and press feedback. */
+  button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  .primary:not(:disabled):hover {
+    background: var(--hs-accent-strong);
+  }
+
+  .secondary:not(:disabled):hover {
+    background: var(--hs-ground);
+  }
+
+  .actions .link:not(:disabled):hover {
+    text-decoration-thickness: 2px;
   }
 
   button:focus-visible,

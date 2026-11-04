@@ -35,6 +35,7 @@ export type TrayAction =
   | "extend"
   | "end"
   | "skip-break"
+  | "done-today"
   | "full"
   | "compact";
 
@@ -43,13 +44,24 @@ export interface TimerSnapshot {
   /** When the countdown reaches zero (epoch ms), or null while paused. */
   endsAt: number | null;
   remainingMs: number;
+  /** The whole countdown, for the progress ring in the tray. */
+  totalMs: number;
   doneTitle: string;
   doneBody: string;
+  /** Play a short sound with the notification. */
+  chime: boolean;
 }
 
 /** Shows the countdown in the tray and arms the end-of-timer notification. */
 export async function setTimer(timer: TimerSnapshot | null): Promise<void> {
   if (inTauri) await invoke("set_timer", { timer });
+}
+
+/** Sends a notification right away, to check that notifications get through. */
+export async function testNotification(chime: boolean): Promise<boolean> {
+  if (!inTauri) return false;
+  await invoke("test_notification", { chime });
+  return true;
 }
 
 export async function setFocusLayout(layout: FocusLayout): Promise<void> {
@@ -86,6 +98,8 @@ export interface PanelSnapshot {
   /** The running session, or the next planned one. */
   heading: string | null;
   nextStep: string | null;
+  /** The running session's to-dos, with the task each belongs to. */
+  todos: { text: string; task: string | null; done: boolean }[];
   upNext: { time: string; course: string; task: string | null; startsNow: boolean } | null;
   focusTodayMinutes: number;
   sessionsToday: number;

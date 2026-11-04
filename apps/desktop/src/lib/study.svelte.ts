@@ -50,6 +50,7 @@ import {
   equipItem,
   extendSession,
   focusedMs,
+  isOnTime,
   isTimeUp,
   type LevelInfo,
   levelInfo,
@@ -65,6 +66,7 @@ import {
   type PlanView,
   type ProgressState,
   pauseSession,
+  planForTask,
   plansOn,
   planToStartNow,
   rateSession,
@@ -72,6 +74,7 @@ import {
   reminderRules,
   reopenTodo,
   resumeSession,
+  retargetSession,
   type SetProgress,
   type Settings,
   StudyEngine,
@@ -115,6 +118,8 @@ const MINUTE = 60_000;
 /** In the app the shell announces the end of a timer (and notifies). The UI
  * only steps in itself if that announcement is this late. */
 const SHELL_GRACE_MS = inTauri ? 3_000 : 0;
+/** The countdown before the next session starts by itself after a break. */
+const AUTO_START_MS = 10_000;
 const REMINDER_REFRESH_MS = 10 * MINUTE;
 const LAYOUT_KEY = "headstart.focusLayout";
 
@@ -188,6 +193,10 @@ export class Study {
   /** The running session, copied out of the engine so the UI reacts to it. */
   active = $state<ActiveSession | null>(null);
   breakTimer = $state<BreakTimer | null>(null);
+  /** The break is over (or skipped) and the next session waits to be started. */
+  breakOver = $state(false);
+  /** When the next session starts by itself, during the short countdown after a break. */
+  startingAt = $state<number | null>(null);
   completion = $state<Completion | null>(null);
   /** A short message for the Today screen, such as a discarded session. */
   notice = $state<string | null>(null);
@@ -202,6 +211,8 @@ export class Study {
   #finishing = false;
   #ticker: ReturnType<typeof setInterval> | null = null;
   #tickEvery = 0;
+  /** The window cannot be seen, so the screen need not tick every second. */
+  #hidden = false;
   #remindersAt = 0;
   #stopListening: () => void = () => {};
   onCheckUpdates: () => void = () => {};
@@ -436,12 +447,28 @@ export class Study {
   }
 
   equippedOf(mascot: MascotId): Partial<Record<Slot, string>> {
-    return this.state?.equipped[mascot] ?? {};
+    const equipped = this.state?.equipped[mascot];
+    return equipped ? copy(equipped) : {};
   }
 
+  /**
+   * The mascot's mood. It is read every second during a session, but only
+   * changes with the log, the timer state or the minute, so it is worked out
+   * once per change.
+   */
   get mood(): Mood {
     const state = this.state;
     const now = this.now;
+    const key = `${this.version}:${this.active !== null}:${this.paused}:${this.breakTimer !== null}:${this.completion !== null}:${Math.floor(now / MINUTE)}`;
+    if (this.#mood?.key === key) return this.#mood.mood;
+    const mood = this.#workOutMood(state, now);
+    this.#mood = { key, mood };
+    return mood;
+  }
+
+  #mood: { key: string; mood: Mood } | null = null;
+
+  #workOutMood(state: ProgressState | null, now: number): Mood {
     const today = localDayKey(now);
     return mascotMood({
       focusing: this.active !== null,
@@ -506,7 +533,8 @@ export class Study {
   }
 
   get pity(): PityState {
-    return this.state?.pity ?? { sinceEpic: 0, sinceLegendary: 0 };
+    const pity = this.state?.pity;
+    return pity ? copy(pity) : { sinceEpic: 0, sinceLegendary: 0 };
   }
 
   async chooseMascot(mascot: MascotId): Promise<void> {
@@ -549,7 +577,7 @@ export class Study {
       this.engine.subscribe(() => this.#refresh());
       this.#stopListening = listenToShell({
         onTrayAction: (action) => this.#onTrayAction(action),
-        onTimerDone: (kind) => (kind === "focus" ? this.#finish() : this.skipBreak()),
+        onTimerDone: (kind) => (kind === "focus" ? this.#finish() : this.#endBreak()),
         onStartOrShow: () => {
           if (!this.active) this.start({ auto: true });
         },
@@ -583,9 +611,22 @@ export class Study {
   async start(options: StartOptions = {}): Promise<void> {
     const engine = this.engine;
     if (!engine || engine.state.active) return;
+    const now = Date.now();
+    const rules = engine.context.rewards;
     let planId = options.planId;
+    // Starting a task carries out today's plan for it (and brings its to-dos),
+    // even at another time than planned. Only a start in the plan's own slot
+    // counts for on time.
+    let adoptPlan = false;
+    if (!planId && options.taskId) {
+      const plan = planForTask(engine.state, options.taskId, now, engine.context.dayKey);
+      if (plan) {
+        planId = plan.id;
+        adoptPlan = !isOnTime(now, plan.startAt, rules);
+      }
+    }
     if (!planId && !options.taskId && options.auto) {
-      planId = planToStartNow(engine.state, Date.now(), engine.context.rewards)?.id;
+      planId = planToStartNow(engine.state, now, rules)?.id;
     }
     const plan = planId ? engine.state.plans.get(planId) : undefined;
     const minutes = options.minutes ?? plan?.minutes ?? engine.state.settings.focusMinutes;
@@ -594,6 +635,7 @@ export class Study {
         sessionId: this.#newId(),
         plannedMinutes: minutes,
         ...(planId ? { planId } : {}),
+        ...(adoptPlan ? { adoptPlan } : {}),
         ...(options.taskId ? { taskId: options.taskId } : {}),
       }),
     );
@@ -606,6 +648,8 @@ export class Study {
     this.completion = null;
     this.notice = null;
     this.breakTimer = null;
+    this.breakOver = false;
+    this.startingAt = null;
     this.#sync();
     if (options.show !== false) await this.setLayout(this.preferredLayout);
   }
@@ -620,6 +664,23 @@ export class Study {
 
   async togglePause(): Promise<void> {
     await (this.paused ? this.resume() : this.pause());
+  }
+
+  /** Called when the window is hidden or shown again. */
+  setHidden(hidden: boolean): void {
+    if (this.#hidden === hidden) return;
+    this.#hidden = hidden;
+    this.#sync();
+  }
+
+  /** Moves the running session to another course or task. */
+  async retarget(target: {
+    courseId: string | null;
+    taskId: string | null;
+  }): Promise<string | null> {
+    const result = await this.run((s) => retargetSession(s, target));
+    if (result.ok) this.#sync();
+    return result.ok ? null : result.reason;
   }
 
   async extend(minutes = 5): Promise<void> {
@@ -646,7 +707,57 @@ export class Study {
   skipBreak(): void {
     if (!this.breakTimer) return;
     this.breakTimer = null;
+    this.breakOver = true;
     this.#sync();
+  }
+
+  /** The break ran out: wait for the next session, or count down to it. */
+  #endBreak(): void {
+    if (!this.breakTimer) return;
+    this.breakTimer = null;
+    this.breakOver = true;
+    if (this.engine?.state.settings.autoStartNext) this.startingAt = Date.now() + AUTO_START_MS;
+    this.#sync();
+  }
+
+  /**
+   * Starts the next session of a study block: the plan that is due, or else
+   * another session for the task the last one was for.
+   */
+  async startNext(options: { show?: boolean } = {}): Promise<void> {
+    const state = this.engine?.state;
+    if (!state) return;
+    const show = options.show === false ? { show: false } : {};
+    if (planToStartNow(state, Date.now(), this.context.rewards)) {
+      return this.start({ auto: true, ...show });
+    }
+    let last: { endedAt: number; taskId: string | null } | null = null;
+    for (const record of state.sessions.values()) {
+      if (!last || record.endedAt > last.endedAt) last = record;
+    }
+    const task = last?.taskId ? state.tasks.get(last.taskId) : undefined;
+    return this.start(task && !task.done ? { taskId: task.id, ...show } : { auto: true, ...show });
+  }
+
+  /** Stops the countdown to the next session, but keeps the "start" offer. */
+  cancelAutoStart(): void {
+    this.startingAt = null;
+    this.#sync();
+  }
+
+  /** Ends the study block: no break, no next session waiting. */
+  doneForToday(): void {
+    this.breakTimer = null;
+    this.breakOver = false;
+    this.startingAt = null;
+    this.notice = "Done for today. Nice work!";
+    this.#sync();
+  }
+
+  /** The number the next session gets today, counting from 1. */
+  get nextSessionNumber(): number {
+    this.version;
+    return this.#sessionsToday() + 1;
   }
 
   /**
@@ -744,6 +855,7 @@ export class Study {
       this.breakTimer = engine.state.settings.autoBreak
         ? { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long }
         : null;
+      this.breakOver = this.breakTimer === null;
       this.#sync();
       if (this.layout !== "normal") await this.setLayout("normal");
     } finally {
@@ -765,7 +877,7 @@ export class Study {
   #onTrayAction(action: TrayAction): void {
     switch (action) {
       case "start":
-        this.start({ auto: true, show: false });
+        this.startNext({ show: false });
         return;
       case "start-five":
         this.start({ auto: true, minutes: TIMER_PRESETS.justFive.focusMinutes, show: false });
@@ -784,6 +896,9 @@ export class Study {
         return;
       case "skip-break":
         this.skipBreak();
+        return;
+      case "done-today":
+        this.doneForToday();
         return;
       case "full":
       case "compact":
@@ -826,7 +941,12 @@ export class Study {
   /** Pushes the running timer to the tray and panel, and keeps the screen ticking. */
   #sync(): void {
     this.now = Date.now();
-    const every = this.active !== null || this.breakTimer !== null ? 1000 : 30_000;
+    // Every second while a countdown is on screen. Hidden, the shell ends the
+    // timer and notifies, so a slow tick is only a backup; the countdown to
+    // the next session still needs every second.
+    const counting = this.active !== null || this.breakTimer !== null;
+    const every =
+      this.startingAt !== null || (counting && !this.#hidden) ? 1000 : counting ? 15_000 : 30_000;
     if (every !== this.#tickEvery) {
       if (this.#ticker) clearInterval(this.#ticker);
       this.#ticker = setInterval(() => this.#tick(), every);
@@ -841,7 +961,10 @@ export class Study {
     // Normally the shell's `timer://done` ends the timer; this is the backup.
     if (this.active && isTimeUp(this.active, this.now - SHELL_GRACE_MS)) this.#finish();
     else if (this.breakTimer && this.now - SHELL_GRACE_MS >= this.breakTimer.endsAt) {
-      this.skipBreak();
+      this.#endBreak();
+    } else if (this.startingAt !== null && this.now >= this.startingAt) {
+      this.startingAt = null;
+      this.startNext();
     }
     if (this.now - this.#remindersAt > REMINDER_REFRESH_MS) this.#syncReminders();
   }
@@ -886,8 +1009,9 @@ export class Study {
         kind: "focus",
         endsAt: this.active.pausedAt === null ? now + left : null,
         remainingMs: left,
-        doneTitle: `${minutes} minutes done!`,
-        doneBody: "Write down what you remember while it is fresh.",
+        totalMs: this.active.plannedMs + this.active.extendedMs,
+        ...this.#focusDoneText(minutes),
+        chime: this.settings.chime,
       };
     }
     if (this.breakTimer) {
@@ -895,17 +1019,36 @@ export class Study {
         kind: "break",
         endsAt: this.breakTimer.endsAt,
         remainingMs: this.breakTimer.endsAt - now,
+        totalMs: this.breakTimer.minutes * MINUTE,
         doneTitle: "Break is over",
-        doneBody: `Session ${this.#sessionsToday() + 1} is ready when you are.`,
+        doneBody: this.settings.autoStartNext
+          ? `Session ${this.#sessionsToday() + 1} starts in 10 seconds.`
+          : `Session ${this.#sessionsToday() + 1} is ready when you are.`,
+        chime: this.settings.chime,
       };
     }
     return null;
   }
 
+  /** The notification when a session ends, which is also when the break starts. */
+  #focusDoneText(minutes: number): { doneTitle: string; doneBody: string } {
+    if (!this.settings.autoBreak) {
+      return {
+        doneTitle: `${minutes} minutes done!`,
+        doneBody: "Write down what you remember while it is fresh.",
+      };
+    }
+    const rest = breakAfter(this.#sessionsToday() + 1, this.#preset);
+    return {
+      doneTitle: `${minutes} minutes done! ${rest.long ? "Long break" : "Break"}: ${rest.minutes} min`,
+      doneBody: "Your break has started. Note what you remember, then stand up and stretch.",
+    };
+  }
+
   #panelSnapshot(): PanelSnapshot {
     const state = this.engine?.state;
     const now = Date.now();
-    const stats = state ? computeStats(state, { now, days: 1 }) : null;
+    const stats = this.stats(1);
     const running = this.active;
     const runningTask = running ? this.task(running.taskId) : null;
     const runningCourse = running ? this.course(running.courseId) : null;
@@ -918,6 +1061,14 @@ export class Study {
       timer: this.#timerSnapshot(),
       heading: running ? (runningTask?.title ?? runningCourse?.name ?? "Focus session") : null,
       nextStep: (running ? runningTask : nextTask)?.nextStep ?? null,
+      todos:
+        state && running
+          ? todosForSession(state, running.sessionId).map((t) => ({
+              text: t.text,
+              task: this.task(t.taskId)?.title ?? null,
+              done: t.done,
+            }))
+          : [],
       upNext: next
         ? {
             time: clockTime(next.startAt),

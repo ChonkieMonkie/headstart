@@ -36,7 +36,9 @@ const GAP: f64 = 6.0;
 #[derive(Default)]
 pub struct PanelState(Mutex<Option<Instant>>);
 
-pub fn create(app: &AppHandle) -> tauri::Result<WebviewWindow> {
+/// The panel is a second web view with its own memory, so it is only made the
+/// first time it is opened, not at start.
+fn create(app: &AppHandle) -> tauri::Result<WebviewWindow> {
     WebviewWindowBuilder::new(app, LABEL, WebviewUrl::App("panel".into()))
         .title("Headstart")
         .inner_size(SIZE.width, SIZE.height)
@@ -53,8 +55,15 @@ pub fn create(app: &AppHandle) -> tauri::Result<WebviewWindow> {
 
 /// Opens the panel next to the tray icon, or closes it if it is open.
 pub fn toggle(app: &AppHandle, icon: Rect) {
-    let Some(panel) = app.get_webview_window(LABEL) else {
-        return;
+    let panel = match app.get_webview_window(LABEL) {
+        Some(panel) => panel,
+        None => match create(app) {
+            Ok(panel) => panel,
+            Err(error) => {
+                eprintln!("Could not open the tray panel: {error}");
+                return;
+            }
+        },
     };
     if panel.is_visible().unwrap_or(false) {
         let _ = panel.hide();

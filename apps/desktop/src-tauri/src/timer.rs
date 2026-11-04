@@ -46,14 +46,28 @@ pub struct TimerSnapshot {
     pub ends_at: Option<f64>,
     /// Time left, used while paused.
     pub remaining_ms: f64,
+    /// The whole countdown, for the progress ring.
+    #[serde(default)]
+    pub total_ms: f64,
     /// The notification shown when the countdown ends.
     pub done_title: String,
     pub done_body: String,
+    /// Play the chime with that notification.
+    #[serde(default)]
+    pub chime: bool,
 }
 
 impl TimerSnapshot {
     pub fn paused(&self) -> bool {
         self.ends_at.is_none()
+    }
+
+    /// Share of the countdown that has passed, 0 to 1.
+    pub fn done_share(&self, now: f64) -> f64 {
+        if self.total_ms <= 0.0 {
+            return 0.0;
+        }
+        (1.0 - self.remaining_ms(now) / self.total_ms).clamp(0.0, 1.0)
     }
 
     fn remaining_ms(&self, now: f64) -> f64 {
@@ -151,6 +165,17 @@ pub fn now_ms() -> f64 {
         .unwrap_or(0.0)
 }
 
+/// Shows a notification right away, so the user can check that they get through.
+#[tauri::command]
+pub fn test_notification(app: AppHandle, chime: bool) {
+    notify(
+        &app,
+        "Notifications work",
+        "This is how Headstart tells you when a break starts and ends.",
+        chime,
+    );
+}
+
 #[tauri::command]
 pub fn set_timer(app: AppHandle, state: State<'_, TimerState>, timer: Option<TimerSnapshot>) {
     if let Ok(mut inner) = state.0.lock() {
@@ -167,7 +192,7 @@ pub fn start_ticker(app: AppHandle) {
             thread::sleep(Duration::from_millis(250));
             let now = now_ms();
             for reminder in due_reminders(&app, now) {
-                notify(&app, &reminder.title, &reminder.body);
+                notify(&app, &reminder.title, &reminder.body, false);
             }
             let state = app.state::<TimerState>();
             let (snapshot, finished) = {
@@ -188,25 +213,33 @@ pub fn start_ticker(app: AppHandle) {
             crate::tray::tick(&app, &snapshot, now);
             if finished {
                 let _ = app.emit(EVENT_TIMER_DONE, snapshot.kind);
-                notify_unless_watching(&app, &snapshot);
+                // Always notify, also when the window is in front: the end of a
+                // session is when the break starts, and that is easy to miss.
+                notify(
+                    &app,
+                    &snapshot.done_title,
+                    &snapshot.done_body,
+                    snapshot.chime,
+                );
             }
         }
     });
 }
 
-/// Someone looking at the app sees the end on screen; everyone else gets a
-/// system notification.
-fn notify_unless_watching(app: &AppHandle, snapshot: &TimerSnapshot) {
-    let watching = app.get_webview_window("main").is_some_and(|window| {
-        window.is_visible().unwrap_or(false) && window.is_focused().unwrap_or(false)
-    });
-    if !watching {
-        notify(app, &snapshot.done_title, &snapshot.done_body);
-    }
-}
+/// The system sound played with a chime, by name on each OS.
+#[cfg(target_os = "macos")]
+const CHIME: &str = "Glass";
+#[cfg(target_os = "windows")]
+const CHIME: &str = "Default";
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+const CHIME: &str = "message-new-instant";
 
-fn notify(app: &AppHandle, title: &str, body: &str) {
-    let shown = app.notification().builder().title(title).body(body).show();
+fn notify(app: &AppHandle, title: &str, body: &str, chime: bool) {
+    let mut builder = app.notification().builder().title(title).body(body);
+    if chime {
+        builder = builder.sound(CHIME);
+    }
+    let shown = builder.show();
     if let Err(error) = shown {
         eprintln!("Could not show a notification: {error}");
     }
@@ -221,8 +254,10 @@ mod tests {
             kind: TimerKind::Focus,
             ends_at,
             remaining_ms,
+            total_ms: 0.0,
             done_title: String::new(),
             done_body: String::new(),
+            chime: false,
         }
     }
 

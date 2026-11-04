@@ -19,6 +19,7 @@
 <!-- The running session: a big countdown and the few controls a focused person needs. Used in the normal window and in full screen. -->
 <script lang="ts">
   import { formatDuration } from "@headstart/core";
+  import { taskGroups } from "$lib/options.ts";
   import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
   import CourseName from "./CourseName.svelte";
@@ -35,6 +36,23 @@
   const fromList = $derived(
     course ? study.todosOf(course.id).filter((t) => !todos.some((own) => own.id === t.id)) : [],
   );
+  // A task started without a plan: offer its open to-dos to bring along.
+  const suggested = $derived(
+    todos.length === 0 && task ? fromList.filter((t) => t.taskId === task.id && t.planId === null).slice(0, 3) : [],
+  );
+  const taskOf = (taskId: string | null) => (taskId ? (study.task(taskId)?.title ?? null) : null);
+  // Changing what the session is for: "task:<id>", "course:<id>" or "".
+  let changing = $state(false);
+  let changeError = $state<string | null>(null);
+  const target = $derived(task ? `task:${task.id}` : course ? `course:${course.id}` : "");
+
+  async function retarget(value: string): Promise<void> {
+    const [kind, id = null] = value ? value.split(":") : [""];
+    const taskId = kind === "task" ? id : null;
+    const courseId = kind === "course" ? id : null;
+    changeError = await study.retarget({ courseId, taskId });
+    if (!changeError) changing = false;
+  }
   let pickTodo = $state("");
   let newTodo = $state("");
   let todoError = $state<string | null>(null);
@@ -58,9 +76,18 @@
     study.active ? Math.floor((study.active.plannedMs + study.active.extendedMs - study.remaining) / 60_000) : 0,
   );
 
+  function wantsSpace(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    return (
+      target.isContentEditable ||
+      target.closest("button, input, textarea, select, [role='listbox'], [role='option'], [role='combobox']") !== null
+    );
+  }
+
   function onkeydown(event: KeyboardEvent): void {
-    // Space pauses and resumes, unless a control has focus and wants it.
-    if (event.key !== " " || event.target instanceof HTMLButtonElement) return;
+    // Space pauses and resumes, unless a control has focus and wants it:
+    // a button, a text field or an open list.
+    if (event.key !== " " || wantsSpace(event.target)) return;
     event.preventDefault();
     study.togglePause();
   }
@@ -71,10 +98,28 @@
 <section class="focus" aria-label="Focus session">
   <header>
     <div>
-      <p class="eyebrow">
-        {#if course}<CourseName {course} />{:else}Focus session{/if}
-      </p>
-      <p class="sub">{task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today</p>
+      {#if changing}
+        <div class="change">
+          <Select
+            dark
+            value={target}
+            label="What this session is for"
+            groups={taskGroups(study, { none: "No course", courses: true })}
+            onchange={(value) => retarget(value)}
+          />
+          <button type="button" class="link" onclick={() => (changing = false)}>Cancel</button>
+        </div>
+        {#if changeError}<p class="todo-error" role="alert">{changeError}</p>{/if}
+        <p class="sub">The whole session moves, so its time counts for the new choice.</p>
+      {:else}
+        <p class="eyebrow">
+          {#if course}<CourseName {course} />{:else}Focus session{/if}
+        </p>
+        <p class="sub">
+          {task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today ·
+          <button type="button" class="inline" onclick={() => (changing = true)}>Change</button>
+        </p>
+      {/if}
     </div>
     <div class="layout">
       {#if study.layout === "full"}
@@ -121,11 +166,21 @@
               <li>
                 <label class:done={todo.done}>
                   <input type="checkbox" checked={todo.done} onchange={() => study.toggleTodo(todo)} />
-                  {todo.text}
+                  <span>
+                    {todo.text}
+                    {#if taskOf(todo.taskId)}<small class="todo-task">{taskOf(todo.taskId)}</small>{/if}
+                  </span>
                 </label>
               </li>
             {/each}
           </ul>
+        {:else if suggested.length > 0}
+          <div class="bring" role="group" aria-label="Bring along to-dos for {task?.title}">
+            <p class="plain">Bring along?</p>
+            {#each suggested as todo (todo.id)}
+              <button type="button" class="ghost small" onclick={() => addToSession(todo.id)}>+ {todo.text}</button>
+            {/each}
+          </div>
         {:else if task?.nextStep}
           <p class="plain">{task.nextStep}</p>
         {/if}
@@ -273,6 +328,49 @@
 
   .plain {
     margin: 0;
+  }
+
+  .change {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inline {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--hs-focus-text);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .inline:hover {
+    color: var(--hs-focus-accent);
+  }
+
+  .todo-task {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hs-focus-text-muted);
+  }
+
+  .bring {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ghost.small {
+    min-height: 36px;
+    padding: 0 12px;
+    font-weight: 700;
+    text-align: left;
   }
 
   .add {
@@ -455,6 +553,24 @@
     color: var(--hs-focus-text-muted);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  /* Hover and press feedback, a little lighter on the dark surface. */
+  button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  .primary:not(:disabled):hover {
+    background: color-mix(in srgb, var(--hs-focus-accent) 82%, #fff);
+  }
+
+  .ghost:not(:disabled):hover {
+    border-color: #5a6094;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .link:not(:disabled):hover {
+    color: var(--hs-focus-text);
   }
 
   button:focus-visible {

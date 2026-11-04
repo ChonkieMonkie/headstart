@@ -53,6 +53,13 @@ export type StudyEvent =
   | { type: "session.paused"; sessionId: string }
   | { type: "session.resumed"; sessionId: string }
   | { type: "session.extended"; sessionId: string; minutes: number }
+  /** The running session moved to another course or task. The whole session follows. */
+  | {
+      type: "session.retargeted";
+      sessionId: string;
+      courseId: string | null;
+      taskId: string | null;
+    }
   | {
       type: "session.completed";
       sessionId: string;

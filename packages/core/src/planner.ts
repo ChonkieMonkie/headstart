@@ -108,6 +108,36 @@ export function planToStartNow(state: ProgressState, now: number, rules: RewardR
   return now >= plan.startAt - rules.onTimeWindowMinutes.early * MINUTE ? plan : null;
 }
 
+/**
+ * Today's open plan for a task, so a session started from the task carries out
+ * that plan and brings its to-dos. A plan for the task wins over a plan for
+ * just its course; between two, the one closest in time. Null when none.
+ */
+export function planForTask(
+  state: ProgressState,
+  taskId: string,
+  now: number,
+  dayKey: (ms: number) => string = localDayKey,
+): Plan | null {
+  const task = state.tasks.get(taskId);
+  if (!task) return null;
+  const today = dayKey(now);
+  let best: Plan | null = null;
+  let bestRank = 0;
+  for (const plan of state.plans.values()) {
+    if (plan.cancelled || plan.sessionId !== null || dayKey(plan.startAt) !== today) continue;
+    const rank =
+      plan.taskId === taskId ? 2 : plan.taskId === null && plan.courseId === task.courseId ? 1 : 0;
+    if (rank === 0) continue;
+    const closer = best !== null && Math.abs(plan.startAt - now) < Math.abs(best.startAt - now);
+    if (rank > bestRank || (rank === bestRank && closer)) {
+      best = plan;
+      bestRank = rank;
+    }
+  }
+  return best;
+}
+
 /** Whole days from today until a "YYYY-MM-DD" date. Negative once it has passed. */
 export function daysUntil(dateKey: string, now: number): number {
   const [y, m, d] = dateKey.split("-").map(Number);

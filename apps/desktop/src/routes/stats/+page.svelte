@@ -16,11 +16,10 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Basic stats: focus time, on-time starts, focus per course and the crate odds. -->
+<!-- Basic stats: focus time, on-time starts, and focus per course. -->
 <script lang="ts">
   import { courseLabel } from "$lib/options.ts";
-  import { formatMinutes, formatPercent } from "@headstart/core";
-  import { rarityColors } from "@headstart/ui";
+  import { formatMinutes } from "@headstart/core";
   import { useApp } from "$lib/context.ts";
   import { plural, shortDate, weekdayOf } from "$lib/format.ts";
 
@@ -33,7 +32,6 @@
   let asTable = $state(false);
 
   const percent = (share: number | null) => (share === null ? "–" : `${Math.round(share * 100)}%`);
-  const rarityName = (rarity: string) => rarity.charAt(0).toUpperCase() + rarity.slice(1);
   const dayDate = (day: string) => {
     const [y, m, d] = day.split("-").map(Number);
     return new Date(y ?? 0, (m ?? 1) - 1, d ?? 1).getTime();
@@ -159,30 +157,6 @@
     {/if}
   </section>
 
-  {#if study.summary}
-    <section class="card" aria-labelledby="odds-h">
-      <h2 id="odds-h">Study Crate odds</h2>
-      <p class="sub">Chance per crate. Bad luck has a ceiling, so Epic and Legendary are also guaranteed.</p>
-      <ul class="odds">
-        {#each study.summary.studyCrateOdds as row (row.rarity)}
-          <li>
-            <span class="dot" style:background={rarityColors[row.rarity].dot} aria-hidden="true"></span>
-            <span class="odds-name">{rarityName(row.rarity)}</span>
-            <span class="odds-pct">{formatPercent(row.percent)}</span>
-            {#if row.guaranteedWithin !== null}
-              <span class="odds-pity">
-                guaranteed within {row.guaranteedWithin} crates{#if row.guaranteedIn !== row.guaranteedWithin}<span
-                    class="odds-next"
-                  >
-                    · next within {row.guaranteedIn}</span
-                  >{/if}
-              </span>
-            {/if}
-          </li>
-        {/each}
-      </ul>
-    </section>
-  {/if}
 {/if}
 
 <style>
@@ -380,8 +354,7 @@
     color: var(--hs-ink-subtle);
   }
 
-  .bars,
-  .odds {
+  .bars {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -424,40 +397,11 @@
     white-space: nowrap;
   }
 
-  .dot {
-    width: 10px;
-    height: 10px;
-    flex: none;
-    border-radius: 999px;
-  }
 
-  .odds li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    column-gap: 10px;
-  }
 
-  .odds-name {
-    min-width: 92px;
-    font-weight: 800;
-  }
 
-  .odds-pct {
-    min-width: 48px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-  }
 
-  .odds-pity {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--hs-ink-muted);
-  }
 
-  .odds-next {
-    color: var(--hs-accent-strong);
-  }
 
   button:focus-visible {
     outline: 3px solid var(--hs-accent);

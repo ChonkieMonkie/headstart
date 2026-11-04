@@ -58,9 +58,37 @@
 
   onMount(() => {
     // Pause every animation while the window cannot be seen (closed to the tray, minimised).
-    const pause = () => document.documentElement.classList.toggle("hs-paused", document.hidden);
+    // The screen also ticks slower then (the shell keeps time for the tray).
+    // A window left in the background for a minute also stops animating:
+    // it is still visible, but nobody is looking at it closely.
+    let away = false;
+    let awayTimer: ReturnType<typeof setTimeout> | undefined;
+    const pause = () => {
+      document.documentElement.classList.toggle("hs-paused", document.hidden || away);
+      study?.setHidden(document.hidden);
+    };
+    const blur = () => {
+      clearTimeout(awayTimer);
+      awayTimer = setTimeout(() => {
+        away = true;
+        pause();
+      }, 60_000);
+    };
+    const focus = () => {
+      clearTimeout(awayTimer);
+      away = false;
+      pause();
+    };
     document.addEventListener("visibilitychange", pause);
-    if (!study || !updater) return () => document.removeEventListener("visibilitychange", pause);
+    window.addEventListener("blur", blur);
+    window.addEventListener("focus", focus);
+    const stopPausing = () => {
+      clearTimeout(awayTimer);
+      document.removeEventListener("visibilitychange", pause);
+      window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", focus);
+    };
+    if (!study || !updater) return stopPausing;
     study.onCheckUpdates = () => updater.check();
     study.open();
     if (inTauri) {
@@ -70,7 +98,7 @@
       if (import.meta.env.PROD) updater.check();
     }
     return () => {
-      document.removeEventListener("visibilitychange", pause);
+      stopPausing();
       study.close();
     };
   });

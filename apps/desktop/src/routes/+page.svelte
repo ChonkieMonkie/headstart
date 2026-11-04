@@ -98,8 +98,27 @@
       Stand up, drink some water, look out of a window.
     </p>
     <div class="actions">
+      <button type="button" class="primary" onclick={() => study.startNext()}>Start session {study.nextSessionNumber}</button>
       <button type="button" class="secondary" onclick={() => study.setLayout("compact")}>Compact timer</button>
       <button type="button" class="secondary" onclick={() => study.skipBreak()}>Skip break</button>
+      <button type="button" class="link" onclick={() => study.doneForToday()}>Done for today</button>
+    </div>
+  </section>
+{:else if study.breakOver && !study.active}
+  <section class="card break" aria-label="Next session">
+    <p>
+      {#if study.startingAt !== null}
+        <strong>Session {study.nextSessionNumber} starts in {Math.max(0, Math.ceil((study.startingAt - study.now) / 1000))} s.</strong>
+      {:else}
+        <strong>Ready for session {study.nextSessionNumber}?</strong> Start it when you are, or call it a day.
+      {/if}
+    </p>
+    <div class="actions">
+      <button type="button" class="primary" onclick={() => study.startNext()}>Start session {study.nextSessionNumber}</button>
+      {#if study.startingAt !== null}
+        <button type="button" class="secondary" onclick={() => study.cancelAutoStart()}>Not now</button>
+      {/if}
+      <button type="button" class="link" onclick={() => study.doneForToday()}>Done for today</button>
     </div>
   </section>
 {/if}

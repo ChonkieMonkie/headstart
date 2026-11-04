@@ -23,6 +23,7 @@
   import { lookFor, Mascot, MASCOT_NAMES, MASCOT_TINTS } from "@headstart/ui";
   import Select from "$lib/components/Select.svelte";
   import { useApp } from "$lib/context.ts";
+  import { testNotification } from "$lib/shell.ts";
 
   const { study, updater } = useApp();
   const shortcut = /Mac/.test(navigator.userAgent) ? "⌥⇧H" : "Alt+Shift+H";
@@ -39,6 +40,14 @@
     saved = "Saved";
     clearTimeout(savedTimer);
     savedTimer = setTimeout(() => (saved = null), 1600);
+  }
+
+  let testSent = $state<string | null>(null);
+  async function sendTest(): Promise<void> {
+    const sent = await testNotification(settings.chime);
+    testSent = sent
+      ? "Sent. If nothing showed up, allow Headstart in your system's notification settings."
+      : "Notifications only work in the installed app.";
   }
 
   const lengthGroups = [{ label: "", options: FOCUS_LENGTHS.map((m) => ({ value: m, label: `${m} minutes` })) }];
@@ -114,6 +123,51 @@
         <span class="knob" aria-hidden="true"></span>
       </button>
     </div>
+  </div>
+  <div class="row">
+    <div class="text">
+      <span class="name" id="next-label">Start the next session after the break</span>
+      <span class="hint">When a break ends, the next session starts after a 10 second countdown that you can stop.</span>
+    </div>
+    <div class="control">
+      <button
+        type="button"
+        class="switch"
+        role="switch"
+        aria-checked={settings.autoStartNext}
+        aria-labelledby="next-label"
+        onclick={() => save({ autoStartNext: !settings.autoStartNext })}
+      >
+        <span class="knob" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="text">
+      <span class="name" id="chime-label">Play a sound</span>
+      <span class="hint">A short chime with the notification when a session or a break ends.</span>
+    </div>
+    <div class="control">
+      <button
+        type="button"
+        class="switch"
+        role="switch"
+        aria-checked={settings.chime}
+        aria-labelledby="chime-label"
+        onclick={() => save({ chime: !settings.chime })}
+      >
+        <span class="knob" aria-hidden="true"></span>
+      </button>
+    </div>
+  <div class="row">
+    <div class="text">
+      <span class="name">Notifications</span>
+      <span class="hint">{testSent ?? "Headstart notifies you when a session ends, the break starts and the break is over."}</span>
+    </div>
+    <div class="control">
+      <button type="button" class="secondary" onclick={sendTest}>Send a test notification</button>
+    </div>
+  </div>
   </div>
 </section>
 

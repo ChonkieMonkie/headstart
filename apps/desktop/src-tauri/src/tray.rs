@@ -27,6 +27,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
 
+use crate::ring::{self, RingLook};
 use crate::timer::{TimerKind, TimerSnapshot};
 
 const TRAY_ID: &str = "main";
@@ -36,10 +37,17 @@ const TRAY_ID: &str = "main";
 pub const EVENT_ACTION: &str = "tray://action";
 pub const EVENT_CHECK_UPDATES: &str = "tray://check-updates";
 
-/// The live status line, and the last text shown, so the tray is only
-/// touched when the clock actually changes.
+/// The live status line, and the last title and ring shown, so the tray is
+/// only touched when something visible actually changes.
 #[derive(Default)]
-pub struct TrayState(Mutex<(Option<MenuItem<Wry>>, String)>);
+pub struct TrayState(Mutex<Shown>);
+
+#[derive(Default)]
+pub struct Shown {
+    status_item: Option<MenuItem<Wry>>,
+    title: String,
+    ring: Option<RingLook>,
+}
 
 pub fn create(app: &AppHandle) -> tauri::Result<()> {
     let builder = TrayIconBuilder::with_id(TRAY_ID)
@@ -91,9 +99,43 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
         }
     };
 
-    builder.build(app)?;
+    let tray = builder.build(app)?;
+    use_steady_digits(&tray);
     Ok(())
 }
+
+/// The idle icon: the logo, as a template on macOS.
+fn idle_icon(app: &AppHandle) -> Option<Image<'static>> {
+    if cfg!(target_os = "macos") {
+        Image::from_bytes(include_bytes!("../icons/tray-template.png")).ok()
+    } else {
+        app.default_window_icon()
+            .map(|icon| icon.clone().to_owned())
+    }
+}
+
+/// macOS: digits of equal width, so the countdown does not make the menu bar
+/// item (and everything beside it) shift every second.
+#[cfg(target_os = "macos")]
+fn use_steady_digits(tray: &tauri::tray::TrayIcon) {
+    let _ = tray.with_inner_tray_icon(|inner| {
+        let (Some(item), Some(mtm)) = (inner.ns_status_item(), objc2::MainThreadMarker::new())
+        else {
+            return;
+        };
+        let Some(button) = item.button(mtm) else {
+            return;
+        };
+        let size = button.font().map(|font| font.pointSize()).unwrap_or(13.0);
+        // SAFETY: a constant AppKit provides; reading it has no side effects.
+        let weight = unsafe { objc2_app_kit::NSFontWeightRegular };
+        let font = objc2_app_kit::NSFont::monospacedDigitSystemFontOfSize_weight(size, weight);
+        button.setFont(Some(&font));
+    });
+}
+
+#[cfg(not(target_os = "macos"))]
+fn use_steady_digits(_tray: &tauri::tray::TrayIcon) {}
 
 /// Rebuilds the menu for a new session state.
 pub fn refresh(app: &AppHandle, timer: Option<&TimerSnapshot>) {
@@ -103,43 +145,63 @@ pub fn refresh(app: &AppHandle, timer: Option<&TimerSnapshot>) {
     if let Ok(menu) = build_menu(app, timer) {
         let _ = tray.set_menu(Some(menu));
     }
-    if let Ok(mut state) = app.state::<TrayState>().0.lock() {
-        state.1.clear();
+    let had_ring = match app.state::<TrayState>().0.lock() {
+        Ok(mut state) => {
+            state.title.clear();
+            if timer.is_none() {
+                state.ring.take().is_some()
+            } else {
+                false
+            }
+        }
+        Err(_) => false,
     };
     match timer {
         Some(timer) => tick(app, timer, crate::timer::now_ms()),
         None => {
             let _ = tray.set_title(None::<&str>);
             let _ = tray.set_tooltip(Some("Headstart"));
+            if had_ring {
+                let _ = tray.set_icon_with_as_template(idle_icon(app), cfg!(target_os = "macos"));
+            }
         }
     }
 }
 
 /// Updates the countdown text. Called often; does nothing until it changes.
 pub fn tick(app: &AppHandle, timer: &TimerSnapshot, now: f64) {
-    let clock = timer.clock(now);
-    let title = match (timer.kind, timer.paused()) {
-        (TimerKind::Focus, true) => format!("❚❚ {clock}"),
-        (TimerKind::Break, _) => format!("☕ {clock}"),
-        _ => clock,
-    };
+    // Only the time: paused and break show in the ring, so the width stays the same.
+    let title = timer.clock(now);
+    let look = RingLook::new(timer.kind, timer.paused(), timer.done_share(now));
     // Never hold the lock while touching the tray: those calls wait for the
     // main thread, which may itself be waiting for this lock in `refresh`.
     let tray_state = app.state::<TrayState>();
-    let status_item = {
+    let (status_item, new_title, new_ring) = {
         let Ok(mut state) = tray_state.0.lock() else {
             return;
         };
-        if state.1 == title {
+        let new_title = state.title != title;
+        let new_ring = state.ring != Some(look);
+        if !new_title && !new_ring {
             return;
         }
-        state.1.clone_from(&title);
-        state.0.clone()
+        state.title.clone_from(&title);
+        state.ring = Some(look);
+        (state.status_item.clone(), new_title, new_ring)
     };
-    if let Some(item) = status_item {
-        let _ = item.set_text(timer.status(now));
+    let Some(tray) = app.tray_by_id(TRAY_ID) else {
+        return;
+    };
+    if new_ring {
+        let template = cfg!(target_os = "macos");
+        let pixels = ring::draw(look, ring::SIZE, template);
+        let icon = Image::new_owned(pixels, ring::SIZE, ring::SIZE);
+        let _ = tray.set_icon_with_as_template(Some(icon), template);
     }
-    if let Some(tray) = app.tray_by_id(TRAY_ID) {
+    if new_title {
+        if let Some(item) = status_item {
+            let _ = item.set_text(timer.status(now));
+        }
         let _ = tray.set_title(Some(&title));
         let _ = tray.set_tooltip(Some(format!("Headstart: {}", timer.status(now))));
     }
@@ -195,7 +257,7 @@ fn build_menu(app: &AppHandle, timer: Option<&TimerSnapshot>) -> tauri::Result<M
     items.push(Box::new(item("quit", "Quit Headstart")?));
 
     if let Ok(mut state) = app.state::<TrayState>().0.lock() {
-        state.0 = status;
+        state.status_item = status;
     }
     let refs: Vec<&dyn IsMenuItem<Wry>> = items.iter().map(|i| i.as_ref()).collect();
     Menu::with_items(app, &refs)

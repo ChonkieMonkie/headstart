@@ -53,6 +53,12 @@ export interface StartSessionInput {
   plannedStartAt?: Date;
   /** Carry out a planned session: its time decides "on time", and it brings its task. */
   planId?: string;
+  /**
+   * Carry out the plan without scoring its start time. Used when a session for
+   * the same task starts at another time than planned, so starting early or
+   * late from a task neither earns nor breaks the on-time streak.
+   */
+  adoptPlan?: boolean;
   courseId?: string;
   taskId?: string;
 }
@@ -71,7 +77,7 @@ export function startSession(
     if (!plan || plan.cancelled) return reject("That planned session no longer exists");
     if (plan.sessionId !== null) return reject("That planned session has already started");
   }
-  const plannedStartAt = plan ? new Date(plan.startAt) : input.plannedStartAt;
+  const plannedStartAt = plan && !input.adoptPlan ? new Date(plan.startAt) : input.plannedStartAt;
   const taskId = input.taskId ?? plan?.taskId ?? undefined;
   const task = taskId ? state.tasks.get(taskId) : undefined;
   if (taskId && !task) return reject("Unknown task");
@@ -109,6 +115,31 @@ export function extendSession(
     return reject(`Extend by 1 to ${MAX_EXTENSION_MINUTES} minutes`);
   }
   return accept({ type: "session.extended", sessionId: state.active.sessionId, minutes });
+}
+
+/**
+ * Moves the running session to another course and task. The whole session
+ * goes along: its time, recall and XP count for the new course.
+ */
+export function retargetSession(
+  state: ProgressState,
+  input: { courseId: string | null; taskId: string | null },
+): CommandResult<EventOf<"session.retargeted">> {
+  const active = state.active;
+  if (!active) return reject("No session is running");
+  const task = input.taskId ? state.tasks.get(input.taskId) : undefined;
+  if (input.taskId && !task) return reject("Unknown task");
+  const courseId = task ? task.courseId : input.courseId;
+  if (courseId && !state.courses.has(courseId)) return reject("Unknown course");
+  if (courseId === active.courseId && (input.taskId ?? null) === active.taskId) {
+    return reject("The session is already for that");
+  }
+  return accept({
+    type: "session.retargeted",
+    sessionId: active.sessionId,
+    courseId: courseId ?? null,
+    taskId: input.taskId ?? null,
+  });
 }
 
 export function completeSession(

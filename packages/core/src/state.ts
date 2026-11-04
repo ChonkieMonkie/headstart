@@ -255,6 +255,13 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       if (active) active.extendedMs += event.minutes * MINUTE;
       return;
     }
+    case "session.retargeted": {
+      const active = matching(state, event.sessionId);
+      if (!active) return;
+      active.courseId = event.courseId;
+      active.taskId = event.taskId;
+      return;
+    }
     case "session.abandoned": {
       const active = matching(state, event.sessionId);
       if (!active) return;

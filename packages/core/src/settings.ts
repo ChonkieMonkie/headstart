@@ -24,6 +24,10 @@ export interface Settings {
   focusMinutes: number;
   /** Start the break by itself when a session ends. */
   autoBreak: boolean;
+  /** Start the next session by itself when a break ends, after a short countdown. */
+  autoStartNext: boolean;
+  /** Play a short sound when a session or a break ends. */
+  chime: boolean;
   /** Minutes before a planned start for the first reminder, or null for none. */
   remindBeforeMinutes: number | null;
   /** Nudges a day at most when a planned session has not started (0 turns them off). */
@@ -35,6 +39,8 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   focusMinutes: 25,
   autoBreak: true,
+  autoStartNext: false,
+  chime: true,
   remindBeforeMinutes: 2,
   maxNudgesPerDay: 3,
   motion: "system",
@@ -46,7 +52,7 @@ export const REMIND_BEFORE = [1, 2, 5, 10, 15] as const;
 
 /** A settings change, or a reason it is not allowed. */
 export function checkSettings(changes: Partial<Settings>): string | null {
-  const { focusMinutes, remindBeforeMinutes, maxNudgesPerDay, motion, autoBreak } = changes;
+  const { focusMinutes, remindBeforeMinutes, maxNudgesPerDay, motion } = changes;
   if (focusMinutes !== undefined && !(FOCUS_LENGTHS as readonly number[]).includes(focusMinutes)) {
     return "Pick one of the session lengths";
   }
@@ -65,7 +71,10 @@ export function checkSettings(changes: Partial<Settings>): string | null {
   }
   if (motion !== undefined && motion !== "system" && motion !== "reduced")
     return "Unknown motion setting";
-  if (autoBreak !== undefined && typeof autoBreak !== "boolean") return "Unknown break setting";
+  for (const key of ["autoBreak", "autoStartNext", "chime"] as const) {
+    if (changes[key] !== undefined && typeof changes[key] !== "boolean")
+      return "Unknown on/off setting";
+  }
   return null;
 }
 

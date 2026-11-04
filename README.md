@@ -2,26 +2,26 @@
 
 A study companion for Windows, macOS and Linux that helps you **get started**, **stay focused** and **keep going**, with a mascot that rewards real studying.
 
-> Status: milestone **M5 (polish)** is done: a first-launch welcome, settings, a calendar date picker, planning straight from a course's to-do list, a rounded tray panel and a faster, calmer app. Stage 1 is complete; next comes stage 2 (habits, a week plan, more crates and plaques).
+> Status: milestone **M6 (session flow)** is done: a steady menu bar timer with a progress ring, to-dos that follow a session however it is started, changing course during a session, a clear way from one session to the next, notifications when a break starts and ends, and a lighter app. Stage 1 is complete; next comes stage 2 (developer tools, dark mode, a week plan, reviews, more crates and plaques).
 
 ## What works today
 
 - **A short welcome** on first launch: pick a study buddy, add a first course and task, and start.
-- **Settings**: the length of unplanned sessions, whether breaks start by themselves, reminders before planned sessions, how many nudges a day, and a switch that keeps every animation still.
+- **Settings**: the length of unplanned sessions, whether breaks start by themselves, whether the next session starts by itself after a break (with a 10 second countdown you can stop), a chime, reminders before planned sessions, how many nudges a day, a switch that keeps every animation still, and a test notification.
 - **A study buddy**: pick Inky the octopus, Axo the axolotl or Maple the red panda. Your buddy shows up on the Today screen, in the focus view, the compact timer and the tray panel. Its mood follows your day (focusing, on a break, celebrating, nudging you when a session is due, sleepy late at night), but never its colours: those belong to the skin.
 - **Study Crates**: open the crates you earn, with the odds and the pity guarantee shown before you open one. Each item is revealed on your own mascot and can be put on right away. Duplicates turn into **Stardust**.
 - **Collection**: a wardrobe for each mascot (skin, head, face, outfit, held item and aura), every item in the catalogue with what you have found so far, and five themed sets. Missing items can be crafted with Stardust, except legendary skins and seasonal items.
 - **154 items** to collect, from palette-swapped commons to animated legendaries. A few items only fit one mascot.
 - **Courses and tasks.** Courses can have a course code (shown as a small tag before the name) and an exam date with a countdown. Every task starts with a concrete **first to-do**, so starting never needs a decision.
-- **To-do lists** under every course and task, such as "Redo problem 3.7 d". Plan a session straight from a course or a to-do, or give to-dos to a planned session (or the one that is running) to decide what it is for; tick them off in the focus view or when the session is done. Whatever you did not get to goes back to the list.
+- **To-do lists** under every course and task, such as "Redo problem 3.7 d". Plan a session straight from a course or a to-do, or give to-dos to a planned session (or the one that is running) to decide what it is for; tick them off in the focus view or when the session is done. Starting a task brings along the to-dos planned for it today, even at another time than planned, and each to-do shows which task it belongs to. Whatever you did not get to goes back to the list.
 - **Today screen**: the next planned session with its to-dos, today's plan, focus time, your on-time streak and crate progress. Start, move or remove planned sessions in one click.
 - **Planned sessions with reminders**: a notification two minutes before, and one gentle nudge if a session has not started ten minutes in (at most three nudges a day). Starting a planned session on time earns a bonus.
 - **Session complete**: what you earned, then write down what you remember (free recall), rate your focus and set the next step. Recall notes are kept per course.
 - **Stats**: focus time per day and per course, on-time start rate, streaks, distraction-free share and focus rating.
-- **Focus sessions** of 25 minutes, 50 minutes or "just 5 minutes", with pause, +5 min and ending early (time studied still counts; under a minute is not saved). A break starts on its own afterwards.
+- **Focus sessions** of 25 minutes, 50 minutes or "just 5 minutes", with pause (<kbd>Space</kbd>), +5 min, changing course or task mid-session, and ending early (time studied still counts; under a minute is not saved). A break starts on its own afterwards, then **Start session 2** carries on with the same task, or **Done for today** ends the block.
 - **Three focus layouts**: the normal window, **full screen** that stays on top (hold *Exit full screen* for 2 seconds to leave), and a **compact timer** that floats above other windows and can be dragged anywhere.
-- **Menu bar / system tray**: left-click the icon for a small panel with the next session, the running timer and today's numbers; right-click for the menu. On macOS the countdown ticks in the menu bar; on Windows and Linux it is in the tooltip and the menu. Linux trays only offer the menu.
-- **Notifications** for planned sessions, and when a session or break ends while Headstart is hidden. macOS asks for permission the first time.
+- **Menu bar / system tray**: left-click the icon for a small panel with the next session, the running timer and today's numbers; right-click for the menu. The icon becomes a progress ring while a session or break runs. On macOS the countdown ticks beside it in steady digits; on Windows and Linux it is in the tooltip and the menu. Linux trays only offer the menu.
+- **Notifications** for planned sessions, when a session ends and the break starts, and when the break is over, with an optional chime. macOS asks for permission the first time; Settings can send a test notification.
 - **Global shortcut** <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> (<kbd>⌥⇧H</kbd> on a Mac) starts a session from anywhere, or brings the running one to the front. On Wayland, where global shortcuts are limited, bind a system shortcut to `headstart --start` instead.
 - **Rewards**: XP and levels, and a Study Crate every 3 sessions of 10+ minutes (up to 9 sessions a day count). An Epic is guaranteed within 15 crates and a Legendary within 60.
 - Everything is stored **locally** in an append-only event log (SQLite). Nothing leaves your computer.

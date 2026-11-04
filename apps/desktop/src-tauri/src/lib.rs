@@ -19,6 +19,7 @@
 
 mod focus;
 mod panel;
+mod ring;
 mod timer;
 mod tray;
 
@@ -80,6 +81,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             timer::set_timer,
             timer::set_reminders,
+            timer::test_notification,
             focus::set_focus_layout,
             take_launch_start,
             open_main_window,
@@ -88,7 +90,6 @@ pub fn run() {
         ])
         .setup(|app| {
             tray::create(app.handle())?;
-            panel::create(app.handle())?;
             timer::start_ticker(app.handle().clone());
             register_shortcut(app.handle());
             Ok(())

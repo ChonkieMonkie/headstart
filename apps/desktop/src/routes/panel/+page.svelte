@@ -43,11 +43,21 @@
   const look = $derived(buddy ? lookFor(buddy.species, buddy.equipped, items) : null);
   const remaining = $derived(timer ? (timer.endsAt === null ? timer.remainingMs : timer.endsAt - now) : 0);
 
+  // The clock ticks only while the panel is open and a countdown runs.
+  let visible = $state(!document.hidden);
+  $effect(() => {
+    if (!visible || !timer || timer.endsAt === null) return;
+    now = Date.now();
+    const tick = setInterval(() => (now = Date.now()), 1000);
+    return () => clearInterval(tick);
+  });
+
   onMount(() => {
     const stop = listenToPanelSnapshots((next) => {
       snapshot = next;
     });
-    const tick = setInterval(() => (now = Date.now()), 1000);
+    const seen = () => (visible = !document.hidden);
+    document.addEventListener("visibilitychange", seen);
     // Ask for a fresh snapshot every time the panel opens.
     const unfocus = inTauri
       ? getCurrentWindow().onFocusChanged(({ payload: focused }) => {
@@ -56,12 +66,22 @@
       : null;
     return () => {
       stop();
-      clearInterval(tick);
+      document.removeEventListener("visibilitychange", seen);
       unfocus?.then((fn) => fn());
     };
   });
 
+  // "End session" asks once more, so a slip of the mouse does not end it.
+  let confirmingEnd = $state(false);
+  let confirmTimer: ReturnType<typeof setTimeout> | undefined;
+  function askEnd(): void {
+    confirmingEnd = true;
+    clearTimeout(confirmTimer);
+    confirmTimer = setTimeout(() => (confirmingEnd = false), 4000);
+  }
+
   async function act(action: TrayAction, close = true): Promise<void> {
+    confirmingEnd = false;
     await sendAction(action);
     if (close) await hidePanel();
   }
@@ -85,7 +105,16 @@
       <p class="eyebrow">{timer.endsAt === null ? "Paused" : "Focusing"}</p>
       <p class="clock" role="timer">{formatDuration(remaining)}</p>
       <p class="heading">{snapshot?.heading}</p>
-      {#if snapshot?.nextStep}<p class="step">Next step: {snapshot.nextStep}</p>{/if}
+      {#if snapshot && snapshot.todos.length > 0}
+        <ul class="step todos" aria-label="This session">
+          {#each snapshot.todos.slice(0, 4) as todo, i (i)}
+            <li class:done={todo.done}>
+              {todo.text}
+              {#if todo.task}<small>{todo.task}</small>{/if}
+            </li>
+          {/each}
+        </ul>
+      {:else if snapshot?.nextStep}<p class="step">Next step: {snapshot.nextStep}</p>{/if}
       <div class="buttons">
         {#if timer.endsAt === null}
           <button type="button" class="primary" onclick={() => act("resume", false)}>Resume</button>
@@ -93,7 +122,11 @@
           <button type="button" class="primary" onclick={() => act("pause", false)}>Pause</button>
         {/if}
         <button type="button" class="ghost" onclick={() => act("extend", false)}>+5 min</button>
-        <button type="button" class="ghost" onclick={() => act("end")}>End</button>
+        {#if confirmingEnd}
+          <button type="button" class="ghost" onclick={() => act("end")}>Yes, end it</button>
+        {:else}
+          <button type="button" class="ghost" onclick={askEnd}>End session</button>
+        {/if}
       </div>
       <div class="buttons">
         <button type="button" class="ghost" onclick={() => act("full")}>Full screen</button>
@@ -106,8 +139,13 @@
       <p class="clock" role="timer">{formatDuration(remaining)}</p>
       <p class="step">Stand up, drink some water, look out of a window.</p>
       <div class="buttons">
-        <button type="button" class="primary" onclick={() => act("start")}>Start next session</button>
+        <button type="button" class="primary" onclick={() => act("start")}>
+          Start session {(snapshot?.sessionsToday ?? 0) + 1}
+        </button>
         <button type="button" class="ghost" onclick={() => act("skip-break", false)}>Skip break</button>
+      </div>
+      <div class="buttons">
+        <button type="button" class="link" onclick={() => act("done-today", false)}>Done for today</button>
       </div>
     </section>
   {:else}
@@ -239,6 +277,25 @@
     color: var(--hs-focus-text-muted);
   }
 
+  .todos {
+    margin: 0;
+    padding-left: 28px;
+    display: grid;
+    gap: 4px;
+  }
+
+  .todos small {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hs-focus-text-muted);
+  }
+
+  .todos .done {
+    text-decoration: line-through;
+    color: var(--hs-focus-text-muted);
+  }
+
   .step {
     padding: 10px 12px;
     border-radius: 12px;
@@ -308,6 +365,24 @@
     color: var(--hs-focus-text-muted);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  /* Hover and press feedback, a little lighter on the dark surface. */
+  button:not(:disabled):active {
+    transform: translateY(1px);
+  }
+
+  .primary:not(:disabled):hover {
+    background: color-mix(in srgb, var(--hs-focus-accent) 82%, #fff);
+  }
+
+  .ghost:not(:disabled):hover {
+    border-color: #5a6094;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .link:not(:disabled):hover {
+    color: var(--hs-focus-text);
   }
 
   button:focus-visible {
