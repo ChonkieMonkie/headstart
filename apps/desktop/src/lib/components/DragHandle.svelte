@@ -58,7 +58,9 @@
     display: grid;
     place-items: center;
     width: 20px;
-    min-height: 28px;
+    /* As tall as a checkbox row (18px box, 2px above and below), so the dots
+       line up with the checkbox beside them. */
+    min-height: 22px;
     padding: 0;
     border: 0;
     border-radius: 6px;
