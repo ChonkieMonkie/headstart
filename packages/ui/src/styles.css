@@ -354,13 +354,6 @@ body {
   }
 }
 
-/* An empty list grows while a row is dragged, so a row can be dropped into it. */
-.reordering [data-reorder]:empty {
-  min-height: 32px;
-  border: 2px dashed var(--hs-line);
-  border-radius: 10px;
-}
-
 /* Spoken messages about a move, for screen readers only. */
 .reorder-live {
   position: absolute;

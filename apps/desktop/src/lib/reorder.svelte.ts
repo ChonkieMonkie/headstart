@@ -33,6 +33,12 @@ export interface Drop {
 }
 
 const EDGE = 48;
+/**
+ * How far above and below a list a drop still lands in it. Nothing on the
+ * page changes size during a drag (that made the window jump), so an empty
+ * list, which has no height, is reached through this margin.
+ */
+const REACH = 16;
 const START_DISTANCE = 4;
 
 function rowsOf(list: Element, without?: string): HTMLElement[] {
@@ -107,11 +113,18 @@ export function dragRow(event: PointerEvent, ondrop: (drop: Drop) => void): void
     if (!ghost || !line) return;
     ghost.style.top = `${box.top + y - startY}px`;
     const lists = [...document.querySelectorAll(`[data-reorder="${CSS.escape(scope)}"]`)];
-    const list =
-      lists.find((l) => {
-        const b = l.getBoundingClientRect();
-        return y >= b.top - 12 && y <= b.bottom + 12;
-      }) ?? null;
+    // The list under the pointer, or the closest one within reach.
+    let list: Element | null = null;
+    let closest = REACH;
+    for (const l of lists) {
+      const b = l.getBoundingClientRect();
+      const distance = y < b.top ? b.top - y : y > b.bottom ? y - b.bottom : 0;
+      if (distance <= closest) {
+        list = l;
+        closest = distance;
+        if (distance === 0) break;
+      }
+    }
     if (!list) {
       target = null;
       line.style.display = "none";
