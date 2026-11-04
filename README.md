@@ -102,7 +102,8 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 - **Three ways to focus:** the normal window, full screen that stays on top, or a compact timer you can drag anywhere.
 - **Menu bar and tray:** a progress ring with the countdown beside it on macOS, a panel to run a whole session without opening the app, and a global shortcut (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>, <kbd>⌥⇧H</kbd> on a Mac).
 - **Rewards:** XP and levels, Study Crates, Stardust, crafting and a pity timer.
-- **Settings:** session length, breaks, reminders, nudges, sound, reduced motion and a test notification.
+- **Light and dark:** a calm dark theme, a light one, or follow your computer. Picked during setup and changeable any time.
+- **Settings:** theme, session length, breaks, reminders, nudges, sound, reduced motion and a test notification.
 - **Updates** install from inside the app.
 
 ## Roadmap

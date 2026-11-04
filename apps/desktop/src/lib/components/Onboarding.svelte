@@ -16,18 +16,37 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- First launch: say hello, pick a study buddy, add a first course and task, then start. Every step after the buddy can be skipped. -->
+<!--
+  First launch: say hello, pick light or dark, pick a study buddy, add a first
+  course and task, turn on notifications, then start. Every step after the
+  buddy can be skipped, and Back returns to the step before.
+-->
 <script lang="ts">
   import { items, MASCOTS, type MascotId } from "@headstart/content";
-  import { COURSE_COLORS, createCourse, createTask, localDayKey } from "@headstart/core";
+  import { COURSE_COLORS, createCourse, createTask, localDayKey, type Theme, updateCourse, updateTask } from "@headstart/core";
   import { lookFor, Logo, Mascot, MASCOT_NAMES, MASCOT_SPECIES, MASCOT_TINTS } from "@headstart/ui";
   import { tick } from "svelte";
+  import { testNotification } from "$lib/shell.ts";
   import type { Study } from "$lib/study.svelte.ts";
   import DatePicker from "./DatePicker.svelte";
 
   let { study, onDone }: { study: Study; onDone: () => void } = $props();
 
-  const STEPS = ["Welcome", "Study buddy", "First course", "First task", "Ready"] as const;
+  type Step = "welcome" | "theme" | "buddy" | "course" | "task" | "notifications" | "ready";
+  const STEPS: { id: Step; name: string }[] = [
+    { id: "welcome", name: "Welcome" },
+    { id: "theme", name: "Light or dark" },
+    { id: "buddy", name: "Study buddy" },
+    { id: "course", name: "First course" },
+    { id: "task", name: "First task" },
+    { id: "notifications", name: "Notifications" },
+    { id: "ready", name: "Ready" },
+  ];
+  const THEMES: { value: Theme; label: string; hint: string }[] = [
+    { value: "system", label: "System", hint: "Follows your computer, day and night" },
+    { value: "light", label: "Light", hint: "Bright and airy" },
+    { value: "dark", label: "Dark", hint: "Easy on the eyes in the evening" },
+  ];
   const BLURBS: Record<MascotId, string> = {
     inky: "Calm and clever. Eight arms for eight subjects.",
     axo: "Cheerful and patient. Never stops growing.",
@@ -35,7 +54,9 @@
   };
   const shortcut = /Mac/.test(navigator.userAgent) ? "⌥⇧H" : "Alt+Shift+H";
 
-  let step = $state(0);
+  let step = $state<Step>("welcome");
+  /** The steps taken so far, so Back returns to the one before (skips included). */
+  let trail = $state<Step[]>([]);
   let heading = $state<HTMLHeadingElement | null>(null);
   let error = $state<string | null>(null);
 
@@ -46,22 +67,57 @@
   let taskTitle = $state("");
   let firstTodo = $state("");
   let taskId = $state<string | null>(null);
+  /** What the notifications step says after the button, or null before it is pressed. */
+  let notifyNote = $state<string | null>(null);
 
   const buddy = $derived(study.mascot);
+  const index = $derived(STEPS.findIndex((s) => s.id === step));
 
-  async function go(to: number): Promise<void> {
+  async function show(to: Step): Promise<void> {
     error = null;
     step = to;
     await tick();
     heading?.focus();
   }
 
-  async function pickBuddy(mascot: MascotId): Promise<void> {
-    await study.chooseMascot(mascot);
-    await go(2);
+  async function go(to: Step): Promise<void> {
+    trail.push(step);
+    await show(to);
   }
 
-  async function addCourse(): Promise<void> {
+  async function back(): Promise<void> {
+    const to = trail.pop();
+    if (to) await show(to);
+  }
+
+  async function pickTheme(theme: Theme): Promise<void> {
+    if (study.settings.theme !== theme) error = await study.saveSettings({ theme });
+  }
+
+  async function pickBuddy(mascot: MascotId): Promise<void> {
+    await study.chooseMascot(mascot);
+    await go("course");
+  }
+
+  /** Adds the course, or saves changes to it after coming back with Back. */
+  async function saveCourse(): Promise<void> {
+    const existing = courseId ? study.state?.courses.get(courseId) : undefined;
+    if (existing && courseId) {
+      const id = courseId;
+      const changed =
+        existing.name !== courseName.trim() || (existing.code ?? "") !== courseCode.trim() || (existing.examDate ?? "") !== examDate;
+      if (changed) {
+        const result = await study.run((s) =>
+          updateCourse(s, id, { name: courseName, code: courseCode || null, examDate: examDate || null }),
+        );
+        if (!result.ok) {
+          error = result.reason;
+          return;
+        }
+      }
+      await go("task");
+      return;
+    }
     const id = study.newId();
     const result = await study.run((s) =>
       createCourse(s, {
@@ -77,11 +133,25 @@
       return;
     }
     courseId = id;
-    await go(3);
+    await go("task");
   }
 
-  async function addTask(): Promise<void> {
+  /** Adds the task, or saves changes to it after coming back with Back. */
+  async function saveTask(): Promise<void> {
     if (!courseId) return;
+    const existing = taskId ? study.state?.tasks.get(taskId) : undefined;
+    if (existing && taskId) {
+      const id = taskId;
+      if (existing.title !== taskTitle.trim() || existing.nextStep !== firstTodo.trim()) {
+        const result = await study.run((s) => updateTask(s, id, { title: taskTitle, nextStep: firstTodo }));
+        if (!result.ok) {
+          error = result.reason;
+          return;
+        }
+      }
+      await go("notifications");
+      return;
+    }
     const id = study.newId();
     const result = await study.run((s) =>
       createTask(s, { taskId: id, courseId: courseId ?? "", title: taskTitle, nextStep: firstTodo }),
@@ -91,7 +161,19 @@
       return;
     }
     taskId = id;
-    await go(4);
+    await go("notifications");
+  }
+
+  /**
+   * Sends a first notification. The computer asks whether Headstart may show
+   * notifications the first time it sends one, so this brings that question up
+   * now, instead of in the middle of the first session.
+   */
+  async function turnOnNotifications(): Promise<void> {
+    const sent = await testNotification(study.settings.chime);
+    notifyNote = sent
+      ? "Sent. If your computer asked, choose Allow. You can change it later in your system's notification settings."
+      : "Notifications only work in the installed app.";
   }
 
   async function startNow(): Promise<void> {
@@ -102,15 +184,23 @@
 
 <main class="onboarding" aria-labelledby="onboarding-h">
   <div class="card">
-    <ol class="steps" aria-label="Steps">
-      {#each STEPS as name, i (name)}
-        <li class:done={i < step} class:current={i === step} aria-current={i === step ? "step" : undefined}>
-          <span class="visually-hidden">{name}{i < step ? ", done" : ""}</span>
-        </li>
-      {/each}
-    </ol>
+    <div class="top">
+      {#if trail.length > 0}
+        <button type="button" class="back" onclick={back}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+          Back
+        </button>
+      {/if}
+      <ol class="steps" aria-label="Steps">
+        {#each STEPS as s, i (s.id)}
+          <li class:done={i < index} class:current={i === index} aria-current={i === index ? "step" : undefined}>
+            <span class="visually-hidden">{s.name}{i < index ? ", done" : ""}</span>
+          </li>
+        {/each}
+      </ol>
+    </div>
 
-    {#if step === 0}
+    {#if step === "welcome"}
       <div class="hello">
         <Logo size={64} />
         <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>Welcome to Headstart</h1>
@@ -122,10 +212,29 @@
         </ul>
         <p class="note">Everything stays on this computer.</p>
         <div class="actions">
-          <button type="button" class="primary" onclick={() => go(1)}>Get started</button>
+          <button type="button" class="primary" onclick={() => go("theme")}>Get started</button>
         </div>
       </div>
-    {:else if step === 1}
+    {:else if step === "theme"}
+      <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>Light or dark?</h1>
+      <p class="lead">Pick how Headstart looks. You can change it any time in Settings.</p>
+      <div class="themes" role="group" aria-label="Theme">
+        {#each THEMES as t (t.value)}
+          <button type="button" class="theme" aria-pressed={study.settings.theme === t.value} onclick={() => pickTheme(t.value)}>
+            <span class="preview {t.value}" aria-hidden="true">
+              <span class="half light"><span class="bar"></span><span class="line"></span><span class="line short"></span></span>
+              <span class="half dark"><span class="bar"></span><span class="line"></span><span class="line short"></span></span>
+            </span>
+            <span class="name">{t.label}</span>
+            <span class="blurb">{t.hint}</span>
+          </button>
+        {/each}
+      </div>
+      {#if error}<p class="error" role="alert">{error}</p>{/if}
+      <div class="actions">
+        <button type="button" class="primary" onclick={() => go("buddy")}>Continue</button>
+      </div>
+    {:else if step === "buddy"}
       <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>Pick your study buddy</h1>
       <p class="lead">They cheer you on, nudge you when a session is due and wear what you find in crates. You can switch any time.</p>
       <div class="buddies">
@@ -140,14 +249,14 @@
           </button>
         {/each}
       </div>
-    {:else if step === 2}
+    {:else if step === "course"}
       <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>Your first course</h1>
       <p class="lead">Start with the course you have the most work in right now. You can add more later.</p>
       <form
         class="form"
         onsubmit={(e) => {
           e.preventDefault();
-          addCourse();
+          saveCourse();
         }}
       >
         <label class="wide">
@@ -164,11 +273,13 @@
         </div>
         {#if error}<p class="error wide" role="alert">{error}</p>{/if}
         <div class="actions wide">
-          <button type="submit" class="primary">Add course</button>
-          <button type="button" class="ghost" onclick={() => go(4)}>Skip for now</button>
+          <button type="submit" class="primary">{courseId ? "Continue" : "Add course"}</button>
+          {#if !courseId}
+            <button type="button" class="ghost" onclick={() => go("notifications")}>Skip for now</button>
+          {/if}
         </div>
       </form>
-    {:else if step === 3}
+    {:else if step === "task"}
       <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>A first task</h1>
       <p class="lead">
         Something you will work on next, and the very first thing you will do. A concrete first to-do is
@@ -178,7 +289,7 @@
         class="form"
         onsubmit={(e) => {
           e.preventDefault();
-          addTask();
+          saveTask();
         }}
       >
         <label class="wide">
@@ -191,10 +302,31 @@
         </label>
         {#if error}<p class="error wide" role="alert">{error}</p>{/if}
         <div class="actions wide">
-          <button type="submit" class="primary">Add task</button>
-          <button type="button" class="ghost" onclick={() => go(4)}>Skip for now</button>
+          <button type="submit" class="primary">{taskId ? "Continue" : "Add task"}</button>
+          {#if !taskId}
+            <button type="button" class="ghost" onclick={() => go("notifications")}>Skip for now</button>
+          {/if}
         </div>
       </form>
+    {:else if step === "notifications"}
+      <h1 id="onboarding-h" tabindex="-1" bind:this={heading}>Notifications</h1>
+      <p class="lead">
+        Headstart tells you when a session ends, when the break is over and just before a planned session.
+        Your computer asks once whether that is OK.
+      </p>
+      <ul class="points">
+        <li>Only about your own sessions and plans. You choose the reminders and nudges in Settings.</li>
+        <li>Nothing else: no news, no streak warnings, no ads.</li>
+      </ul>
+      {#if notifyNote}<p class="note-box" role="status">{notifyNote}</p>{/if}
+      <div class="actions">
+        {#if notifyNote}
+          <button type="button" class="primary" onclick={() => go("ready")}>Continue</button>
+        {:else}
+          <button type="button" class="primary" onclick={turnOnNotifications}>Turn on notifications</button>
+          <button type="button" class="ghost" onclick={() => go("ready")}>Not now</button>
+        {/if}
+      </div>
     {:else}
       <div class="hello">
         {#if study.look && buddy}
@@ -243,10 +375,50 @@
     background: var(--hs-surface);
   }
 
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 36px;
+    margin: 0 0 6px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 36px;
+    padding: 0 12px 0 6px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--hs-ink-muted);
+    cursor: pointer;
+  }
+
+  .back:hover {
+    background: var(--hs-raised);
+    color: var(--hs-ink);
+  }
+
+  .back svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   .steps {
+    flex: 1;
     display: flex;
     gap: 6px;
-    margin: 0 0 6px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -305,6 +477,99 @@
     margin: 0;
     font-size: 14px;
     color: var(--hs-ink-subtle);
+  }
+
+  .themes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+  }
+
+  .theme {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 14px;
+    border: 2px solid var(--hs-line);
+    border-radius: var(--hs-radius-lg);
+    background: var(--hs-surface);
+    font: inherit;
+    color: var(--hs-ink);
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .theme:hover,
+  .theme[aria-pressed="true"] {
+    border-color: var(--hs-accent);
+  }
+
+  /* A tiny window in the theme's colours; System shows both halves. */
+  .preview {
+    display: flex;
+    width: 100%;
+    height: 96px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    border-radius: var(--hs-radius-md);
+    border: 1px solid var(--hs-line);
+  }
+
+  .preview.light .half.dark,
+  .preview.dark .half.light {
+    display: none;
+  }
+
+  .half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 14px 12px;
+  }
+
+  .half.light {
+    background: #f3f5fa;
+  }
+
+  .half.dark {
+    background: #131417;
+  }
+
+  .half .bar {
+    width: 46px;
+    height: 12px;
+    border-radius: 5px;
+    background: #5b4bd6;
+  }
+
+  .half.dark .bar {
+    background: #a99bff;
+  }
+
+  .half .line {
+    height: 8px;
+    border-radius: 4px;
+    background: #e2e6ef;
+  }
+
+  .half.dark .line {
+    background: #34373f;
+  }
+
+  .half .line.short {
+    width: 60%;
+  }
+
+  .note-box {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--hs-raised);
+    font-weight: 700;
+    line-height: 1.45;
+    color: var(--hs-ink-muted);
   }
 
   .buddies {
@@ -390,7 +655,7 @@
     min-height: 44px;
     box-sizing: border-box;
     padding: 0 12px;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 10px;
     background: var(--hs-surface);
     font: inherit;
@@ -420,7 +685,7 @@
   .primary {
     border: 0;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .secondary {
@@ -439,7 +704,7 @@
 
   .error {
     margin: 0;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 
