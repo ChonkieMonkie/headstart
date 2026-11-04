@@ -107,12 +107,20 @@
       <p class="heading">{snapshot?.heading}</p>
       {#if snapshot && snapshot.todos.length > 0}
         <ul class="step todos" aria-label="This session">
-          {#each snapshot.todos.slice(0, 4) as todo, i (i)}
-            <li class:done={todo.done}>
-              {todo.text}
-              {#if todo.task}<small>{todo.task}</small>{/if}
+          {#each snapshot.todos.slice(0, 4) as todo (todo.id)}
+            <li>
+              <label class:done={todo.done}>
+                <input type="checkbox" checked={todo.done} onchange={() => act(`toggle-todo:${todo.id}`, false)} />
+                <span>
+                  <span class="todo-text">{todo.text}</span>
+                  {#if todo.task}<small>{todo.task}</small>{/if}
+                </span>
+              </label>
             </li>
           {/each}
+          {#if snapshot.todos.length > 4}
+            <li class="more">+ {snapshot.todos.length - 4} more</li>
+          {/if}
         </ul>
       {:else if snapshot?.nextStep}<p class="step">Next step: {snapshot.nextStep}</p>{/if}
       <div class="buttons">
@@ -279,9 +287,24 @@
 
   .todos {
     margin: 0;
-    padding-left: 28px;
+    list-style: none;
     display: grid;
-    gap: 4px;
+    gap: 6px;
+  }
+
+  .todos label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .todos input {
+    width: 16px;
+    height: 16px;
+    margin: 2px 0 0;
+    flex: none;
+    accent-color: var(--hs-focus-accent);
   }
 
   .todos small {
@@ -292,7 +315,16 @@
   }
 
   .todos .done {
+    color: var(--hs-focus-text-muted);
+  }
+
+  .todos .done .todo-text {
     text-decoration: line-through;
+  }
+
+  .todos .more {
+    padding-left: 26px;
+    font-size: 13px;
     color: var(--hs-focus-text-muted);
   }
 

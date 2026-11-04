@@ -23,6 +23,8 @@
   import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
   import CourseName from "./CourseName.svelte";
+  import { dragRow, type Drop, KeyboardMove } from "$lib/reorder.svelte.ts";
+  import DragHandle from "./DragHandle.svelte";
   import Select from "./Select.svelte";
   import HoldButton from "./HoldButton.svelte";
 
@@ -36,15 +38,30 @@
   const fromList = $derived(
     course ? study.todosOf(course.id).filter((t) => !todos.some((own) => own.id === t.id)) : [],
   );
-  // A task started without a plan: offer its open to-dos to bring along.
-  const suggested = $derived(
-    todos.length === 0 && task ? fromList.filter((t) => t.taskId === task.id && t.planId === null).slice(0, 3) : [],
-  );
-  const taskOf = (taskId: string | null) => (taskId ? (study.task(taskId)?.title ?? null) : null);
+  // The task a to-do belongs to, only when it is not the session's own task (that is the heading).
+  const taskOf = (taskId: string | null) =>
+    taskId && taskId !== task?.id ? (study.task(taskId)?.title ?? null) : null;
+
+  // Dragging sets the order the session's to-dos are done in.
+  async function drop({ id, after, before }: Drop): Promise<void> {
+    todoError = await study.moveTodo(id, { after, before });
+  }
+  const keys = new KeyboardMove(drop, (id) => todos.find((t) => t.id === id)?.text ?? "To-do");
   // Changing what the session is for: "task:<id>", "course:<id>" or "".
   let changing = $state(false);
   let changeError = $state<string | null>(null);
   const target = $derived(task ? `task:${task.id}` : course ? `course:${course.id}` : "");
+
+  // A click anywhere outside the popover closes it.
+  let subLine = $state<HTMLElement | null>(null);
+  $effect(() => {
+    if (!changing) return;
+    const away = (e: PointerEvent) => {
+      if (subLine && !subLine.contains(e.target as Node)) changing = false;
+    };
+    document.addEventListener("pointerdown", away);
+    return () => document.removeEventListener("pointerdown", away);
+  });
 
   async function retarget(value: string): Promise<void> {
     const [kind, id = null] = value ? value.split(":") : [""];
@@ -98,28 +115,45 @@
 <section class="focus" aria-label="Focus session">
   <header>
     <div>
-      {#if changing}
-        <div class="change">
-          <Select
-            dark
-            value={target}
-            label="What this session is for"
-            groups={taskGroups(study, { none: "No course", courses: true })}
-            onchange={(value) => retarget(value)}
-          />
-          <button type="button" class="link" onclick={() => (changing = false)}>Cancel</button>
-        </div>
-        {#if changeError}<p class="todo-error" role="alert">{changeError}</p>{/if}
-        <p class="sub">The whole session moves, so its time counts for the new choice.</p>
-      {:else}
-        <p class="eyebrow">
-          {#if course}<CourseName {course} />{:else}Focus session{/if}
-        </p>
+      <p class="eyebrow">
+        {#if course}<CourseName {course} />{:else}Focus session{/if}
+      </p>
+      <div class="sub-line" bind:this={subLine}>
         <p class="sub">
           {task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today ·
-          <button type="button" class="inline" onclick={() => (changing = true)}>Change</button>
+          <button type="button" class="inline" aria-expanded={changing} onclick={() => (changing = !changing)}>Change</button>
         </p>
-      {/if}
+        {#if changing}
+          <!-- Floats over the page, so nothing below moves while it is open. -->
+          <div
+            class="change"
+            role="dialog"
+            aria-label="Change what this session is for"
+            tabindex="-1"
+            onkeydown={(e) => {
+              if (e.key === "Escape") {
+                e.stopPropagation();
+                changing = false;
+              }
+            }}
+            onfocusout={(e) => {
+              const next = e.relatedTarget as Node | null;
+              if (next && !e.currentTarget.contains(next) && !(next as Element).closest?.("[role='listbox']")) changing = false;
+            }}
+          >
+            <Select
+              dark
+              value={target}
+              label="What this session is for"
+              groups={taskGroups(study, { none: "No course", courses: true })}
+              onchange={(value) => retarget(value)}
+            />
+            <p class="hint">The whole session moves, so its time counts for the new choice.</p>
+            {#if changeError}<p class="todo-error" role="alert">{changeError}</p>{/if}
+            <button type="button" class="link" onclick={() => (changing = false)}>Cancel</button>
+          </div>
+        {/if}
+      </div>
     </div>
     <div class="layout">
       {#if study.layout === "full"}
@@ -161,26 +195,29 @@
       <section class="next-step" aria-label="To-dos for this session">
         <span>{todos.length > 0 ? "This session" : "Next step"}</span>
         {#if todos.length > 0}
-          <ul class="todos">
+          <ul class="todos" data-reorder="session">
             {#each todos as todo (todo.id)}
-              <li>
+              <li data-reorder-id={todo.id}>
+                <DragHandle
+                  dark
+                  label={todo.text}
+                  held={keys.held?.id === todo.id}
+                  onpointerdown={(e) => dragRow(e, drop)}
+                  onkeydown={(e) => {
+                    if (keys.key(e, todos.map((t) => t.id), todo.id)) e.preventDefault();
+                  }}
+                />
                 <label class:done={todo.done}>
                   <input type="checkbox" checked={todo.done} onchange={() => study.toggleTodo(todo)} />
                   <span>
-                    {todo.text}
+                    <span class="todo-text">{todo.text}</span>
                     {#if taskOf(todo.taskId)}<small class="todo-task">{taskOf(todo.taskId)}</small>{/if}
                   </span>
                 </label>
               </li>
             {/each}
           </ul>
-        {:else if suggested.length > 0}
-          <div class="bring" role="group" aria-label="Bring along to-dos for {task?.title}">
-            <p class="plain">Bring along?</p>
-            {#each suggested as todo (todo.id)}
-              <button type="button" class="ghost small" onclick={() => addToSession(todo.id)}>+ {todo.text}</button>
-            {/each}
-          </div>
+          <p class="reorder-live" aria-live="polite">{keys.message}</p>
         {:else if task?.nextStep}
           <p class="plain">{task.nextStep}</p>
         {/if}
@@ -313,8 +350,17 @@
     cursor: pointer;
   }
 
+  .todos li {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
   .todos label.done {
     color: var(--hs-focus-text-muted);
+  }
+
+  .todos label.done .todo-text {
     text-decoration: line-through;
   }
 
@@ -330,11 +376,34 @@
     margin: 0;
   }
 
+  .sub-line {
+    position: relative;
+  }
+
   .change {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 20;
+    width: min(360px, calc(100vw - 56px));
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--hs-focus-surface);
+    box-shadow: 0 14px 32px rgb(0 0 0 / 0.35);
+  }
+
+  .change :global(.select) {
+    width: 100%;
+  }
+
+  .hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--hs-focus-text-muted);
   }
 
   .inline {
@@ -359,19 +428,6 @@
     color: var(--hs-focus-text-muted);
   }
 
-  .bring {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .ghost.small {
-    min-height: 36px;
-    padding: 0 12px;
-    font-weight: 700;
-    text-align: left;
-  }
 
   .add {
     display: flex;

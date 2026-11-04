@@ -25,6 +25,7 @@ import {
   createTask,
   createTodo,
   deleteTodo,
+  moveTodo,
   planSession,
   reopenTodo,
   retargetSession,
@@ -298,5 +299,51 @@ describe("changing course during a session", () => {
     later(25);
     await run((s) => completeSession(s, { distractions: 0 }));
     expect(engine.state.sessions.get("s1")).toMatchObject({ courseId: "st", taskId: "t2" });
+  });
+});
+
+describe("reordering to-dos", () => {
+  async function three() {
+    const ctx = await setup();
+    await ctx.run((s) => createTodo(s, { todoId: "b", courseId: "la", taskId: "t1", text: "B" }));
+    await ctx.run((s) => createTodo(s, { todoId: "c", courseId: "la", taskId: "t1", text: "C" }));
+    const ids = () => openTodos(ctx.engine.state, "la", "t1").map((t) => t.id);
+    return { ...ctx, ids, a: firstTodoId("t1") };
+  }
+
+  it("moves to the top, the bottom and between, and the top one is the next step", async () => {
+    const { engine, run, ids, a } = await three();
+    expect(ids()).toEqual([a, "b", "c"]);
+    await run((s) => moveTodo(s, "c", { after: null, before: a }));
+    expect(ids()).toEqual(["c", a, "b"]);
+    expect(engine.state.tasks.get("t1")?.nextStep).toBe("C");
+    await run((s) => moveTodo(s, "c", { after: "b", before: null }));
+    expect(ids()).toEqual([a, "b", "c"]);
+    await run((s) => moveTodo(s, "c", { after: a, before: "b" }));
+    expect(ids()).toEqual([a, "c", "b"]);
+    // A new to-do still goes last.
+    await run((s) => createTodo(s, { todoId: "d", courseId: "la", taskId: "t1", text: "D" }));
+    expect(ids()).toEqual([a, "c", "b", "d"]);
+  });
+
+  it("moves to another task of the same course, never to another course", async () => {
+    const { engine, run, a } = await three();
+    await run((s) =>
+      createTask(s, { taskId: "t2", courseId: "la", title: "Chapter 4", nextStep: "Read 4.1" }),
+    );
+    await run((s) => moveTodo(s, a, { after: null, before: firstTodoId("t2"), taskId: "t2" }));
+    expect(openTodos(engine.state, "la", "t2").map((t) => t.id)).toEqual([a, firstTodoId("t2")]);
+    expect(engine.state.tasks.get("t1")?.nextStep).toBe("B");
+    expect(engine.state.tasks.get("t2")?.nextStep).toBe("Read 3.1");
+    await run((s) =>
+      createTask(s, { taskId: "s1", courseId: "st", title: "Exercises", nextStep: "Do 1.1" }),
+    );
+    expect(moveTodo(engine.state, a, { after: null, before: null, taskId: "s1" }).ok).toBe(false);
+    expect(moveTodo(engine.state, a, { after: a, before: null }).ok).toBe(false);
+  });
+
+  it("keeps old logs in the order the to-dos were made", async () => {
+    const { ids, a } = await three();
+    expect(ids()).toEqual([a, "b", "c"]);
   });
 });

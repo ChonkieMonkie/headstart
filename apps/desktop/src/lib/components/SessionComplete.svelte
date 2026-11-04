@@ -163,7 +163,7 @@
                     <input type="checkbox" checked={ticked.has(todo.id)} onchange={(e) => tick(todo.id, e.currentTarget.checked)} />
                     <span>
                       {todo.text}
-                      {#if todo.taskId && study.task(todo.taskId)}<small class="todo-task">{study.task(todo.taskId)?.title}</small>{/if}
+                      {#if todo.taskId && todo.taskId !== done.task?.id && study.task(todo.taskId)}<small class="todo-task">{study.task(todo.taskId)?.title}</small>{/if}
                     </span>
                   </label>
                 </li>

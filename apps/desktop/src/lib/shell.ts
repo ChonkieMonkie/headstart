@@ -37,7 +37,9 @@ export type TrayAction =
   | "skip-break"
   | "done-today"
   | "full"
-  | "compact";
+  | "compact"
+  /** Ticks a to-do of the running session off (or back on), from the panel. */
+  | `toggle-todo:${string}`;
 
 export interface TimerSnapshot {
   kind: TimerKind;
@@ -99,7 +101,7 @@ export interface PanelSnapshot {
   heading: string | null;
   nextStep: string | null;
   /** The running session's to-dos, with the task each belongs to. */
-  todos: { text: string; task: string | null; done: boolean }[];
+  todos: { id: string; text: string; task: string | null; done: boolean }[];
   upNext: { time: string; course: string; task: string | null; startsNow: boolean } | null;
   focusTodayMinutes: number;
   sessionsToday: number;

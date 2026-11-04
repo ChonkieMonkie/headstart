@@ -22,8 +22,10 @@
   import { localDayKey, planSession } from "@headstart/core";
   import { fromInputs, toTimeInput } from "$lib/format.ts";
   import { taskGroups } from "$lib/options.ts";
+  import { dragRow, type Drop, KeyboardMove } from "$lib/reorder.svelte.ts";
   import type { Study } from "$lib/study.svelte.ts";
   import DatePicker from "./DatePicker.svelte";
+  import DragHandle from "./DragHandle.svelte";
   import Select from "./Select.svelte";
 
   let {
@@ -71,6 +73,12 @@
     const all = study.todosOf(picked.courseId).filter((t) => t.planId === null);
     return picked.taskId ? [...all.filter((t) => t.taskId === picked.taskId), ...all.filter((t) => t.taskId !== picked.taskId)] : all;
   });
+
+  // Dragging sets the order the to-dos are done in, in every list.
+  async function drop({ id, after, before }: Drop): Promise<void> {
+    error = await study.moveTodo(id, { after, before });
+  }
+  const keys = new KeyboardMove(drop, (id) => todos.find((t) => t.id === id)?.text ?? "To-do");
 
   function choose(id: string, on: boolean): void {
     const next = new Set(chosen);
@@ -128,13 +136,26 @@
   {#if todos.length > 0}
     <fieldset class="wide todos">
       <legend>To-dos for this session (optional)</legend>
-      {#each todos as todo (todo.id)}
-        <label class="check">
-          <input type="checkbox" checked={chosen.has(todo.id)} onchange={(e) => choose(todo.id, e.currentTarget.checked)} />
-          {todo.text}
-          {#if todo.taskId && todo.taskId !== picked?.taskId}<span class="muted">{study.task(todo.taskId)?.title}</span>{/if}
-        </label>
-      {/each}
+      <ul class="rows" data-reorder="plan-form">
+        {#each todos as todo (todo.id)}
+          <li data-reorder-id={todo.id}>
+            <DragHandle
+              label={todo.text}
+              held={keys.held?.id === todo.id}
+              onpointerdown={(e) => dragRow(e, drop)}
+              onkeydown={(e) => {
+                if (keys.key(e, todos.map((t) => t.id), todo.id)) e.preventDefault();
+              }}
+            />
+            <label class="check">
+              <input type="checkbox" checked={chosen.has(todo.id)} onchange={(e) => choose(todo.id, e.currentTarget.checked)} />
+              {todo.text}
+              {#if todo.taskId && todo.taskId !== picked?.taskId}<span class="muted">{study.task(todo.taskId)?.title}</span>{/if}
+            </label>
+          </li>
+        {/each}
+      </ul>
+      <p class="reorder-live" aria-live="polite">{keys.message}</p>
     </fieldset>
   {/if}
   <div class="actions">
@@ -190,6 +211,21 @@
     margin: 0;
     padding: 0;
     border: 0;
+  }
+
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .rows li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   label.check {

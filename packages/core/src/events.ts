@@ -126,6 +126,11 @@ export type StudyEvent =
       sessionId?: string;
     }
   | { type: "todo.updated"; todoId: string; text: string }
+  /**
+   * Dragged to a new place: `order` sorts it among the other to-dos. With
+   * `taskId` it also moved to another task of its course (null: no task).
+   */
+  | { type: "todo.moved"; todoId: string; order: number; taskId?: string | null }
   /** Ticked off, during or after the session given, if any. */
   | { type: "todo.completed"; todoId: string; sessionId?: string }
   | { type: "todo.reopened"; todoId: string }

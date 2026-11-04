@@ -27,6 +27,7 @@
   import { onMount, type Snippet } from "svelte";
   import { page } from "$app/state";
   import CompactTimer from "$lib/components/CompactTimer.svelte";
+  import StartPicker from "$lib/components/StartPicker.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
   import Onboarding from "$lib/components/Onboarding.svelte";
   import SessionComplete from "$lib/components/SessionComplete.svelte";
@@ -125,6 +126,7 @@
       {/if}
     </main>
   </div>
+  <StartPicker {study} />
 {/if}
 
 <style>

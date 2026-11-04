@@ -19,6 +19,7 @@
 
 import type { RewardRules } from "@headstart/content";
 import {
+  byOrder,
   type Course,
   localDayKey,
   type Plan,
@@ -211,21 +212,23 @@ export function openTasks(state: ProgressState): Task[] {
 
 /** Open to-dos of a course (or one task), oldest first. */
 export function openTodos(state: ProgressState, courseId: string, taskId?: string | null): Todo[] {
-  return [...state.todos.values()].filter(
-    (t) => !t.done && t.courseId === courseId && (taskId === undefined || t.taskId === taskId),
-  );
+  return [...state.todos.values()]
+    .filter(
+      (t) => !t.done && t.courseId === courseId && (taskId === undefined || t.taskId === taskId),
+    )
+    .sort(byOrder);
 }
 
 /** To-dos given to a planned session. */
 export function todosForPlan(state: ProgressState, planId: string): Todo[] {
-  return [...state.todos.values()].filter((t) => t.planId === planId);
+  return [...state.todos.values()].filter((t) => t.planId === planId).sort(byOrder);
 }
 
 /** To-dos of a session: the ones it carries now, and those ticked off in it. */
 export function todosForSession(state: ProgressState, sessionId: string): Todo[] {
   const record = state.sessions.get(sessionId);
   const ids = new Set(record?.todoIds ?? []);
-  return [...state.todos.values()].filter(
-    (t) => t.sessionId === sessionId || t.doneInSessionId === sessionId || ids.has(t.id),
-  );
+  return [...state.todos.values()]
+    .filter((t) => t.sessionId === sessionId || t.doneInSessionId === sessionId || ids.has(t.id))
+    .sort(byOrder);
 }

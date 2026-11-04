@@ -22,6 +22,7 @@ import {
   isTimeUp,
   progress,
   remainingMs,
+  sessionInBlock,
   TIMER_PRESETS,
 } from "./timer.ts";
 
@@ -73,5 +74,39 @@ describe("focus timer", () => {
     expect(breakAfter(1, preset)).toMatchObject({ minutes: 5, long: false });
     expect(breakAfter(4, preset)).toMatchObject({ minutes: 15, long: true });
     expect(breakAfter(8, preset).long).toBe(true);
+  });
+});
+
+describe("study blocks", () => {
+  const preset = TIMER_PRESETS.classic;
+  const at = (h: number, m: number) => new Date(2026, 10, 4, h, m).getTime();
+  const session = (h: number, m: number) => ({
+    startedAt: at(h, m),
+    endedAt: at(h, m) + 25 * MINUTE,
+  });
+
+  it("counts four sessions in a row, so the 4th gets the long break", () => {
+    const four = [session(9, 0), session(9, 30), session(10, 0), session(10, 30)];
+    expect(sessionInBlock(four, preset)).toBe(4);
+    expect(breakAfter(sessionInBlock(four, preset), preset).long).toBe(true);
+  });
+
+  it("starts again after a long gap", () => {
+    const split = [session(9, 0), session(9, 30), session(18, 0), session(18, 30)];
+    expect(sessionInBlock(split, preset)).toBe(2);
+    expect(breakAfter(sessionInBlock(split, preset), preset).long).toBe(false);
+  });
+
+  it("allows the break plus 30 minutes, and a skipped break still counts", () => {
+    // 09:25 end, 5 min break, then 30 minutes: 10:00 is still the same block.
+    expect(sessionInBlock([session(9, 0), session(10, 0)], preset)).toBe(2);
+    expect(sessionInBlock([session(9, 0), session(10, 1)], preset)).toBe(1);
+    expect(sessionInBlock([session(9, 0), session(9, 25)], preset)).toBe(2);
+  });
+
+  it("starts a new block after done for today", () => {
+    const four = [session(9, 0), session(9, 30), session(10, 0)];
+    expect(sessionInBlock(four, preset, at(9, 56))).toBe(1);
+    expect(sessionInBlock([], preset)).toBe(0);
   });
 });

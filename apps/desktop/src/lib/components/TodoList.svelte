@@ -23,7 +23,9 @@
 <script lang="ts">
   import type { Todo } from "@headstart/core";
   import { clockTime, shortDate } from "$lib/format.ts";
+  import { dragRow, type Drop, KeyboardMove } from "$lib/reorder.svelte.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import DragHandle from "./DragHandle.svelte";
   import Select from "./Select.svelte";
 
   let {
@@ -72,6 +74,14 @@
     return [{ label: "", options }];
   });
 
+  // Dragging: rows can move within this list and to the other lists of the
+  // same course (another task, or the course's other to-dos).
+  async function drop({ id, after, before, group }: Drop): Promise<void> {
+    const toTask = group === null ? undefined : group === "" ? null : group;
+    error = await study.moveTodo(id, { after, before, ...(toTask !== undefined ? { taskId: toTask } : {}) });
+  }
+  const keys = new KeyboardMove(drop, (id) => open.find((t) => t.id === id)?.text ?? "To-do");
+
   function placeOf(todo: Todo): string {
     if (todo.sessionId) return `session:${todo.sessionId}`;
     if (todo.planId) return `plan:${todo.planId}`;
@@ -102,10 +112,17 @@
 </script>
 
 <div class="todo-list">
-  {#if open.length > 0}
-    <ul>
+  <ul data-reorder="course:{courseId}" data-reorder-group={taskId ?? ""}>
       {#each open as todo, i (todo.id)}
-        <li>
+        <li data-reorder-id={todo.id}>
+          <DragHandle
+            label={todo.text}
+            held={keys.held?.id === todo.id}
+            onpointerdown={(e) => dragRow(e, drop)}
+            onkeydown={(e) => {
+              if (keys.key(e, open.map((t) => t.id), todo.id)) e.preventDefault();
+            }}
+          />
           <input
             type="checkbox"
             aria-label="Done: {todo.text}"
@@ -164,8 +181,8 @@
           </button>
         </li>
       {/each}
-    </ul>
-  {/if}
+  </ul>
+  <p class="reorder-live" aria-live="polite">{keys.message}</p>
 
   <form
     class="new"

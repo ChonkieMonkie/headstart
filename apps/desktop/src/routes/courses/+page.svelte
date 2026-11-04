@@ -162,7 +162,7 @@
                 <strong>{task.title}</strong>
               </div>
               <div class="row-actions">
-                <button type="button" class="small primary" onclick={() => study.start({ taskId: task.id })}>Start</button>
+                <button type="button" class="small primary" onclick={() => study.startTask(task.id)}>Start</button>
                 <button type="button" class="small" onclick={() => (open = `plan:${task.id}`)}>Plan</button>
                 <button type="button" class="small ghost" onclick={() => (open = `task:${task.id}`)}>Edit</button>
               </div>

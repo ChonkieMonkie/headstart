@@ -572,6 +572,44 @@ export function deleteTodo(
   return accept({ type: "todo.deleted", todoId });
 }
 
+/**
+ * Moves a to-do between two neighbours in the list it is shown in (either can
+ * be null at the ends). With `taskId` it also moves to another task of the
+ * same course, or (null) to the course's other to-dos.
+ */
+export function moveTodo(
+  state: ProgressState,
+  todoId: string,
+  input: { after: string | null; before: string | null; taskId?: string | null },
+): CommandResult<EventOf<"todo.moved">> {
+  const todo = state.todos.get(todoId);
+  if (!todo) return reject("Unknown to-do");
+  const after = input.after ? state.todos.get(input.after) : undefined;
+  const before = input.before ? state.todos.get(input.before) : undefined;
+  if ((input.after && !after) || (input.before && !before)) return reject("Unknown to-do");
+  if (after?.id === todoId || before?.id === todoId) return reject("Pick another place");
+  if (input.taskId) {
+    const task = state.tasks.get(input.taskId);
+    if (!task || task.courseId !== todo.courseId) return reject("Unknown task");
+  }
+  const order =
+    after && before
+      ? (after.order + before.order) / 2
+      : after
+        ? after.order + 1
+        : before
+          ? before.order - 1
+          : todo.order;
+  const taskChanges = input.taskId !== undefined && input.taskId !== todo.taskId;
+  if (order === todo.order && !taskChanges) return reject("Nothing changed");
+  return accept({
+    type: "todo.moved",
+    todoId,
+    order,
+    ...(taskChanges ? { taskId: input.taskId ?? null } : {}),
+  });
+}
+
 /** Gives a to-do to a planned or running session, or (with null) back to the course list. */
 export function assignTodo(
   state: ProgressState,

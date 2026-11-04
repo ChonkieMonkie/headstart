@@ -107,3 +107,32 @@ export function breakAfter(
   const minutes = long ? preset.longBreakMinutes : preset.breakMinutes;
   return { minutes, long, ms: minutes * MINUTE };
 }
+
+/** A study block ends after this long without studying, counted from the end of a break. */
+export const BLOCK_GAP_MS = 30 * MINUTE;
+
+/**
+ * Which session of its study block the last of these sessions is (1 for the
+ * first, 0 for none). Sessions far apart are separate blocks, so two in the
+ * morning and two in the evening never earn a long break for the 4th. Only
+ * sessions that end after `since` count, which is how "done for today" ends
+ * a block early.
+ */
+export function sessionInBlock(
+  sessions: Iterable<{ startedAt: number; endedAt: number }>,
+  preset: TimerPreset,
+  since = Number.NEGATIVE_INFINITY,
+): number {
+  const ordered = [...sessions]
+    .filter((session) => session.endedAt > since)
+    .sort((a, b) => a.startedAt - b.startedAt);
+  let count = 0;
+  let previousEnd: number | null = null;
+  for (const session of ordered) {
+    const rest = breakAfter(count, preset).ms;
+    if (previousEnd !== null && session.startedAt - previousEnd > rest + BLOCK_GAP_MS) count = 0;
+    count += 1;
+    previousEnd = session.endedAt;
+  }
+  return count;
+}

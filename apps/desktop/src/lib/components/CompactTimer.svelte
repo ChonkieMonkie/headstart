@@ -20,9 +20,18 @@
 <script lang="ts">
   import { formatDuration } from "@headstart/core";
   import { Mascot } from "@headstart/ui";
+  import { onMount } from "svelte";
   import type { Study } from "$lib/study.svelte.ts";
 
   let { study }: { study: Study } = $props();
+
+  // Only macOS has a transparent main window (tauri.macos.conf.json). Elsewhere
+  // the corners stay square rather than showing the page behind them.
+  onMount(() => {
+    if (!/Mac/.test(navigator.userAgent)) return;
+    document.documentElement.classList.add("hs-see-through");
+    return () => document.documentElement.classList.remove("hs-see-through");
+  });
 
   const label = $derived(
     study.breakTimer ? "Break" : study.paused ? "Paused" : "until your break",
@@ -71,6 +80,7 @@
   .compact {
     height: 100vh;
     box-sizing: border-box;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -80,6 +90,12 @@
     color: var(--hs-focus-text);
     cursor: grab;
     user-select: none;
+  }
+
+  /* macOS: the window is transparent, so the timer is a card with rounded corners. */
+  :global(html.hs-see-through) .compact {
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 14px;
   }
 
   .buddy {

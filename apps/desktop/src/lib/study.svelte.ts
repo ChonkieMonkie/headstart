@@ -26,6 +26,7 @@ import {
   abandonSession,
   assignTodo,
   breakAfter,
+  byOrder,
   type CollectionCount,
   type CommandResult,
   type CoreContext,
@@ -56,6 +57,7 @@ import {
   levelInfo,
   localDayKey,
   MemoryEventStore,
+  moveTodo,
   type OddsRow,
   openCrate,
   openTasks,
@@ -80,6 +82,7 @@ import {
   StudyEngine,
   type StudyEvent,
   type StudyStats,
+  sessionInBlock,
   setProgress,
   startSession,
   type Task,
@@ -180,6 +183,11 @@ export interface StartOptions {
   auto?: boolean;
   /** Show the focus view. False when started from the tray. */
   show?: boolean;
+  /**
+   * To-dos of the task to bring along. Left out, a session for a task brings
+   * the task's next step, unless a plan already brings to-dos.
+   */
+  todoIds?: string[];
 }
 
 export class Study {
@@ -195,6 +203,8 @@ export class Study {
   breakTimer = $state<BreakTimer | null>(null);
   /** The break is over (or skipped) and the next session waits to be started. */
   breakOver = $state(false);
+  /** A start waiting for the user to pick which of the task's to-dos to bring. */
+  choosing = $state<{ taskId: string; options: StartOptions } | null>(null);
   /** When the next session starts by itself, during the short countdown after a break. */
   startingAt = $state<number | null>(null);
   completion = $state<Completion | null>(null);
@@ -366,10 +376,27 @@ export class Study {
     return state ? openTodos(state, courseId, taskId).map(copy) : [];
   }
 
-  /** Every to-do of a course, open and done, oldest first. */
+  /** Every to-do of a course, open and done, in list order. */
   allTodosOf(courseId: string): Todo[] {
     const state = this.state;
-    return state ? [...state.todos.values()].filter((t) => t.courseId === courseId).map(copy) : [];
+    return state
+      ? [...state.todos.values()]
+          .filter((t) => t.courseId === courseId)
+          .sort(byOrder)
+          .map(copy)
+      : [];
+  }
+
+  /**
+   * Moves a to-do between two neighbours of the list it is shown in, and
+   * (with `taskId`) to another task of its course.
+   */
+  async moveTodo(
+    todoId: string,
+    place: { after: string | null; before: string | null; taskId?: string | null },
+  ): Promise<string | null> {
+    const result = await this.run((s) => moveTodo(s, todoId, place));
+    return result.ok || result.reason === "Nothing changed" ? null : result.reason;
   }
 
   /** Planned sessions that have not started, soonest first. */
@@ -608,6 +635,41 @@ export class Study {
     return this.engine.run(command);
   }
 
+  /**
+   * The task's open to-dos that a new session could bring along: not in a
+   * plan or a session yet. Empty when a plan for the task brings its own.
+   */
+  startChoices(taskId: string): Todo[] {
+    const state = this.engine?.state;
+    if (!state) return [];
+    const plan = planForTask(state, taskId, Date.now(), this.engine?.context.dayKey);
+    if (plan && todosForPlan(state, plan.id).length > 0) return [];
+    const task = state.tasks.get(taskId);
+    if (!task) return [];
+    return openTodos(state, task.courseId, taskId)
+      .filter((t) => t.planId === null && t.sessionId === null)
+      .map(copy);
+  }
+
+  /**
+   * Starting from a task's Start button: asks which to-dos to bring when
+   * there is a choice (two or more), otherwise starts straight away.
+   */
+  async startTask(taskId: string, options: Omit<StartOptions, "taskId"> = {}): Promise<void> {
+    if (this.startChoices(taskId).length >= 2) {
+      this.choosing = { taskId, options: { ...options, taskId } };
+      return;
+    }
+    await this.start({ ...options, taskId });
+  }
+
+  /** Finishes a start that was waiting for the to-do choice. */
+  async startChosen(todoIds: string[]): Promise<void> {
+    const choosing = this.choosing;
+    this.choosing = null;
+    if (choosing) await this.start({ ...choosing.options, todoIds });
+  }
+
   async start(options: StartOptions = {}): Promise<void> {
     const engine = this.engine;
     if (!engine || engine.state.active) return;
@@ -630,6 +692,15 @@ export class Study {
     }
     const plan = planId ? engine.state.plans.get(planId) : undefined;
     const minutes = options.minutes ?? plan?.minutes ?? engine.state.settings.focusMinutes;
+    // Bring the chosen to-dos, or else the task's next step, unless the plan brings its own.
+    const planBrings = planId ? todosForPlan(engine.state, planId).length > 0 : false;
+    const bring =
+      options.todoIds ??
+      (options.taskId && !planBrings
+        ? this.startChoices(options.taskId)
+            .slice(0, 1)
+            .map((t) => t.id)
+        : []);
     const result = await engine.run((s) =>
       startSession(s, {
         sessionId: this.#newId(),
@@ -643,6 +714,8 @@ export class Study {
       this.notice = result.reason;
       return;
     }
+    const sessionId = result.event.sessionId;
+    for (const todoId of bring) await engine.run((s) => assignTodo(s, todoId, { sessionId }));
     this.#preset = presetFor(minutes);
     this.distractions = 0;
     this.completion = null;
@@ -747,6 +820,7 @@ export class Study {
 
   /** Ends the study block: no break, no next session waiting. */
   doneForToday(): void {
+    this.#blockEndedAt = Date.now();
     this.breakTimer = null;
     this.breakOver = false;
     this.startingAt = null;
@@ -851,7 +925,7 @@ export class Study {
           todos: this.#completionTodos(record.sessionId, record.taskId),
         };
       }
-      const rest = breakAfter(this.#sessionsToday(), this.#preset);
+      const rest = breakAfter(this.#sessionInBlock(), this.#preset);
       this.breakTimer = engine.state.settings.autoBreak
         ? { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long }
         : null;
@@ -875,6 +949,11 @@ export class Study {
   }
 
   #onTrayAction(action: TrayAction): void {
+    if (action.startsWith("toggle-todo:")) {
+      const todo = this.engine?.state.todos.get(action.slice("toggle-todo:".length));
+      if (todo) this.toggleTodo(todo);
+      return;
+    }
     switch (action) {
       case "start":
         this.startNext({ show: false });
@@ -905,6 +984,15 @@ export class Study {
         this.setLayout(action);
         return;
     }
+  }
+
+  /** "Done for today" ends the study block, even if the next session is soon. */
+  #blockEndedAt = Number.NEGATIVE_INFINITY;
+
+  /** Which session of the current study block the last one is, for the length of the break. */
+  #sessionInBlock(extra: { startedAt: number; endedAt: number }[] = []): number {
+    const sessions = this.engine ? [...this.engine.state.sessions.values()] : [];
+    return sessionInBlock([...sessions, ...extra], this.#preset, this.#blockEndedAt);
   }
 
   #sessionsToday(): number {
@@ -1038,7 +1126,9 @@ export class Study {
         doneBody: "Write down what you remember while it is fresh.",
       };
     }
-    const rest = breakAfter(this.#sessionsToday() + 1, this.#preset);
+    const active = this.active;
+    const running = active ? [{ startedAt: active.startedAt, endedAt: Date.now() }] : [];
+    const rest = breakAfter(this.#sessionInBlock(running), this.#preset);
     return {
       doneTitle: `${minutes} minutes done! ${rest.long ? "Long break" : "Break"}: ${rest.minutes} min`,
       doneBody: "Your break has started. Note what you remember, then stand up and stretch.",
@@ -1064,8 +1154,13 @@ export class Study {
       todos:
         state && running
           ? todosForSession(state, running.sessionId).map((t) => ({
+              id: t.id,
               text: t.text,
-              task: this.task(t.taskId)?.title ?? null,
+              // The session's own task is the heading already.
+              task:
+                t.taskId && t.taskId !== running.taskId
+                  ? (this.task(t.taskId)?.title ?? null)
+                  : null,
               done: t.done,
             }))
           : [],

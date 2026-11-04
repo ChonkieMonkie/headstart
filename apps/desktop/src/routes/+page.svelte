@@ -54,6 +54,11 @@
   const nextTask = $derived(next ? study.task(next.taskId) : null);
   const nextTodos = $derived(next ? study.todosForPlan(next.id) : []);
   const quickTaskId = $derived(quickTask.startsWith("task:") ? quickTask.slice(5) : "");
+  /** The quick start: a task asks which to-dos to bring, no task just starts. */
+  const quickStart = (minutes?: number) =>
+    quickTaskId
+      ? study.startTask(quickTaskId, minutes ? { minutes } : {})
+      : study.start(minutes ? { minutes } : {});
   const plannedLeft = $derived(plans.filter((v) => v.status === "next" || v.status === "planned").length);
   const weekMinutes = $derived(stats?.days.reduce((sum, d) => sum + d.minutes, 0) ?? 0);
 
@@ -183,13 +188,13 @@
     <p class="meta">Pick a task and go, or plan your next session below.</p>
     <div class="actions">
       <Select bind:value={quickTask} groups={taskGroups(study, { none: "No task" })} label="Task" />
-      <button type="button" class="primary" onclick={() => study.start(quickTaskId ? { taskId: quickTaskId } : {})}>
+      <button type="button" class="primary" onclick={() => quickStart()}>
         Start {study.settings.focusMinutes} min
       </button>
       <button
         type="button"
         class="secondary"
-        onclick={() => study.start({ ...(quickTaskId ? { taskId: quickTaskId } : {}), minutes: TIMER_PRESETS.justFive.focusMinutes })}
+        onclick={() => quickStart(TIMER_PRESETS.justFive.focusMinutes)}
       >
         Just 5 minutes
       </button>
@@ -197,7 +202,7 @@
       <button
         type="button"
         class="secondary"
-        onclick={() => study.start({ ...(quickTaskId ? { taskId: quickTaskId } : {}), minutes: TIMER_PRESETS.deep.focusMinutes })}
+        onclick={() => quickStart(TIMER_PRESETS.deep.focusMinutes)}
       >
         Deep work 50 min
       </button>

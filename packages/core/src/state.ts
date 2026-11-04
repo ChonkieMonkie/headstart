@@ -104,6 +104,8 @@ export interface Todo {
   planId: string | null;
   /** The running session it belongs to. Cleared when that session ends. */
   sessionId: string | null;
+  /** Place in its lists, lowest first. New to-dos go last; dragging sets it. */
+  order: number;
 }
 
 /** The id of the to-do made from a task's first next step. */
@@ -153,8 +155,10 @@ export interface ProgressState {
   equipped: Record<MascotId, Partial<Record<Slot, string>>>;
   courses: Map<string, Course>;
   tasks: Map<string, Task>;
-  /** To-dos in the order they were made. */
+  /** To-dos in the order they were made; lists sort them by `order`. */
   todos: Map<string, Todo>;
+  /** The `order` the next new to-do gets: always after every other to-do. */
+  nextTodoOrder: number;
   plans: Map<string, Plan>;
   settings: Settings;
   lastEventAt: number | null;
@@ -194,6 +198,7 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     courses: new Map(),
     tasks: new Map(),
     todos: new Map(),
+    nextTodoOrder: 1,
     plans: new Map(),
     settings: { ...DEFAULT_SETTINGS },
     lastEventAt: null,
@@ -338,7 +343,7 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       });
       state.todos.set(
         firstTodoId(event.taskId),
-        newTodo(firstTodoId(event.taskId), event.courseId, event.taskId, event.nextStep, at),
+        newTodo(state, firstTodoId(event.taskId), event.courseId, event.taskId, event.nextStep, at),
       );
       return;
     }
@@ -353,7 +358,7 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         else
           state.todos.set(
             `${envelope.id}:step`,
-            newTodo(`${envelope.id}:step`, task.courseId, task.id, event.nextStep, at),
+            newTodo(state, `${envelope.id}:step`, task.courseId, task.id, event.nextStep, at),
           );
         refreshNextStep(state, task.id);
       }
@@ -405,12 +410,34 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
     case "todo.created": {
       if (state.todos.has(event.todoId) || !state.courses.has(event.courseId)) return;
       const task = event.taskId ? state.tasks.get(event.taskId) : undefined;
-      const todo = newTodo(event.todoId, event.courseId, task ? task.id : null, event.text, at);
+      const todo = newTodo(
+        state,
+        event.todoId,
+        event.courseId,
+        task ? task.id : null,
+        event.text,
+        at,
+      );
       if (event.planId && openPlanFor(state, event.planId)) todo.planId = event.planId;
       if (event.sessionId && state.active?.sessionId === event.sessionId)
         todo.sessionId = event.sessionId;
       state.todos.set(todo.id, todo);
       if (task) refreshNextStep(state, task.id);
+      return;
+    }
+    case "todo.moved": {
+      const todo = state.todos.get(event.todoId);
+      if (!todo || !Number.isFinite(event.order)) return;
+      const before = todo.taskId;
+      if (event.taskId !== undefined) {
+        const task = event.taskId ? state.tasks.get(event.taskId) : undefined;
+        if (event.taskId && task?.courseId !== todo.courseId) return;
+        todo.taskId = task ? task.id : null;
+      }
+      todo.order = event.order;
+      state.nextTodoOrder = Math.max(state.nextTodoOrder, Math.floor(event.order) + 1);
+      if (before) refreshNextStep(state, before);
+      if (todo.taskId && todo.taskId !== before) refreshNextStep(state, todo.taskId);
       return;
     }
     case "todo.updated": {
@@ -600,6 +627,7 @@ export function level(state: ProgressState, ctx: CoreContext): LevelInfo {
 }
 
 function newTodo(
+  state: ProgressState,
   id: string,
   courseId: string,
   taskId: string | null,
@@ -617,7 +645,13 @@ function newTodo(
     doneInSessionId: null,
     planId: null,
     sessionId: null,
+    order: state.nextTodoOrder++,
   };
+}
+
+/** Sorts to-dos by their place in the lists, the oldest first on a tie. */
+export function byOrder(a: Todo, b: Todo): number {
+  return a.order - b.order || a.createdAt - b.createdAt;
 }
 
 /** A plan that has not started or been cancelled. */
@@ -630,14 +664,11 @@ export function openPlanFor(state: ProgressState, planId: string): Plan | null {
 function refreshNextStep(state: ProgressState, taskId: string): void {
   const task = state.tasks.get(taskId);
   if (!task) return;
-  let next = "";
+  let next: Todo | null = null;
   for (const todo of state.todos.values()) {
-    if (todo.taskId === taskId && !todo.done) {
-      next = todo.text;
-      break;
-    }
+    if (todo.taskId === taskId && !todo.done && (!next || byOrder(todo, next) < 0)) next = todo;
   }
-  task.nextStep = next;
+  task.nextStep = next?.text ?? "";
 }
 
 /**
