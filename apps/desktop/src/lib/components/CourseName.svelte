@@ -19,6 +19,7 @@
 <!-- A course as it is shown everywhere: colour dot, course code as a small tag, then the name. -->
 <script lang="ts">
   import type { Course } from "@headstart/core";
+  import { courseColor } from "@headstart/ui";
 
   let {
     course,
@@ -33,7 +34,7 @@
 </script>
 
 <span class="course" title={short && course.code ? course.name : undefined}>
-  {#if dot}<span class="dot" style:background={course.color} aria-hidden="true"></span>{/if}
+  {#if dot}<span class="dot" style:background={courseColor(course.color)} aria-hidden="true"></span>{/if}
   {#if course.code}<span class="code">{course.code}</span>{/if}
   {#if !short || !course.code}<span class="name">{course.name}</span>{/if}
 </span>

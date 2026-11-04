@@ -27,4 +27,12 @@ export { itemPreview, lookFor, previewSpecies, starterSkin } from "./mascot/look
 export { default as Mascot } from "./mascot/Mascot.svelte";
 export { type MascotLook, mascotLabel, renderMascot } from "./mascot/render.ts";
 export { default as StardustIcon } from "./StardustIcon.svelte";
-export { colors, fonts, type Rarity, rarityColors } from "./tokens.ts";
+export {
+  colors,
+  courseColor,
+  fonts,
+  type Rarity,
+  type RarityColors,
+  rarityColors,
+  rarityColorsLight,
+} from "./tokens.ts";

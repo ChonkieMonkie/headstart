@@ -19,7 +19,7 @@
 <!-- Today: what is up next, how the day is going and the day's plan. -->
 <script lang="ts">
   import { cancelPlan, daysUntil, formatDuration, formatMinutes, movePlan, TIMER_PRESETS } from "@headstart/core";
-  import { Mascot, MASCOT_TINTS } from "@headstart/ui";
+  import { courseColor, Mascot, MASCOT_TINTS } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
@@ -153,7 +153,7 @@
   {#if next}
     <p class="eyebrow">Next session · {clockTime(next.startAt)} to {clockTime(next.startAt + next.minutes * MINUTE)}</p>
     <h2 id="next-h">
-      {#if nextCourse}<span class="dot" style:background={nextCourse.color} aria-hidden="true"></span>{/if}
+      {#if nextCourse}<span class="dot" style:background={courseColor(nextCourse.color)} aria-hidden="true"></span>{/if}
       {nextTask?.title ?? nextCourse?.name ?? "Study session"}
     </h2>
     <p class="meta">
@@ -272,7 +272,7 @@
       {#each plans as view (view.plan.id)}
         <li class:is-next={view.status === "next"}>
           <span class="time">{clockTime(view.plan.startAt)}</span>
-          <span class="bar" style:background={view.course?.color ?? "#8A93A6"} aria-hidden="true"></span>
+          <span class="bar" style:background={courseColor(view.course?.color)} aria-hidden="true"></span>
           <span class="what">
             <strong>{#if view.course}<CourseName course={view.course} dot={false} />{:else}Study session{/if}</strong>
             <span>
@@ -432,7 +432,7 @@
   .crate-banner span {
     padding: 8px 16px;
     border-radius: 10px;
-    background: #f5c542;
+    background: var(--hs-gold);
     color: var(--hs-focus-ground);
     font-weight: 800;
   }
@@ -504,7 +504,7 @@
   .primary {
     border: 0;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .secondary {
@@ -659,17 +659,17 @@
   .status-running,
   .status-next {
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .status-planned {
-    background: #eceef2;
-    color: #4b5468;
+    background: var(--hs-neutral-soft);
+    color: var(--hs-neutral-strong);
   }
 
   .status-missed {
-    background: #fdf0dc;
-    color: #8f5300;
+    background: var(--hs-warning-soft);
+    color: var(--hs-warning-strong);
   }
 
   .row-actions {
@@ -694,7 +694,7 @@
 
   .error {
     margin: 0;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 

@@ -29,6 +29,7 @@
     type Todo,
     updateCourse,
   } from "@headstart/core";
+  import { courseColor } from "@headstart/ui";
   import CourseForm from "$lib/components/CourseForm.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
@@ -88,7 +89,7 @@
   {@const focus = focusByCourse.get(course.id)}
   {@const recalls = study.recallsOf(course.id)}
   {@const foundCode = course.code ? null : codeInName(course.name)}
-  <section class="card course" style:--course={course.color} aria-labelledby="course-{course.id}">
+  <section class="card course" style:--course={courseColor(course.color)} aria-labelledby="course-{course.id}">
     {#if open === `course:${course.id}`}
       <CourseForm {study} {course} onDone={close} />
     {:else}
@@ -380,7 +381,7 @@
     border: 0;
     border-radius: 12px;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .small {
@@ -396,7 +397,7 @@
   .small.primary {
     border-color: var(--hs-accent);
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .small.ghost {
@@ -406,16 +407,16 @@
   }
 
   .small.danger {
-    border-color: #b42318;
-    background: #b42318;
-    color: #fff;
+    border-color: var(--hs-danger);
+    background: var(--hs-danger);
+    color: var(--hs-surface);
   }
 
   .add {
     align-self: flex-start;
     min-height: 40px;
     padding: 0 14px;
-    border: 1px dashed #b6bdcc;
+    border: 1px dashed var(--hs-field-line);
     border-radius: 10px;
     background: transparent;
     color: var(--hs-accent-strong);
@@ -446,7 +447,7 @@
     gap: 8px;
     padding: 12px;
     border-radius: 12px;
-    background: #fdf0dc;
+    background: var(--hs-warning-soft);
   }
 
   .confirm p {

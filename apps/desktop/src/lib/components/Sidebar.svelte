@@ -172,7 +172,7 @@
   }
 
   .nav-item.disabled {
-    color: #8a93a6;
+    color: var(--hs-ink-disabled);
   }
 
   .nav-item:focus-visible {
@@ -200,8 +200,8 @@
     padding: 2px 7px;
     box-sizing: border-box;
     border-radius: 999px;
-    background: #f5c542;
-    color: var(--hs-ink);
+    background: var(--hs-gold);
+    color: var(--hs-on-gold);
     font-size: 12px;
     font-weight: 800;
     text-align: center;
@@ -306,6 +306,6 @@
   }
 
   .error {
-    color: #b42318;
+    color: var(--hs-danger);
   }
 </style>

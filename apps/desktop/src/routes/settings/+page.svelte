@@ -16,10 +16,10 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Settings: session length, breaks, reminders, motion, your study buddy and app updates. Every change saves at once. -->
+<!-- Settings: session length, breaks, reminders, theme, motion, your study buddy and app updates. Every change saves at once. -->
 <script lang="ts">
   import { MASCOTS } from "@headstart/content";
-  import { FOCUS_LENGTHS, REMIND_BEFORE, type Settings } from "@headstart/core";
+  import { FOCUS_LENGTHS, REMIND_BEFORE, type Settings, type Theme } from "@headstart/core";
   import { lookFor, Mascot, MASCOT_NAMES, MASCOT_TINTS } from "@headstart/ui";
   import Select from "$lib/components/Select.svelte";
   import { useApp } from "$lib/context.ts";
@@ -68,6 +68,15 @@
         label: n === 0 ? "No nudges" : `At most ${n} a day`,
       })),
     },
+  ];
+  const THEME_CHOICES: { value: Theme; label: string; icon: string }[] = [
+    { value: "system", label: "System", icon: "M3 5h18v11H3zM8 20h8M12 16v4" },
+    {
+      value: "light",
+      label: "Light",
+      icon: "M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8",
+    },
+    { value: "dark", label: "Dark", icon: "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" },
   ];
   const motionGroups = [
     {
@@ -159,6 +168,7 @@
         <span class="knob" aria-hidden="true"></span>
       </button>
     </div>
+  </div>
   <div class="row">
     <div class="text">
       <span class="name">Notifications</span>
@@ -167,7 +177,6 @@
     <div class="control">
       <button type="button" class="secondary" onclick={sendTest}>Send a test notification</button>
     </div>
-  </div>
   </div>
 </section>
 
@@ -205,6 +214,27 @@
 
 <section class="card" aria-labelledby="look-h">
   <h2 id="look-h">Look and feel</h2>
+  <div class="row">
+    <div class="text">
+      <span class="name" id="theme-label">Theme</span>
+      <span class="hint">System follows your computer's light or dark mode, and changes with it.</span>
+    </div>
+    <div class="control">
+      <div class="segments" role="group" aria-labelledby="theme-label">
+        {#each THEME_CHOICES as choice (choice.value)}
+          <button
+            type="button"
+            class="segment"
+            aria-pressed={settings.theme === choice.value}
+            onclick={() => settings.theme !== choice.value && save({ theme: choice.value })}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={choice.icon} /></svg>
+            {choice.label}
+          </button>
+        {/each}
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="text">
       <span class="name">Motion</span>
@@ -372,7 +402,7 @@
     padding: 0;
     border: 0;
     border-radius: 999px;
-    background: #c9cfdc;
+    background: var(--hs-field-line);
     cursor: pointer;
     transition: background 0.15s;
   }
@@ -389,12 +419,64 @@
     height: 24px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 1px 3px rgb(27 34 54 / 0.3);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
     transition: transform 0.15s;
   }
 
   .switch[aria-checked="true"] .knob {
     transform: translateX(22px);
+  }
+
+  /* On the light lavender of the dark theme, a dark knob reads better. */
+  :global(:root[data-theme="dark"]) .switch[aria-checked="true"] .knob {
+    background: var(--hs-on-accent);
+  }
+
+  /* The theme choice: the current one is filled, the others are plain. */
+  .segments {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 12px;
+    background: var(--hs-raised);
+    border: 1px solid var(--hs-line);
+  }
+
+  .segment {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--hs-ink-muted);
+    cursor: pointer;
+  }
+
+  .segment svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .segment:not([aria-pressed="true"]):hover {
+    background: var(--hs-surface);
+    color: var(--hs-ink);
+  }
+
+  .segment[aria-pressed="true"] {
+    background: var(--hs-accent);
+    color: var(--hs-on-accent);
+    cursor: default;
   }
 
   .buddies {
@@ -434,7 +516,7 @@
   .primary {
     border: 0;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .secondary {
@@ -450,7 +532,7 @@
 
   .error {
     margin: 0 0 18px;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 

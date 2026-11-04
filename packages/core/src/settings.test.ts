@@ -62,6 +62,17 @@ describe("settings", () => {
     expect(mergeSettings(DEFAULT_SETTINGS, { focusMinutes: 7 })).toEqual(DEFAULT_SETTINGS);
   });
 
+  it("follow the computer's theme until one is picked", async () => {
+    const { engine, run } = await setup();
+    expect(engine.state.settings.theme).toBe("system");
+    await run((s) => changeSettings(s, { theme: "dark" }));
+    expect(engine.state.settings.theme).toBe("dark");
+    expect(changeSettings(engine.state, { theme: "sepia" as unknown as "dark" })).toMatchObject({
+      ok: false,
+      reason: "Unknown theme",
+    });
+  });
+
   it("turn reminders and nudges off", async () => {
     const { engine, run } = await setup();
     await run((s) => createCourse(s, { courseId: "c", name: "Calculus", color: "#255EBC" }));

@@ -241,7 +241,7 @@
     min-height: 42px;
     padding: 0 12px;
     box-sizing: border-box;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 10px;
     background: var(--hs-surface);
     font: inherit;
@@ -289,7 +289,7 @@
     width: 292px;
     box-sizing: border-box;
     padding: 12px;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 16px;
     background: var(--hs-surface);
     box-shadow: var(--hs-shadow-pop);
@@ -363,7 +363,7 @@
   }
 
   .day.outside {
-    color: #8a93a6;
+    color: var(--hs-ink-disabled);
     font-weight: 600;
   }
 
@@ -373,11 +373,11 @@
 
   .day.chosen {
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .day:disabled {
-    color: #c9cfdc;
+    color: var(--hs-field-line);
     cursor: default;
   }
 

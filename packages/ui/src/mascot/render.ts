@@ -760,7 +760,16 @@ function draw(look: MascotLook, mood: Mood): string {
 
   const parts = [
     aura.back,
-    el("ellipse", { cx: 100, cy: 190, rx: 46, ry: 6, fill: "#1B2236", opacity: 0.13 }),
+    // The ground shadow takes its colour from the theme (`.mc-shadow` in styles.css).
+    el("ellipse", {
+      class: "mc-shadow",
+      cx: 100,
+      cy: 190,
+      rx: 46,
+      ry: 6,
+      fill: "#1B2236",
+      opacity: 0.13,
+    }),
     outfit.back,
     lowerBody(species, skin, anim, m),
     outfit.torso,

@@ -308,8 +308,8 @@
   }
 
   .remove:hover {
-    background: #fdecea;
-    color: #b42318;
+    background: var(--hs-danger-soft);
+    color: var(--hs-danger);
   }
 
   .remove svg {
@@ -335,7 +335,7 @@
     min-height: 38px;
     box-sizing: border-box;
     padding: 0 10px;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 10px;
     background: var(--hs-surface);
     font: inherit;
@@ -358,7 +358,7 @@
     border: 0;
     border-radius: 10px;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
     font: inherit;
     font-weight: 800;
     cursor: pointer;
@@ -385,7 +385,7 @@
 
   .error {
     margin: 0;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 

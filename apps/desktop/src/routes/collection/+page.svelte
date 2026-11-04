@@ -264,7 +264,7 @@
               style:border-bottom-color={rarityColors[item.rarity].dot}
               onclick={() => (selectedId = item.id)}
             >
-              <span class="thumb" style:background={owned ? MASCOT_TINTS[previewSpecies(item, mascot ?? "maple")] : "#ECEEF2"}>
+              <span class="thumb" style:background={owned ? MASCOT_TINTS[previewSpecies(item, mascot ?? "maple")] : "var(--hs-neutral-soft)"}>
                 <LazyMascot look={preview(item)} size={96} grey={!owned} />
               </span>
               <span class="item-name">{item.name}</span>
@@ -418,7 +418,7 @@
     margin-bottom: 18px;
     padding: 5px;
     border-radius: 14px;
-    background: #e6e9f1;
+    background: var(--hs-tabs);
   }
 
   .tabs button {
@@ -520,7 +520,7 @@
 
   .chip[aria-pressed="true"] {
     border-color: var(--hs-accent);
-    background: #f1efff;
+    background: var(--hs-pressed);
   }
 
   .dot {
@@ -541,12 +541,12 @@
   }
 
   .tag {
-    background: #eceef2;
-    color: #4b5468;
+    background: var(--hs-neutral-soft);
+    color: var(--hs-neutral-strong);
   }
 
   .tag.only {
-    background: #ffe7a8;
+    background: var(--hs-gold-soft);
     color: var(--hs-ink);
     letter-spacing: 0;
     text-transform: none;
@@ -707,7 +707,7 @@
     border: 0;
     border-radius: 12px;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
     font: inherit;
     font-weight: 800;
     cursor: pointer;
@@ -754,7 +754,7 @@
   .bar {
     height: 8px;
     border-radius: 999px;
-    background: #eceef2;
+    background: var(--hs-neutral-soft);
     overflow: hidden;
   }
 

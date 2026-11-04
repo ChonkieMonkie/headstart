@@ -186,11 +186,11 @@
     border-radius: 18px;
     background: var(--hs-surface);
     color: var(--hs-ink);
-    box-shadow: 0 18px 48px rgb(27 34 54 / 0.25);
+    box-shadow: var(--hs-shadow-dialog);
   }
 
   dialog::backdrop {
-    background: rgb(27 34 54 / 0.4);
+    background: var(--hs-backdrop);
   }
 
   header {

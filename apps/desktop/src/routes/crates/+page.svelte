@@ -19,7 +19,7 @@
 <!-- Crates: open the Study Crates you have earned, with the odds shown before you open one. -->
 <script lang="ts">
   import { formatPercent, type OddsRow } from "@headstart/core";
-  import { lookFor, Mascot, MASCOT_NAMES, previewSpecies, rarityColors, StardustIcon } from "@headstart/ui";
+  import { lookFor, Mascot, MASCOT_NAMES, previewSpecies, rarityColorsLight as rarityColors, StardustIcon } from "@headstart/ui";
   import StudyCrate from "$lib/components/StudyCrate.svelte";
   import { useApp } from "$lib/context.ts";
   import { plural } from "$lib/format.ts";
@@ -364,6 +364,9 @@
   }
 
   .prize {
+    /* The prize card is light in both themes, so the mascot keeps the light shadow. */
+    --hs-mascot-shadow: #1b2236;
+    --hs-mascot-shadow-opacity: 0.13;
     position: relative;
     display: flex;
     align-items: center;

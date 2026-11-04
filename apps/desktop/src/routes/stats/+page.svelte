@@ -20,6 +20,7 @@
 <script lang="ts">
   import { courseLabel } from "$lib/options.ts";
   import { formatMinutes } from "@headstart/core";
+  import { courseColor } from "@headstart/ui";
   import { useApp } from "$lib/context.ts";
   import { plural, shortDate, weekdayOf } from "$lib/format.ts";
 
@@ -140,14 +141,14 @@
           {@const course = study.course(row.courseId)}
           <li>
             <span class="bar-name">
-              <span class="dot" style:background={course?.color ?? "#8A93A6"} aria-hidden="true"></span>
+              <span class="dot" style:background={courseColor(course?.color)} aria-hidden="true"></span>
               {course ? courseLabel(course) : "No course"}
             </span>
             <span class="bar-track">
               <span
                 class="bar"
                 style:width="{(row.minutes / coursePeak) * 100}%"
-                style:background={course?.color ?? "#8A93A6"}
+                style:background={courseColor(course?.color)}
               ></span>
               <span class="bar-value">{formatMinutes(row.minutes)}</span>
             </span>
@@ -289,7 +290,7 @@
     width: 24px;
     min-height: 0;
     border-radius: 4px 4px 0 0;
-    background: #8f84e6;
+    background: var(--hs-chart);
   }
 
   .column.today {
@@ -326,7 +327,7 @@
     padding: 8px 10px;
     border-radius: 10px;
     background: var(--hs-ink);
-    color: #fff;
+    color: var(--hs-surface);
     font-size: 13px;
     white-space: nowrap;
     pointer-events: none;

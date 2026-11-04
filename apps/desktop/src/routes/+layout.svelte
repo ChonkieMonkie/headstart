@@ -36,6 +36,7 @@
   import { provideApp } from "$lib/context.ts";
   import { Study } from "$lib/study.svelte.ts";
   import { inTauri } from "$lib/tauri.ts";
+  import { followTheme } from "$lib/theme.ts";
   import { Updater } from "$lib/updater.svelte.ts";
 
   let { children }: { children: Snippet } = $props();
@@ -52,6 +53,11 @@
     if (study?.ready && onboarding === null) {
       onboarding = study.mascot === null && study.courses.length === 0 && (study.state?.completedSessions ?? 0) === 0;
     }
+  });
+
+  // Light, dark or the computer's choice, from Settings.
+  $effect(() => {
+    if (study?.ready) return followTheme(study.settings.theme);
   });
 
   // "Reduce motion" in Settings stills every animation, like the system setting does.
@@ -181,8 +187,8 @@
     margin: 0;
     padding: 16px;
     border-radius: var(--hs-radius-md);
-    background: #fdecea;
-    color: #8a1c13;
+    background: var(--hs-danger-soft);
+    color: var(--hs-danger-strong);
     font-weight: 700;
   }
 </style>

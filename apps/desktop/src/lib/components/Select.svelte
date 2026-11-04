@@ -239,7 +239,7 @@
     position: relative;
     display: inline-block;
     min-width: 0;
-    --line: #c9cfdc;
+    --line: var(--hs-field-line);
     --bg: var(--hs-surface);
     --ink: var(--hs-ink);
     --muted: var(--hs-ink-subtle);

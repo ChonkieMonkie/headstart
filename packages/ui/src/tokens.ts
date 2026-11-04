@@ -40,8 +40,33 @@ export const colors = {
 
 export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "exotic";
 
-/** Rarity colours: `dot` for markers, `fg`/`bg` for readable labels (4.5:1 contrast). */
-export const rarityColors: Record<Rarity, { dot: string; fg: string; bg: string }> = {
+/** A rarity's colours: `dot` for markers, `fg` on `bg` for readable labels (4.5:1 contrast). */
+export interface RarityColors {
+  dot: string;
+  fg: string;
+  bg: string;
+}
+
+const RARITIES: readonly Rarity[] = ["common", "uncommon", "rare", "epic", "legendary", "exotic"];
+
+/**
+ * Rarity colours as CSS variables, so they follow the light or dark theme
+ * (values in styles.css). Use them in styles; use `rarityColorsLight` where a
+ * raw colour is needed or the surface is dark in both themes.
+ */
+export const rarityColors = Object.fromEntries(
+  RARITIES.map((r) => [
+    r,
+    {
+      dot: `var(--hs-rarity-${r}-dot)`,
+      fg: `var(--hs-rarity-${r}-fg)`,
+      bg: `var(--hs-rarity-${r}-bg)`,
+    },
+  ]),
+) as Record<Rarity, RarityColors>;
+
+/** The light-theme rarity colours as plain hex. */
+export const rarityColorsLight: Record<Rarity, RarityColors> = {
   common: { dot: "#8A93A6", fg: "#4B5468", bg: "#ECEEF2" },
   uncommon: { dot: "#2F9E6E", fg: "#1E6B4A", bg: "#E3F4EC" },
   rare: { dot: "#2F7FD8", fg: "#1D5FA8", bg: "#E3EEFA" },
@@ -50,6 +75,20 @@ export const rarityColors: Record<Rarity, { dot: string; fg: string; bg: string 
   // Above Legendary and never in crates; label 6.6:1.
   exotic: { dot: "#D7263D", fg: "#9E1B2D", bg: "#FCE4E7" },
 };
+
+/**
+ * How a stored course colour is shown. The log keeps the colour as picked; on a
+ * dark surface the darker course colours are shown a step lighter (styles.css).
+ * Colours without a dark step are shown as they are.
+ */
+export function courseColor(
+  stored: string | null | undefined,
+  fallback = "var(--hs-ink-disabled)",
+): string {
+  if (!stored) return fallback;
+  if (!/^#[0-9a-f]{6}$/i.test(stored)) return stored;
+  return `var(--hs-course-${stored.slice(1).toLowerCase()}, ${stored})`;
+}
 
 export const fonts = {
   display: "'Fredoka Variable', 'Fredoka', system-ui, sans-serif",

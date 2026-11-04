@@ -196,7 +196,7 @@
     min-height: 42px;
     box-sizing: border-box;
     padding: 0 10px;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 10px;
     background: var(--hs-surface);
     font: inherit;
@@ -268,7 +268,7 @@
   .primary {
     border: 0;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .secondary {
@@ -280,7 +280,7 @@
   .error {
     grid-column: 1 / -1;
     margin: 0;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 

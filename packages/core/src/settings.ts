@@ -34,7 +34,12 @@ export interface Settings {
   maxNudgesPerDay: number;
   /** "system" follows the computer's setting; "reduced" keeps the mascot and crates still. */
   motion: "system" | "reduced";
+  /** "system" follows the computer's light or dark mode; "light" and "dark" stay put. */
+  theme: Theme;
 }
+
+export const THEMES = ["system", "light", "dark"] as const;
+export type Theme = (typeof THEMES)[number];
 
 export const DEFAULT_SETTINGS: Settings = {
   focusMinutes: 25,
@@ -44,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   remindBeforeMinutes: 2,
   maxNudgesPerDay: 3,
   motion: "system",
+  theme: "system",
 };
 
 /** Choices offered on the settings screen. */
@@ -52,7 +58,7 @@ export const REMIND_BEFORE = [1, 2, 5, 10, 15] as const;
 
 /** A settings change, or a reason it is not allowed. */
 export function checkSettings(changes: Partial<Settings>): string | null {
-  const { focusMinutes, remindBeforeMinutes, maxNudgesPerDay, motion } = changes;
+  const { focusMinutes, remindBeforeMinutes, maxNudgesPerDay, motion, theme } = changes;
   if (focusMinutes !== undefined && !(FOCUS_LENGTHS as readonly number[]).includes(focusMinutes)) {
     return "Pick one of the session lengths";
   }
@@ -71,6 +77,7 @@ export function checkSettings(changes: Partial<Settings>): string | null {
   }
   if (motion !== undefined && motion !== "system" && motion !== "reduced")
     return "Unknown motion setting";
+  if (theme !== undefined && !(THEMES as readonly string[]).includes(theme)) return "Unknown theme";
   for (const key of ["autoBreak", "autoStartNext", "chime"] as const) {
     if (changes[key] !== undefined && typeof changes[key] !== "boolean")
       return "Unknown on/off setting";

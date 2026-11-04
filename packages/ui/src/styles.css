@@ -23,20 +23,71 @@
 @import "@fontsource-variable/nunito";
 
 :root {
-  /* Colour */
+  color-scheme: light;
+
+  /* Colour. The dark theme below overrides these; components use only the tokens. */
   --hs-ink: #1b2236;
   --hs-ink-muted: #4a5370;
   --hs-ink-subtle: #5a6378;
+  --hs-ink-disabled: #8a93a6;
   --hs-ground: #f3f5fa;
   --hs-surface: #ffffff;
+  --hs-raised: #f3f5fa;
   --hs-line: #e2e6ef;
+  --hs-field-line: #c9cfdc;
   --hs-accent: #5b4bd6;
+  --hs-on-accent: #ffffff;
   --hs-accent-strong: #4335b0;
   --hs-accent-soft: #eeecfe;
   --hs-lavender: #e9e6fd;
+  --hs-pressed: #f1efff;
+  --hs-tabs: #e6e9f1;
   --hs-success: #2f9e6e;
   --hs-success-strong: #1e6b4a;
   --hs-success-soft: #e3f4ec;
+  --hs-danger: #b42318;
+  --hs-danger-strong: #8a1c13;
+  --hs-danger-soft: #fdecea;
+  --hs-warning-strong: #8f5300;
+  --hs-warning-soft: #fdf0dc;
+  --hs-neutral-strong: #4b5468;
+  --hs-neutral-soft: #eceef2;
+  --hs-gold: #f5c542;
+  --hs-gold-soft: #ffe7a8;
+  --hs-on-gold: #1b2236;
+  --hs-chart: #8f84e6;
+  --hs-backdrop: rgb(27 34 54 / 0.35);
+  --hs-shadow-pop: 0 12px 32px rgb(27 34 54 / 0.22);
+  --hs-shadow-dialog: 0 18px 48px rgb(27 34 54 / 0.25);
+  --hs-mascot-shadow: #1b2236;
+  --hs-mascot-shadow-opacity: 0.13;
+
+  /* Stages behind each mascot (MASCOT_TINTS points here). */
+  --hs-stage-inky: #eeecfe;
+  --hs-stage-axo: #fdeef4;
+  --hs-stage-maple: #fbede4;
+
+  /* Rarity: dot for markers, fg on bg for labels (rarityColors points here). */
+  --hs-rarity-common-dot: #8a93a6;
+  --hs-rarity-common-fg: #4b5468;
+  --hs-rarity-common-bg: #eceef2;
+  --hs-rarity-uncommon-dot: #2f9e6e;
+  --hs-rarity-uncommon-fg: #1e6b4a;
+  --hs-rarity-uncommon-bg: #e3f4ec;
+  --hs-rarity-rare-dot: #2f7fd8;
+  --hs-rarity-rare-fg: #1d5fa8;
+  --hs-rarity-rare-bg: #e3eefa;
+  --hs-rarity-epic-dot: #8b5cf6;
+  --hs-rarity-epic-fg: #6d3fd6;
+  --hs-rarity-epic-bg: #efe9fe;
+  --hs-rarity-legendary-dot: #e8890c;
+  --hs-rarity-legendary-fg: #8f5300;
+  --hs-rarity-legendary-bg: #fdf0dc;
+  --hs-rarity-exotic-dot: #d7263d;
+  --hs-rarity-exotic-fg: #9e1b2d;
+  --hs-rarity-exotic-bg: #fce4e7;
+
+  /* The focus view, crate stage, tray panel and compact timer are dark in both themes. */
   --hs-focus-ground: #1b1f3b;
   --hs-focus-surface: #232850;
   --hs-focus-accent: #a99bff;
@@ -57,7 +108,89 @@
   --hs-space-4: 16px;
   --hs-space-5: 24px;
   --hs-space-6: 32px;
-  --hs-shadow-pop: 0 12px 32px rgb(27 34 54 / 0.22);
+}
+
+/*
+ * The dark theme ("Graphite"), picked on the design canvas. Each value is its own
+ * step, checked for contrast: every text colour passes 4.5 : 1 on ground,
+ * surface and raised. Set by the layout as data-theme on <html>.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --hs-ink: #eef0f8;
+  --hs-ink-muted: #bcc2d9;
+  --hs-ink-subtle: #a0a8c3;
+  --hs-ink-disabled: #868da0;
+  --hs-ground: #131417;
+  --hs-surface: #1c1e23;
+  --hs-raised: #26292f;
+  --hs-line: #34373f;
+  --hs-field-line: #4a4e59;
+  --hs-accent: #a99bff;
+  --hs-on-accent: #15183a;
+  --hs-accent-strong: #c3b9ff;
+  --hs-accent-soft: #2b2950;
+  --hs-lavender: #2b2950;
+  --hs-pressed: #2b2950;
+  --hs-tabs: #26292f;
+  --hs-success: #4cc38a;
+  --hs-success-strong: #7adba9;
+  --hs-success-soft: #173328;
+  --hs-danger: #ff8a80;
+  --hs-danger-strong: #ffb4ab;
+  --hs-danger-soft: #3d1f22;
+  --hs-warning-strong: #f8c77e;
+  --hs-warning-soft: #3d2c12;
+  --hs-neutral-strong: #c8cedb;
+  --hs-neutral-soft: #2c2f36;
+  --hs-gold-soft: #3d2c12;
+  --hs-chart: #8f84e6;
+  --hs-backdrop: rgb(0 0 0 / 0.6);
+  --hs-shadow-pop: 0 12px 32px rgb(0 0 0 / 0.5);
+  --hs-shadow-dialog: 0 18px 48px rgb(0 0 0 / 0.55);
+  --hs-mascot-shadow: #000000;
+  --hs-mascot-shadow-opacity: 0.35;
+
+  --hs-stage-inky: #272452;
+  --hs-stage-axo: #38212f;
+  --hs-stage-maple: #3a2a2e;
+
+  --hs-rarity-common-dot: #9aa3b5;
+  --hs-rarity-common-fg: #c8cedb;
+  --hs-rarity-common-bg: #2a3047;
+  --hs-rarity-uncommon-dot: #4cc38a;
+  --hs-rarity-uncommon-fg: #86e0b4;
+  --hs-rarity-uncommon-bg: #173b30;
+  --hs-rarity-rare-dot: #4b95ea;
+  --hs-rarity-rare-fg: #9cc6f7;
+  --hs-rarity-rare-bg: #18304f;
+  --hs-rarity-epic-dot: #a283fa;
+  --hs-rarity-epic-fg: #cbb8ff;
+  --hs-rarity-epic-bg: #2f2559;
+  --hs-rarity-legendary-dot: #f0a030;
+  --hs-rarity-legendary-fg: #f8c77e;
+  --hs-rarity-legendary-bg: #3d2c12;
+  --hs-rarity-exotic-dot: #e8455a;
+  --hs-rarity-exotic-fg: #ff8e9c;
+  --hs-rarity-exotic-bg: #43161f;
+
+  /*
+   * Course colours are stored in the log as picked. On a dark surface the
+   * darker ones are shown one step lighter (courseColor() points here). Every
+   * pair stays apart for colour-blind readers (ΔE 11) and at 3 : 1 or more.
+   */
+  --hs-course-255ebc: #3d77d7;
+  --hs-course-f28f29: #f99532;
+  --hs-course-227702: #378a21;
+  --hs-course-c24976: #d35985;
+  --hs-course-53c48e: #5aca94;
+}
+
+/* The mascot's ground shadow (renderer class), a touch stronger on dark. */
+.mc-shadow {
+  fill: var(--hs-mascot-shadow);
+  opacity: var(--hs-mascot-shadow-opacity);
 }
 
 *,
@@ -354,7 +487,7 @@ body {
   list-style: none;
   pointer-events: none;
   border-radius: 10px;
-  box-shadow: 0 10px 24px rgb(27 34 54 / 0.22);
+  box-shadow: var(--hs-shadow-pop);
   opacity: 0.95;
   transform: rotate(-1deg);
 }

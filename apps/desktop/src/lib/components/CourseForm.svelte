@@ -20,6 +20,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { COURSE_COLORS, type Course, createCourse, localDayKey, updateCourse } from "@headstart/core";
+  import { courseColor } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
   import DatePicker from "./DatePicker.svelte";
 
@@ -73,7 +74,7 @@
     <legend>Colour</legend>
     <div class="swatches">
       {#each COURSE_COLORS as swatch, i (swatch)}
-        <label class="swatch" style:--swatch={swatch} title={COLOR_NAMES[i]}>
+        <label class="swatch" style:--swatch={courseColor(swatch)} title={COLOR_NAMES[i]}>
           <input type="radio" name="colour" value={swatch} bind:group={color} />
           <span class="visually-hidden">{COLOR_NAMES[i] ?? `Colour ${i + 1}`}</span>
         </label>
@@ -112,7 +113,7 @@
     min-height: 42px;
     box-sizing: border-box;
     padding: 0 10px;
-    border: 1px solid #c9cfdc;
+    border: 1px solid var(--hs-field-line);
     border-radius: 10px;
     background: var(--hs-surface);
     font: inherit;
@@ -189,7 +190,7 @@
   .primary {
     border: 0;
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
   }
 
   .secondary {
@@ -201,7 +202,7 @@
   .error {
     grid-column: 1 / -1;
     margin: 0;
-    color: #b42318;
+    color: var(--hs-danger);
     font-weight: 700;
   }
 

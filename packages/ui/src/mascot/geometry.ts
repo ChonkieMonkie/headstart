@@ -232,9 +232,9 @@ export const MASCOT_SPECIES: Record<MascotId, string> = {
   maple: "red panda",
 };
 
-/** Soft background tint that suits each mascot's starter colours. */
+/** The stage behind each mascot, a soft tint of its starter colours. CSS variables, so they follow the theme (styles.css). */
 export const MASCOT_TINTS: Record<MascotId, string> = {
-  inky: "#EEECFE",
-  axo: "#FDEEF4",
-  maple: "#FBEDE4",
+  inky: "var(--hs-stage-inky)",
+  axo: "var(--hs-stage-axo)",
+  maple: "var(--hs-stage-maple)",
 };

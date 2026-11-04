@@ -17,6 +17,7 @@
 // Options for the dropdowns that pick a task or a course.
 
 import type { Course } from "@headstart/core";
+import { courseColor } from "@headstart/ui";
 import type { SelectGroup } from "./components/Select.svelte";
 import type { Study } from "./study.svelte.ts";
 
@@ -42,7 +43,12 @@ export function taskGroups(
     if (options.courses)
       items.unshift({ value: `course:${course.id}`, label: "Whole course, no task" });
     if (items.length === 0) continue;
-    groups.push({ label: course.name, tag: course.code, color: course.color, options: items });
+    groups.push({
+      label: course.name,
+      tag: course.code,
+      color: courseColor(course.color),
+      options: items,
+    });
   }
   return groups;
 }
