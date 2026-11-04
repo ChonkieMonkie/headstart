@@ -16,7 +16,15 @@
 
 /** Rarities from most to least common. The order matters: it is used for ranking. */
 export const RARITIES = ["common", "uncommon", "rare", "epic", "legendary"] as const;
+/** A rarity that crates can drop. */
 export type Rarity = (typeof RARITIES)[number];
+
+/**
+ * Every rarity an item can have: the crate rarities and, above Legendary,
+ * Exotic. Exotic items are never rolled: they are only granted one by one.
+ */
+export const ITEM_RARITIES = [...RARITIES, "exotic"] as const;
+export type ItemRarity = (typeof ITEM_RARITIES)[number];
 
 export const SLOTS = ["skin", "head", "face", "outfit", "held", "aura"] as const;
 export type Slot = (typeof SLOTS)[number];
@@ -78,6 +86,7 @@ export const WEAR_SHAPES = {
     lanyard: 2,
     lei: 3,
     hoodie: 3,
+    "root-hoodie": 3,
     backpack: 3,
     cape: 3,
     "starlit-cape": 2,
@@ -107,6 +116,7 @@ export const WEAR_SHAPES = {
     snow: 1,
     orbit: 2,
     "stardust-storm": 2,
+    "code-orbit": 2,
   },
 } as const satisfies Record<WearSlot, Record<string, number>>;
 
@@ -159,7 +169,7 @@ export interface Item {
   id: string;
   name: string;
   slot: Slot;
-  rarity: Rarity;
+  rarity: ItemRarity;
   /** One line shown when the item drops or is looked at. */
   description?: string;
   /** How the item is drawn: a `SkinArt` for skins, a `WearArt` for everything else. */
@@ -178,6 +188,11 @@ export interface Item {
   craftable?: boolean;
   /** Defaults to true. False keeps an item out of every crate (for example retired items). */
   dropsFromCrates?: boolean;
+  /**
+   * Only given by a signed grant (every Exotic item). Never drops, cannot be
+   * crafted and stays hidden until it is owned.
+   */
+  grantOnly?: boolean;
 }
 
 export type RarityTable = Record<Rarity, number>;

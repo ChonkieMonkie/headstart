@@ -28,6 +28,7 @@
   import { page } from "$app/state";
   import CompactTimer from "$lib/components/CompactTimer.svelte";
   import StartPicker from "$lib/components/StartPicker.svelte";
+  import DevMenu from "$lib/components/DevMenu.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
   import Onboarding from "$lib/components/Onboarding.svelte";
   import SessionComplete from "$lib/components/SessionComplete.svelte";
@@ -44,6 +45,7 @@
   const updater = isPanel ? null : new Updater();
   if (study && updater) provideApp({ study, updater });
   let version = $state("dev");
+  let devOpen = $state(false);
   /** Shown once on a fresh install, decided when the saved progress has loaded. */
   let onboarding = $state<boolean | null>(null);
   $effect(() => {
@@ -105,6 +107,23 @@
   });
 </script>
 
+<svelte:window
+  onkeydown={(e) => {
+    // The developer menu has no button: only this key combination, and only with a developer token.
+    if (study?.developer && e.code === "KeyD" && e.altKey && e.shiftKey && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      devOpen = !devOpen;
+    }
+  }}
+/>
+
+{#if study?.profile === "debug"}
+  <div class="debug-band" role="status">Debug profile{study.clockOffset ? ` · clock ahead ${Math.round(study.clockOffset / 3_600_000)} h` : ""}</div>
+{/if}
+{#if study?.developer}
+  <DevMenu {study} bind:open={devOpen} />
+{/if}
+
 {#if !study}
   {@render children()}
 {:else if study.layout === "compact" && (study.active || study.breakTimer)}
@@ -130,6 +149,23 @@
 {/if}
 
 <style>
+  .debug-band {
+    position: fixed;
+    z-index: 900;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3px 14px;
+    border-radius: 0 0 10px 10px;
+    background: #d7263d;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
   .shell {
     display: flex;
     min-height: 100vh;

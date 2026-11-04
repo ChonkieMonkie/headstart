@@ -33,7 +33,7 @@ import { createUlidFactory } from "./ids.ts";
 import { type LevelInfo, levelInfo } from "./rewards.ts";
 import { createRng, randomIndex } from "./rng.ts";
 import { type CoreContext, owns, unopenedCrates } from "./state.ts";
-import { MemoryEventStore } from "./store.ts";
+import { type EventStore, MemoryEventStore } from "./store.ts";
 
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
@@ -55,6 +55,12 @@ export interface SimulationOptions {
   sessionMinutes?: number;
   /** Local midnight of the first day. */
   start?: Date;
+  /** Where the events go. A fresh memory store by default. */
+  store?: EventStore;
+  /** Device id written on the events. */
+  deviceId?: string;
+  /** Open every crate as it is earned (default), or leave them waiting. */
+  openCrates?: boolean;
 }
 
 export interface SimulationSummary {
@@ -88,8 +94,8 @@ export async function simulateStudy(
     for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(rng() * 256);
   });
   const engine = await StudyEngine.open(
-    new MemoryEventStore(),
-    { deviceId: "simulation", now: () => new Date(now), newId },
+    options.store ?? new MemoryEventStore(),
+    { deviceId: options.deviceId ?? "simulation", now: () => new Date(now), newId },
     ctx,
   );
 
@@ -135,7 +141,7 @@ export async function simulateStudy(
           writeRecall(s, sessionId, "Eigenvalues come from det(A - λI) = 0."),
         );
       }
-      for (const crate of unopenedCrates(engine.state)) {
+      for (const crate of options.openCrates === false ? [] : unopenedCrates(engine.state)) {
         await engine.run((s, c) => openCrate(s, crate.id, c));
       }
     }

@@ -18,7 +18,7 @@
 
 <!-- Collection: dress up the mascot, browse every item (and craft missing ones with Stardust) and follow the sets. -->
 <script lang="ts">
-  import { type Item, MASCOTS, RARITIES, type Slot, SLOTS } from "@headstart/content";
+  import { ITEM_RARITIES, type Item, MASCOTS, type Slot, SLOTS } from "@headstart/content";
   import { craftBlocker, itemFits } from "@headstart/core";
   import {
     itemPreview,
@@ -54,7 +54,9 @@
     held: { title: "Held item", plural: "Held", note: "Study gear in the right hand" },
     aura: { title: "Aura", plural: "Aura", note: "Effects around the mascot" },
   };
-  const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary" };
+  const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary", exotic: "Exotic" };
+  /** Stardust to craft an item. Exotic items are never crafted, so they have no price. */
+  const craftCost = (item: Item) => (item.rarity === "exotic" ? 0 : study.context.crates.craftCost[item.rarity]);
   const TRY_MOODS: Mood[] = ["idle", "focus", "celebrate", "sleepy", "welcome"];
 
   let tab = $state<Tab>("wardrobe");
@@ -72,7 +74,7 @@
     [...study.catalog].sort(
       (a, b) =>
         SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) ||
-        RARITIES.indexOf(a.rarity) - RARITIES.indexOf(b.rarity) ||
+        ITEM_RARITIES.indexOf(a.rarity) - ITEM_RARITIES.indexOf(b.rarity) ||
         a.name.localeCompare(b.name),
     ),
   );
@@ -110,7 +112,7 @@
 
   async function craft(item: Item): Promise<void> {
     const reason = await study.craft(item.id);
-    message = reason ?? `${item.name} crafted for ${study.context.crates.craftCost[item.rarity]} Stardust.`;
+    message = reason ?? `${item.name} crafted for ${craftCost(item)} Stardust.`;
   }
 
   function onTabKey(event: KeyboardEvent, index: number): void {
@@ -257,6 +259,7 @@
             <button
               type="button"
               class="item"
+              class:exotic={item.rarity === "exotic"}
               aria-pressed={selectedId === item.id}
               style:border-bottom-color={rarityColors[item.rarity].dot}
               onclick={() => (selectedId = item.id)}
@@ -303,11 +306,13 @@
                 </button>
               {/if}
             {/if}
+          {:else if selected.grantOnly}
+            <p class="note">Exotic items are never in crates. They are only given, one by one.</p>
           {:else if selected.craftable === false || selected.season}
             <p class="note">Only found in crates. It cannot be crafted.</p>
           {:else}
             <button type="button" class="primary" disabled={blocker !== null} onclick={() => craft(selected)}>
-              Craft for {study.context.crates.craftCost[selected.rarity]} <StardustIcon size={16} />
+              Craft for {craftCost(selected)} <StardustIcon size={16} />
             </button>
             {#if blocker}<p class="note">{blocker}.</p>{/if}
           {/if}
@@ -609,6 +614,32 @@
     font: inherit;
     color: var(--hs-ink);
     cursor: pointer;
+  }
+
+  /* Exotic: a slowly shifting ruby and gold frame. */
+  .item.exotic {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--hs-surface), var(--hs-surface)) padding-box,
+      linear-gradient(120deg, #d7263d, #f5c542, #d7263d, #f5c542) border-box;
+    background-size: 100% 100%, 300% 300%;
+    animation: exotic-frame 6s ease-in-out infinite;
+  }
+
+  @keyframes exotic-frame {
+    0%,
+    100% {
+      background-position: 0 0, 0% 50%;
+    }
+    50% {
+      background-position: 0 0, 100% 50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .item.exotic {
+      animation: none;
+    }
   }
 
   .item[aria-pressed="true"] {

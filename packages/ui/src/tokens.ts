@@ -38,7 +38,7 @@ export const colors = {
   focusTextMuted: "#B8BFD6",
 } as const;
 
-export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
+export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "exotic";
 
 /** Rarity colours: `dot` for markers, `fg`/`bg` for readable labels (4.5:1 contrast). */
 export const rarityColors: Record<Rarity, { dot: string; fg: string; bg: string }> = {
@@ -47,6 +47,8 @@ export const rarityColors: Record<Rarity, { dot: string; fg: string; bg: string 
   rare: { dot: "#2F7FD8", fg: "#1D5FA8", bg: "#E3EEFA" },
   epic: { dot: "#8B5CF6", fg: "#6D3FD6", bg: "#EFE9FE" },
   legendary: { dot: "#E8890C", fg: "#8F5300", bg: "#FDF0DC" },
+  // Above Legendary and never in crates; label 6.6:1.
+  exotic: { dot: "#D7263D", fg: "#9E1B2D", bg: "#FCE4E7" },
 };
 
 export const fonts = {

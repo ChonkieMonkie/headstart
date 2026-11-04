@@ -28,7 +28,8 @@ import {
   type Slot,
 } from "@headstart/content";
 import { NO_PITY, nextPity, type PityState, rarityRank } from "./crates.ts";
-import type { CrateDrop, EventEnvelope, FocusRating } from "./events.ts";
+import { DEVELOPER_KEYS, readGrant } from "./developer.ts";
+import type { CrateDrop, EventEnvelope, FocusRating, StudyEvent } from "./events.ts";
 import {
   type LevelInfo,
   levelInfo,
@@ -48,6 +49,10 @@ export interface CoreContext {
   catalog: readonly Item[];
   /** Calendar day of a moment, for daily limits. Defaults to the local day. */
   dayKey?: (epochMs: number) => string;
+  /** The debug profile: developer events apply. Never set for the real profile. */
+  debug?: boolean;
+  /** Public keys that may sign grants. Defaults to DEVELOPER_KEYS. */
+  developerKeys?: readonly string[];
 }
 
 export interface SessionRecord {
@@ -514,6 +519,22 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       state.inventory.set(event.itemId, (state.inventory.get(event.itemId) ?? 0) + 1);
       return;
     }
+    case "item.granted": {
+      // Checked on every replay: only a signed grant for this installation counts.
+      const grant = readGrant(event.grant, ctx.developerKeys ?? DEVELOPER_KEYS);
+      if (!grant || grant.installId !== envelope.deviceId) return;
+      const item = ctx.catalog.find((i) => i.id === grant.itemId);
+      if (!item?.grantOnly || owns(state, item.id)) return;
+      state.inventory.set(item.id, 1);
+      return;
+    }
+    case "dev.item.given":
+    case "dev.item.taken":
+    case "dev.crate.added":
+    case "dev.stardust.set":
+    case "dev.xp.added":
+      if (ctx.debug) applyDeveloperEvent(state, event, envelope.id, at);
+      return;
     case "item.equipped": {
       const slots = state.equipped[event.mascot];
       if (event.itemId === null) delete slots[event.slot];
@@ -647,6 +668,46 @@ function newTodo(
     sessionId: null,
     order: state.nextTodoOrder++,
   };
+}
+
+type DeveloperEvent = Extract<StudyEvent, { type: `dev.${string}` }>;
+
+/** The developer menu's changes, for the debug profile only. */
+function applyDeveloperEvent(
+  state: ProgressState,
+  event: DeveloperEvent,
+  eventId: string,
+  at: number,
+): void {
+  switch (event.type) {
+    case "dev.item.given":
+      state.inventory.set(event.itemId, Math.max(1, state.inventory.get(event.itemId) ?? 0));
+      return;
+    case "dev.item.taken":
+      state.inventory.delete(event.itemId);
+      for (const slots of Object.values(state.equipped)) {
+        for (const slot of Object.keys(slots) as (keyof typeof slots)[]) {
+          if (slots[slot] === event.itemId) delete slots[slot];
+        }
+      }
+      return;
+    case "dev.crate.added":
+      state.crates.push({
+        id: event.crateId,
+        type: event.crateType,
+        seed: eventId,
+        earnedAt: at,
+        openedAt: null,
+        drops: [],
+      });
+      return;
+    case "dev.stardust.set":
+      state.stardust = event.amount;
+      return;
+    case "dev.xp.added":
+      state.xp += event.xp;
+      return;
+  }
 }
 
 /** Sorts to-dos by their place in the lists, the oldest first on a tie. */

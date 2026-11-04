@@ -295,6 +295,30 @@ body {
     transform: rotate(-360deg);
   }
 }
+/* Exotic: a heartbeat (two beats, then rest) and a slow breath. */
+@keyframes mc-beat {
+  0%,
+  28%,
+  56%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.2);
+  }
+  42% {
+    transform: scale(1.12);
+  }
+}
+@keyframes mc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   [style*="mc-"] {
     animation: none !important;

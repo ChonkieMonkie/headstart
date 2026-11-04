@@ -20,6 +20,7 @@
 import {
   CRATE_TYPES,
   type CrateRules,
+  ITEM_RARITIES,
   type Item,
   type ItemSet,
   MASCOTS,
@@ -161,7 +162,7 @@ export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[]
       id,
       name: raw.name,
       slot,
-      rarity: oneOf(raw.rarity, RARITIES, `items.${id}.rarity`),
+      rarity: oneOf(raw.rarity, ITEM_RARITIES, `items.${id}.rarity`),
       art:
         slot === "skin"
           ? skinArt(raw.art, `items.${id}.art`)
@@ -182,7 +183,13 @@ export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[]
         item[key] = v;
       }
     }
-    for (const key of ["animated", "starter", "craftable", "dropsFromCrates"] as const) {
+    for (const key of [
+      "animated",
+      "starter",
+      "craftable",
+      "dropsFromCrates",
+      "grantOnly",
+    ] as const) {
       const v = raw[key];
       if (v !== undefined) {
         if (typeof v !== "boolean") fail(`items.${id}.${key}`, "expected true or false");
@@ -191,6 +198,16 @@ export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[]
     }
     if (item.set !== undefined && sets && !sets.some((set) => set.id === item.set)) {
       fail(`items.${id}.set`, `unknown set "${item.set}"`);
+    }
+    // Exotic and grant-only go together, and such items can never be rolled or crafted.
+    if ((item.rarity === "exotic") !== (item.grantOnly === true)) {
+      fail(`items.${id}`, "Exotic items, and only those, are grant-only");
+    }
+    if (
+      item.grantOnly &&
+      (item.craftable === true || item.dropsFromCrates === true || item.set || item.season)
+    ) {
+      fail(`items.${id}`, "a grant-only item cannot drop, be crafted or belong to a set or season");
     }
     if (item.slot === "skin" && item.fits?.length !== 1) {
       fail(`items.${id}`, "a skin must fit exactly one mascot");

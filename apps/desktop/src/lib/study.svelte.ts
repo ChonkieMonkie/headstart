@@ -34,6 +34,7 @@ import {
   type CrateDrop,
   changeSettings,
   chooseMascot,
+  claimGrant,
   collectionCount,
   completeSession,
   completeTask,
@@ -44,6 +45,7 @@ import {
   createTodo,
   createUlidFactory,
   DEFAULT_SETTINGS,
+  type DeveloperToken,
   defaultContext,
   deleteTodo,
   type EarnedCrate,
@@ -72,6 +74,8 @@ import {
   plansOn,
   planToStartNow,
   rateSession,
+  readDeveloperToken,
+  readGrant,
   remainingMs,
   reminderRules,
   reopenTodo,
@@ -84,6 +88,7 @@ import {
   type StudyStats,
   sessionInBlock,
   setProgress,
+  simulateStudy,
   startSession,
   type Task,
   TIMER_PRESETS,
@@ -99,6 +104,14 @@ import {
   writeRecall,
 } from "@headstart/core";
 import { lookFor, MASCOT_NAMES, type MascotLook, type Mood } from "@headstart/ui";
+import {
+  moveClock,
+  type Profile,
+  saveClockOffset,
+  savedClockOffset,
+  savedProfile,
+  saveProfile,
+} from "./debug-clock.ts";
 import { clockTime } from "./format.ts";
 import { mascotLine, mascotMood } from "./mascot.ts";
 import { courseLabel } from "./options.ts";
@@ -107,6 +120,7 @@ import {
   listenToShell,
   type PanelSnapshot,
   publishPanel,
+  readDeveloperTokenFile,
   setFocusLayout,
   setReminders,
   setTimer,
@@ -114,7 +128,7 @@ import {
   type TrayAction,
   takeLaunchStart,
 } from "./shell.ts";
-import { SqliteEventStore } from "./storage/sqlite.ts";
+import { DEBUG_DATABASE_URL, SqliteEventStore } from "./storage/sqlite.ts";
 import { inTauri } from "./tauri.ts";
 
 const MINUTE = 60_000;
@@ -532,8 +546,10 @@ export class Study {
     return this.state?.inventory.get(itemId) ?? 0;
   }
 
+  /** Every item there is to find. Grant-only (Exotic) items only once you own them. */
   get catalog(): readonly Item[] {
-    return catalog;
+    const state = this.state;
+    return catalog.filter((i) => !i.grantOnly || (state !== null && owns(state, i.id)));
   }
 
   item(id: string | null): Item | null {
@@ -593,14 +609,43 @@ export class Study {
       let store: EventStore;
       let deviceId: string;
       if (inTauri) {
-        const sqlite = await SqliteEventStore.open();
-        deviceId = await sqlite.deviceId(() => this.#newId());
-        store = sqlite;
+        const real = await SqliteEventStore.open();
+        this.#installId = await real.deviceId(() => this.#newId());
+        // The developer menu needs a token signed for this installation.
+        const token = await readDeveloperTokenFile();
+        this.developer = token ? readDeveloperToken(token, this.#installId) : null;
+        this.profile = this.developer ? savedProfile() : "real";
+        if (this.profile === "debug") {
+          const debug = await SqliteEventStore.open(DEBUG_DATABASE_URL);
+          this.#debugStore = debug;
+          store = debug;
+          deviceId = await debug.deviceId(() => this.#newId());
+        } else {
+          store = real;
+          deviceId = this.#installId;
+        }
       } else {
         store = new MemoryEventStore();
         deviceId = "browser-preview";
+        this.#installId = deviceId;
+        // In the dev server only, ?developer opens a debug profile in memory to work on the menu.
+        if (import.meta.env.DEV && new URLSearchParams(location.search).has("developer")) {
+          this.developer = {
+            v: 1,
+            kind: "developer",
+            installId: deviceId,
+            issuedAt: "",
+            grants: [],
+          };
+          this.profile = "debug";
+        }
       }
-      this.engine = await StudyEngine.open(store, { deviceId, newId: this.#newId }, defaultContext);
+      if (this.profile === "debug") {
+        this.#clockOffset = savedClockOffset();
+        moveClock(this.#clockOffset);
+      }
+      const ctx = this.profile === "debug" ? { ...defaultContext, debug: true } : defaultContext;
+      this.engine = await StudyEngine.open(store, { deviceId, newId: this.#newId }, ctx);
       this.engine.subscribe(() => this.#refresh());
       this.#stopListening = listenToShell({
         onTrayAction: (action) => this.#onTrayAction(action),
@@ -826,6 +871,122 @@ export class Study {
     this.startingAt = null;
     this.notice = "Done for today. Nice work!";
     this.#sync();
+  }
+
+  // Developer tools. They need a developer token; see packages/core/src/developer.ts.
+
+  /** The developer token for this installation, if there is a valid one. */
+  developer = $state<DeveloperToken | null>(null);
+  /** "debug" is a separate database the developer menu can change freely. */
+  profile = $state<Profile>("real");
+  #installId = "";
+  #debugStore: SqliteEventStore | null = null;
+  /** How far the debug profile's clock is ahead of the computer's. */
+  #clockOffset = 0;
+
+  /** The shell (tray timer, notifications) keeps the computer's own time. */
+  #toShell(ms: number): number {
+    return ms - this.#clockOffset;
+  }
+
+  get clockOffset(): number {
+    return this.#clockOffset;
+  }
+
+  /** Why the profile or clock cannot change now, or null. */
+  #devBusy(): string | null {
+    return this.active || this.breakTimer ? "Finish the session and break first" : null;
+  }
+
+  /** Opens the app again on the other profile. */
+  switchProfile(profile: Profile): string | null {
+    if (!this.developer) return "Needs a developer token";
+    const busy = this.#devBusy();
+    if (busy) return busy;
+    saveProfile(profile);
+    location.reload();
+    return null;
+  }
+
+  /** Runs a developer command against the debug profile. */
+  async dev<E extends StudyEvent>(
+    command: (state: ProgressState, ctx: CoreContext) => CommandResult<E>,
+  ): Promise<string | null> {
+    if (this.profile !== "debug") return "Only in the debug profile";
+    const result = await this.run(command);
+    return result.ok ? null : result.reason;
+  }
+
+  /** Moves the debug profile's clock and opens the app again. */
+  jumpClock(ms: number | null): string | null {
+    if (this.profile !== "debug") return "Only in the debug profile";
+    const busy = this.#devBusy();
+    if (busy) return busy;
+    saveClockOffset(ms === null ? 0 : this.#clockOffset + ms);
+    location.reload();
+    return null;
+  }
+
+  /** Adds a simulated week of studying, ending now, to the debug profile. */
+  async simulateWeek(): Promise<string | null> {
+    if (this.profile !== "debug" || !this.#debugStore)
+      return "Only in the debug profile on the desktop";
+    const busy = this.#devBusy();
+    if (busy) return busy;
+    const start = new Date(Date.now() - 7 * 24 * 60 * MINUTE);
+    start.setHours(0, 0, 0, 0);
+    await simulateStudy({
+      ctx: defaultContext,
+      seed: this.#newId(),
+      weeks: 1,
+      sessionsPerDay: [1, 4],
+      start,
+      store: this.#debugStore,
+      deviceId: `simulation-${this.#newId()}`,
+      openCrates: false,
+    });
+    location.reload();
+    return null;
+  }
+
+  /** Empties the debug profile and resets its clock. The real profile is never touched. */
+  async resetDebugProfile(): Promise<string | null> {
+    if (this.profile !== "debug") return "Only in the debug profile";
+    const busy = this.#devBusy();
+    if (busy) return busy;
+    await this.#debugStore?.clearDebugProfile();
+    saveClockOffset(0);
+    location.reload();
+    return null;
+  }
+
+  /** The developer items in the token that this profile does not have yet. */
+  get unclaimedGrants(): Item[] {
+    const state = this.state;
+    if (!state || !this.developer || this.profile !== "real") return [];
+    return this.developer.grants
+      .map((grant) => readGrant(grant))
+      .filter(
+        (grant) =>
+          grant !== null && grant.installId === this.#installId && !owns(state, grant.itemId),
+      )
+      .map((grant) => catalog.find((i) => i.id === grant?.itemId))
+      .filter((item): item is Item => item !== undefined);
+  }
+
+  /** Claims every grant in the token for the real profile. Returns the items received. */
+  async claimDeveloperGrants(): Promise<{ items: Item[]; error: string | null }> {
+    if (!this.developer || this.profile !== "real")
+      return { items: [], error: "Only in the real profile" };
+    const items: Item[] = [];
+    for (const grant of this.developer.grants) {
+      const result = await this.run((s, c) => claimGrant(s, grant, c, this.#installId));
+      if (!result.ok) continue;
+      const id = readGrant(grant)?.itemId;
+      const item = catalog.find((i) => i.id === id);
+      if (item) items.push(item);
+    }
+    return { items, error: items.length === 0 ? "Nothing new to claim" : null };
   }
 
   /** The number the next session gets today, counting from 1. */
@@ -1070,7 +1231,7 @@ export class Study {
         if (reminder.kind === "soon") {
           return {
             id: reminder.id,
-            at: reminder.at,
+            at: this.#toShell(reminder.at),
             title: `Starting at ${clockTime(reminder.plan.startAt)}`,
             body: task?.nextStep
               ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
@@ -1079,7 +1240,7 @@ export class Study {
         }
         return {
           id: reminder.id,
-          at: reminder.at,
+          at: this.#toShell(reminder.at),
           title: `Still up for ${what}?`,
           body: "How about just 5 minutes? You can stop after that.",
         };
@@ -1095,7 +1256,7 @@ export class Study {
       const minutes = Math.round((this.active.plannedMs + this.active.extendedMs) / MINUTE);
       return {
         kind: "focus",
-        endsAt: this.active.pausedAt === null ? now + left : null,
+        endsAt: this.active.pausedAt === null ? this.#toShell(now + left) : null,
         remainingMs: left,
         totalMs: this.active.plannedMs + this.active.extendedMs,
         ...this.#focusDoneText(minutes),
@@ -1105,7 +1266,7 @@ export class Study {
     if (this.breakTimer) {
       return {
         kind: "break",
-        endsAt: this.breakTimer.endsAt,
+        endsAt: this.#toShell(this.breakTimer.endsAt),
         remainingMs: this.breakTimer.endsAt - now,
         totalMs: this.breakTimer.minutes * MINUTE,
         doneTitle: "Break is over",

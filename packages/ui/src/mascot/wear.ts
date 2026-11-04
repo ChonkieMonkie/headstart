@@ -58,6 +58,21 @@ const SHINE = (d: string, opacity = 0.35) =>
   });
 const TWINKLE = (delay = 0) => animate("mc-twinkle", 2, delay);
 
+/** The gold on Exotic items. */
+const EXOTIC_GOLD = "#F5C542";
+
+/** The "</>" code sign as strokes, centred on (x, y). */
+function codeSign(x: number, y: number, s: number, color: string, width: number): string {
+  return el("path", {
+    d: `M${x - 5 * s} ${y - 4 * s} L${x - 9 * s} ${y} L${x - 5 * s} ${y + 4 * s} M${x - 1.2 * s} ${y + 5 * s} L${x + 1.2 * s} ${y - 5 * s} M${x + 5 * s} ${y - 4 * s} L${x + 9 * s} ${y} L${x + 5 * s} ${y + 4 * s}`,
+    fill: "none",
+    stroke: color,
+    "stroke-width": width,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+  });
+}
+
 // ─── Head ──────────────────────────────────────────────────────────────────
 
 function beanie(main: string, cuff: string, stripes: boolean): string {
@@ -928,6 +943,23 @@ const OUTFIT: ShapeTable<"outfit"> = {
     };
   },
 
+  // Exotic: the developer hoodie. Its code emblem beats like a heart.
+  "root-hoodie": (ctx) => {
+    const base = OUTFIT.hoodie(ctx);
+    const lift = ctx.species === "axo" ? -6 : 0;
+    const beat = `transform-box: fill-box; transform-origin: center; ${animate("mc-beat", 1.4)}`;
+    return {
+      ...base,
+      torso:
+        (base.torso ?? "") +
+        g(
+          { transform: `translate(0 ${lift})` },
+          el("circle", { cx: 100, cy: 158, r: 13, fill: EXOTIC_GOLD, opacity: 0.35, style: beat }),
+          g({ style: beat }, codeSign(100, 158, 0.95, EXOTIC_GOLD, 2.6)),
+        ),
+    };
+  },
+
   backpack: (ctx) => {
     const [left, right] = ctx.geo.shoulders;
     const strap = (x: number, y: number) =>
@@ -1469,6 +1501,75 @@ const AURA: ShapeTable<"aura"> = {
         ),
     };
   },
+
+  "code-orbit": codeOrbit,
 };
+
+// Exotic: code signs circling the mascot, each turning back so it stays upright.
+function codeOrbit(ctx: WearContext): WearParts {
+  const signs = [
+    [100, 10, "{}"],
+    [194, 104, "</>"],
+    [100, 198, ";"],
+    [6, 104, "</>"],
+  ] as const;
+  let ring = "";
+  signs.forEach(([x, y, sign], i) => {
+    const badge =
+      outlined("circle", { cx: x, cy: y, r: 11, fill: i % 2 ? c(ctx, 1) : c(ctx, 0) }, 2.2) +
+      (sign === "</>"
+        ? codeSign(x, y, 0.62, "#FF8A98", 1.9)
+        : el(
+            "text",
+            {
+              x,
+              y: y + 4.6,
+              "text-anchor": "middle",
+              "font-family": "monospace",
+              "font-weight": 700,
+              "font-size": 13,
+              fill: "#FFFFFF",
+            },
+            sign,
+          ));
+    ring += g(
+      {
+        style: `transform-box: fill-box; transform-origin: center; ${animate("mc-spin-back", 14, 0, "linear")}`,
+      },
+      badge,
+    );
+  });
+  return {
+    back:
+      el("circle", { cx: 100, cy: 104, r: 96, fill: c(ctx, 0), opacity: 0.09 }) +
+      el("circle", {
+        cx: 100,
+        cy: 104,
+        r: 74,
+        fill: c(ctx, 0),
+        opacity: 0.12,
+        style: `transform-box: fill-box; transform-origin: center; ${animate("mc-breathe", 3)}`,
+      }) +
+      el("circle", {
+        cx: 100,
+        cy: 104,
+        r: 94,
+        fill: "none",
+        stroke: c(ctx, 0),
+        opacity: 0.45,
+        "stroke-width": 2,
+        "stroke-dasharray": "3 7",
+      }),
+    front:
+      g(
+        {
+          style: `transform-origin: 100px 104px; transform-box: view-box; ${animate("mc-spin", 14, 0, "linear")}`,
+        },
+        ring,
+      ) +
+      outlined("path", { d: sparkle(160, 30, 5), fill: EXOTIC_GOLD, style: TWINKLE() }, 1.4) +
+      outlined("path", { d: sparkle(36, 176, 4), fill: EXOTIC_GOLD, style: TWINKLE(1) }, 1.2),
+  };
+}
 
 export const WEAR_DRAWINGS = { head: HEAD, face: FACE, outfit: OUTFIT, held: HELD, aura: AURA };

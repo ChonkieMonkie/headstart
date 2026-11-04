@@ -23,7 +23,9 @@ import { createInitialState } from "./state.ts";
 describe("collection progress", () => {
   it("starts with only the three starter skins", () => {
     const state = createInitialState(defaultContext);
-    expect(collectionCount(state, items)).toEqual({ owned: 3, total: items.length });
+    // Grant-only (Exotic) items are not part of the count.
+    const counted = items.filter((i) => !i.grantOnly).length;
+    expect(collectionCount(state, items)).toEqual({ owned: 3, total: counted });
     expect(slotCount(state, items, "skin").owned).toBe(3);
     expect(slotCount(state, items, "head").owned).toBe(0);
   });
@@ -44,8 +46,9 @@ describe("collection progress", () => {
       id: "head.retired",
       dropsFromCrates: false,
     } as (typeof items)[number];
-    expect(collectionCount(state, [...items, retired]).total).toBe(items.length);
+    const counted = items.filter((i) => !i.grantOnly).length;
+    expect(collectionCount(state, [...items, retired]).total).toBe(counted);
     state.inventory.set("head.retired", 1);
-    expect(collectionCount(state, [...items, retired]).total).toBe(items.length + 1);
+    expect(collectionCount(state, [...items, retired]).total).toBe(counted + 1);
   });
 });

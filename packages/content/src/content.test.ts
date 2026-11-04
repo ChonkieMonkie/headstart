@@ -99,6 +99,18 @@ describe("validation", () => {
     expect(() => validateItems([item, item])).toThrow(ContentError);
   });
 
+  it("keeps Exotic for grant-only items that never drop or craft", () => {
+    expect(validateItems([{ ...item, rarity: "exotic", grantOnly: true }])[0]?.grantOnly).toBe(
+      true,
+    );
+    expect(() => validateItems([{ ...item, rarity: "exotic" }])).toThrow(/grant-only/);
+    expect(() => validateItems([{ ...item, grantOnly: true }])).toThrow(/grant-only/);
+    expect(() =>
+      validateItems([{ ...item, rarity: "exotic", grantOnly: true, craftable: true }]),
+    ).toThrow(/cannot drop/);
+    expect(items.filter((i) => i.rarity === "exotic").every((i) => i.grantOnly)).toBe(true);
+  });
+
   it("rejects unknown rarities and slots", () => {
     expect(() => validateItems([{ ...item, rarity: "mythic" }])).toThrow(/rarity/);
     expect(() => validateItems([{ ...item, slot: "tail" }])).toThrow(/slot/);

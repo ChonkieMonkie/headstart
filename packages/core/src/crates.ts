@@ -124,7 +124,7 @@ export function itemFits(item: Item, mascot: MascotId): boolean {
 /** Items a crate of this kind can drop. */
 export function cratePool(definition: CrateDefinition, catalog: readonly Item[]): Item[] {
   return catalog.filter((item) => {
-    if (item.starter || item.dropsFromCrates === false) return false;
+    if (item.starter || item.grantOnly || item.dropsFromCrates === false) return false;
     return definition.pool === "seasonal" ? item.season !== undefined : item.season === undefined;
   });
 }
@@ -229,7 +229,14 @@ export function craftBlocker(
 ): string | null {
   if (!item) return "Unknown item";
   if (item.starter) return "You already have this item";
-  if (item.craftable === false || item.season !== undefined) return "This item cannot be crafted";
+  if (
+    item.grantOnly ||
+    item.rarity === "exotic" ||
+    item.craftable === false ||
+    item.season !== undefined
+  ) {
+    return "This item cannot be crafted";
+  }
   if ((owned.get(item.id) ?? 0) > 0) return "You already have this item";
   const cost = rules.craftCost[item.rarity];
   if (stardust < cost) return `Needs ${cost} Stardust, you have ${stardust}`;

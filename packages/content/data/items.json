@@ -1899,5 +1899,31 @@
       "shape": "stardust-storm",
       "colors": ["#A99BFF", "#F5B82E"]
     }
+  },
+  {
+    "id": "outfit.root-hoodie",
+    "name": "Root Hoodie",
+    "slot": "outfit",
+    "rarity": "exotic",
+    "description": "For the people who build Headstart. Its heart beats in code.",
+    "animated": true,
+    "grantOnly": true,
+    "art": {
+      "shape": "root-hoodie",
+      "colors": ["#D7263D", "#8E1527", "#F7D6DA"]
+    }
+  },
+  {
+    "id": "aura.code-orbit",
+    "name": "Code Orbit",
+    "slot": "aura",
+    "rarity": "exotic",
+    "description": "Code circles the ones who wrote it.",
+    "animated": true,
+    "grantOnly": true,
+    "art": {
+      "shape": "code-orbit",
+      "colors": ["#D7263D", "#1B1F3B"]
+    }
   }
 ]

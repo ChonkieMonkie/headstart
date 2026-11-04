@@ -21,6 +21,8 @@ import type { EventEnvelope, EventStore, StudyEvent } from "@headstart/core";
 import Database from "@tauri-apps/plugin-sql";
 
 export const DATABASE_URL = "sqlite:headstart.db";
+/** The debug profile: its own file, so testing never touches real progress. */
+export const DEBUG_DATABASE_URL = "sqlite:headstart-debug.db";
 
 interface EventRow {
   id: string;
@@ -69,6 +71,11 @@ export class SqliteEventStore implements EventStore {
         JSON.stringify(envelope.event),
       ],
     );
+  }
+
+  /** Empties the log. Only ever used to reset the debug profile. */
+  async clearDebugProfile(): Promise<void> {
+    await this.#db.execute("DELETE FROM events");
   }
 
   /** This installation's device id, created on first launch. */

@@ -148,6 +148,11 @@ export async function sendAction(action: TrayAction): Promise<void> {
 }
 
 /** True once if the app was launched with `--start`. */
+/** The developer token file's text, if there is one next to the database. */
+export async function readDeveloperTokenFile(): Promise<string | null> {
+  return inTauri ? invoke<string | null>("read_developer_token") : null;
+}
+
 export async function takeLaunchStart(): Promise<boolean> {
   return inTauri ? invoke<boolean>("take_launch_start") : false;
 }

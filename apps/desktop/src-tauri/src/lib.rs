@@ -57,6 +57,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations(DATABASE_URL, migrations())
+                .add_migrations(DEBUG_DATABASE_URL, migrations())
                 .build(),
         )
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -84,6 +85,7 @@ pub fn run() {
             timer::test_notification,
             focus::set_focus_layout,
             take_launch_start,
+            read_developer_token,
             open_main_window,
             hide_panel,
             quit_app,
@@ -150,6 +152,20 @@ fn take_launch_start(state: State<'_, LaunchStart>) -> bool {
 
 /// The local database. The frontend opens it with the same URL.
 const DATABASE_URL: &str = "sqlite:headstart.db";
+/// The debug profile's database, used only with a developer token.
+const DEBUG_DATABASE_URL: &str = "sqlite:headstart-debug.db";
+
+/// The developer token, if one has been placed next to the database. The UI
+/// checks its signature; without a valid one it is ignored.
+#[tauri::command]
+fn read_developer_token(app: AppHandle) -> Option<String> {
+    let path = app
+        .path()
+        .app_config_dir()
+        .ok()?
+        .join("developer-token.json");
+    std::fs::read_to_string(path).ok()
+}
 
 /// Schema changes, applied in order when the database opens. Never edit a
 /// migration that has shipped: add a new one instead.

@@ -23,6 +23,7 @@
 // - A breaking change needs a new EVENT_SCHEMA and an upgrade step for old events.
 
 import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
+import type { Signed } from "./developer.ts";
 import type { Settings } from "./settings.ts";
 
 export const EVENT_SCHEMA = 1;
@@ -140,6 +141,14 @@ export type StudyEvent =
   | { type: "todo.unassigned"; todoId: string }
   | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
   | { type: "item.crafted"; itemId: string; cost: number }
+  /** A grant-only (Exotic) item, given with a signed grant. Ignored unless the signature checks out. */
+  | { type: "item.granted"; grant: Signed }
+  // Developer tools: only applied in the debug profile (ctx.debug), ignored everywhere else.
+  | { type: "dev.item.given"; itemId: string }
+  | { type: "dev.item.taken"; itemId: string }
+  | { type: "dev.crate.added"; crateId: string; crateType: CrateType }
+  | { type: "dev.stardust.set"; amount: number }
+  | { type: "dev.xp.added"; xp: number }
   | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }
   | { type: "mascot.chosen"; mascot: MascotId }
   /** Only the settings that changed. */

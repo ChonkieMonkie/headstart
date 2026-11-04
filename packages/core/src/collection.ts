@@ -32,11 +32,14 @@ function count(state: ProgressState, items: readonly Item[]): CollectionCount {
   return { owned: items.filter((i) => owns(state, i.id)).length, total: items.length };
 }
 
-/** Items found out of everything in the catalogue (retired items count once found). */
+/**
+ * Items found out of everything in the catalogue (retired items count once
+ * found). Grant-only items are left out: they are shown on their own.
+ */
 export function collectionCount(state: ProgressState, catalog: readonly Item[]): CollectionCount {
   return count(
     state,
-    catalog.filter((i) => i.dropsFromCrates !== false || owns(state, i.id)),
+    catalog.filter((i) => !i.grantOnly && (i.dropsFromCrates !== false || owns(state, i.id))),
   );
 }
 

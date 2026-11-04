@@ -18,8 +18,9 @@
 // return the event to record, or a reason why it is not allowed. They never
 // change anything themselves.
 
-import type { MascotId, Slot } from "@headstart/content";
+import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
 import { craftBlocker, itemFits, rollCrate } from "./crates.ts";
+import { DEVELOPER_KEYS, readGrant, type Signed } from "./developer.ts";
 import type { FocusRating, StudyEvent } from "./events.ts";
 import { checkSettings, type Settings } from "./settings.ts";
 import {
@@ -200,8 +201,66 @@ export function craftItem(
   const item = ctx.catalog.find((i) => i.id === itemId);
   const blocker = craftBlocker(item, state.stardust, state.inventory, ctx.crates);
   if (blocker || !item) return reject(blocker ?? "Unknown item");
-  return accept({ type: "item.crafted", itemId, cost: ctx.crates.craftCost[item.rarity] });
+  // craftBlocker has already turned away Exotic items, which have no price.
+  return accept({
+    type: "item.crafted",
+    itemId,
+    cost: ctx.crates.craftCost[item.rarity as Rarity],
+  });
 }
+
+/** Claims a signed grant for a grant-only item, such as a developer item. */
+export function claimGrant(
+  state: ProgressState,
+  grant: Signed,
+  ctx: CoreContext,
+  installId: string,
+): CommandResult<EventOf<"item.granted">> {
+  const checked = readGrant(grant, ctx.developerKeys ?? DEVELOPER_KEYS);
+  if (!checked) return reject("That grant is not signed");
+  if (checked.installId !== installId) return reject("That grant is for another installation");
+  const item = ctx.catalog.find((i) => i.id === checked.itemId);
+  if (!item?.grantOnly) return reject("Unknown item");
+  if (owns(state, item.id)) return reject("You already have this item");
+  return accept({ type: "item.granted", grant });
+}
+
+/** Developer tools, for the debug profile only. */
+export const developer = {
+  giveItem(itemId: string, ctx: CoreContext): CommandResult<EventOf<"dev.item.given">> {
+    if (!ctx.debug) return reject("Only in the debug profile");
+    if (!ctx.catalog.some((i) => i.id === itemId)) return reject("Unknown item");
+    return accept({ type: "dev.item.given", itemId });
+  },
+  takeItem(
+    state: ProgressState,
+    itemId: string,
+    ctx: CoreContext,
+  ): CommandResult<EventOf<"dev.item.taken">> {
+    if (!ctx.debug) return reject("Only in the debug profile");
+    if (!owns(state, itemId)) return reject("Not owned");
+    return accept({ type: "dev.item.taken", itemId });
+  },
+  addCrate(
+    crateId: string,
+    crateType: CrateType,
+    ctx: CoreContext,
+  ): CommandResult<EventOf<"dev.crate.added">> {
+    if (!ctx.debug) return reject("Only in the debug profile");
+    if (!ctx.crates.crates[crateType]) return reject("Unknown crate");
+    return accept({ type: "dev.crate.added", crateId, crateType });
+  },
+  setStardust(amount: number, ctx: CoreContext): CommandResult<EventOf<"dev.stardust.set">> {
+    if (!ctx.debug) return reject("Only in the debug profile");
+    if (!Number.isInteger(amount) || amount < 0) return reject("A whole number, 0 or more");
+    return accept({ type: "dev.stardust.set", amount });
+  },
+  addXp(xp: number, ctx: CoreContext): CommandResult<EventOf<"dev.xp.added">> {
+    if (!ctx.debug) return reject("Only in the debug profile");
+    if (!Number.isInteger(xp) || xp <= 0) return reject("A whole number above 0");
+    return accept({ type: "dev.xp.added", xp });
+  },
+};
 
 export function equipItem(
   state: ProgressState,
