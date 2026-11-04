@@ -99,6 +99,7 @@
         <button
           type="button"
           aria-pressed={study.profile === profile}
+          class="segment"
           class:debug={profile === "debug"}
           onclick={() => study.profile !== profile && say(study.switchProfile(profile), "")}>{label}</button
         >
@@ -259,7 +260,7 @@
     background: var(--hs-ground);
   }
 
-  .switch button {
+  .switch .segment {
     min-height: 32px;
     padding: 0 16px;
     border: 0;
@@ -268,22 +269,22 @@
     color: var(--hs-ink-muted);
   }
 
-  .switch button:not([aria-pressed="true"]):hover {
+  .switch .segment:not([aria-pressed="true"]):hover {
     background: var(--hs-surface);
     color: var(--hs-ink);
   }
 
-  .switch button[aria-pressed="true"] {
+  .switch .segment[aria-pressed="true"] {
     background: var(--hs-accent);
     color: #fff;
     cursor: default;
   }
 
-  .switch button.debug[aria-pressed="true"] {
+  .switch .segment.debug[aria-pressed="true"] {
     background: #d7263d;
   }
 
-  .switch button:focus-visible {
+  .switch .segment:focus-visible {
     outline-offset: 1px;
   }
 
@@ -299,7 +300,8 @@
     cursor: pointer;
   }
 
-  button:not(:disabled):hover {
+  /* The profile switch has its own hover, below. */
+  button:not(:disabled):not(.segment):hover {
     background: var(--hs-ground);
   }
 
