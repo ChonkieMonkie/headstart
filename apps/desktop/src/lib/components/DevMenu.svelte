@@ -90,11 +90,19 @@
   <header>
     <div>
       <p class="eyebrow">Developer</p>
-      <h2 id="dev-h">{study.profile === "debug" ? "Debug profile" : "Real profile"}</h2>
+      <!-- Focus starts here, not on the profile switch, so no button looks picked by mistake. -->
+      <!-- svelte-ignore a11y_autofocus -->
+      <h2 id="dev-h" tabindex="-1" autofocus>{study.profile === "debug" ? "Debug profile" : "Real profile"}</h2>
     </div>
     <div class="switch" role="group" aria-label="Profile">
-      <button type="button" aria-pressed={study.profile === "real"} onclick={() => say(study.switchProfile("real"), "")}>Real</button>
-      <button type="button" aria-pressed={study.profile === "debug"} onclick={() => say(study.switchProfile("debug"), "")}>Debug</button>
+      {#each [["real", "Real"], ["debug", "Debug"]] as const as [profile, label] (profile)}
+        <button
+          type="button"
+          aria-pressed={study.profile === profile}
+          class:debug={profile === "debug"}
+          onclick={() => study.profile !== profile && say(study.switchProfile(profile), "")}>{label}</button
+        >
+      {/each}
     </div>
   </header>
 
@@ -238,22 +246,45 @@
     margin-bottom: 8px;
   }
 
+  h2:focus {
+    outline: none;
+  }
+
+  /* A segmented switch: the current profile is filled, the other is plain. */
   .switch {
     display: flex;
+    gap: 2px;
     padding: 3px;
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--hs-ground);
   }
 
   .switch button {
     min-height: 32px;
+    padding: 0 16px;
     border: 0;
+    border-radius: 9px;
     background: none;
+    color: var(--hs-ink-muted);
+  }
+
+  .switch button:not([aria-pressed="true"]):hover {
+    background: var(--hs-surface);
+    color: var(--hs-ink);
   }
 
   .switch button[aria-pressed="true"] {
-    background: var(--hs-surface);
-    box-shadow: 0 1px 2px rgb(27 34 54 / 0.12);
+    background: var(--hs-accent);
+    color: #fff;
+    cursor: default;
+  }
+
+  .switch button.debug[aria-pressed="true"] {
+    background: #d7263d;
+  }
+
+  .switch button:focus-visible {
+    outline-offset: 1px;
   }
 
   button {
