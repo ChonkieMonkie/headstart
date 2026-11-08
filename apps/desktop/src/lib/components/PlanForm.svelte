@@ -138,7 +138,7 @@
       <legend>To-dos for this session (optional)</legend>
       <ul class="rows" data-reorder="plan-form">
         {#each todos as todo (todo.id)}
-          <li data-reorder-id={todo.id}>
+          <li class="row" data-reorder-id={todo.id}>
             <DragHandle
               label={todo.text}
               held={keys.held?.id === todo.id}
@@ -222,7 +222,8 @@
     gap: 4px;
   }
 
-  .rows li {
+  /* The row's own class, so the drag ghost (a copy placed in <body>) keeps its layout. */
+  .row {
     display: flex;
     align-items: center;
     gap: 6px;

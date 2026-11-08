@@ -200,7 +200,11 @@
             <button type="submit" class="primary" disabled={saving}>Save and continue</button>
           {/if}
           <button type="button" class="secondary" onclick={() => study.dismissCompletion()}>Skip notes</button>
-          {#if study.breakTimer}
+          {#if study.breakPending}
+            <span class="break">
+              {study.breakPending.long ? "Long break" : "Break"}: {study.breakPending.minutes} min, starts when you are done
+            </span>
+          {:else if study.breakTimer}
             <span class="break" aria-live="off">
               {study.breakTimer.long ? "Long break" : "Break"}: {formatDuration(study.remaining)} left
               <button type="button" class="link" onclick={() => study.skipBreak()}>Skip break</button>

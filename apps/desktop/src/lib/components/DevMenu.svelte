@@ -276,12 +276,14 @@
 
   .switch .segment[aria-pressed="true"] {
     background: var(--hs-accent);
-    color: #fff;
+    color: var(--hs-on-accent);
     cursor: default;
   }
 
+  /* Ruby red in both themes, so white text keeps its contrast. */
   .switch .segment.debug[aria-pressed="true"] {
     background: #d7263d;
+    color: #fff;
   }
 
   .switch .segment:focus-visible {

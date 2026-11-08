@@ -215,6 +215,11 @@ export class Study {
   /** The running session, copied out of the engine so the UI reacts to it. */
   active = $state<ActiveSession | null>(null);
   breakTimer = $state<BreakTimer | null>(null);
+  /**
+   * The break that waits for the reflection: it starts when the "session
+   * complete" notes are saved or skipped, so writing them does not eat it.
+   */
+  breakPending = $state<{ ms: number; minutes: number; long: boolean } | null>(null);
   /** The break is over (or skipped) and the next session waits to be started. */
   breakOver = $state(false);
   /** A start waiting for the user to pick which of the task's to-dos to bring. */
@@ -766,6 +771,7 @@ export class Study {
     this.completion = null;
     this.notice = null;
     this.breakTimer = null;
+    this.breakPending = null;
     this.breakOver = false;
     this.startingAt = null;
     this.#sync();
@@ -867,6 +873,7 @@ export class Study {
   doneForToday(): void {
     this.#blockEndedAt = Date.now();
     this.breakTimer = null;
+    this.breakPending = null;
     this.breakOver = false;
     this.startingAt = null;
     this.notice = "Done for today. Nice work!";
@@ -895,7 +902,9 @@ export class Study {
 
   /** Why the profile or clock cannot change now, or null. */
   #devBusy(): string | null {
-    return this.active || this.breakTimer ? "Finish the session and break first" : null;
+    return this.active || this.breakTimer || this.breakPending
+      ? "Finish the session and break first"
+      : null;
   }
 
   /** Opens the app again on the other profile. */
@@ -1036,11 +1045,22 @@ export class Study {
     }
     if (task && input.taskDone) await this.run((s) => completeTask(s, task.id));
     this.completion = null;
+    this.#startPendingBreak();
     return null;
   }
 
   dismissCompletion(): void {
     this.completion = null;
+    this.#startPendingBreak();
+  }
+
+  /** Starts the break that waited for the reflection, counting from now. */
+  #startPendingBreak(): void {
+    const rest = this.breakPending;
+    if (!rest) return;
+    this.breakPending = null;
+    this.breakTimer = { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long };
+    this.#sync();
   }
 
   /** Switches the window layout. During a session the choice is remembered. */
@@ -1087,10 +1107,14 @@ export class Study {
         };
       }
       const rest = breakAfter(this.#sessionInBlock(), this.#preset);
-      this.breakTimer = engine.state.settings.autoBreak
-        ? { endsAt: Date.now() + rest.ms, minutes: rest.minutes, long: rest.long }
-        : null;
-      this.breakOver = this.breakTimer === null;
+      this.breakTimer = null;
+      this.breakPending = null;
+      this.breakOver = !engine.state.settings.autoBreak;
+      if (engine.state.settings.autoBreak) {
+        this.breakPending = { ms: rest.ms, minutes: rest.minutes, long: rest.long };
+        // Nothing to write about (no record): the break starts right away.
+        if (!this.completion) this.#startPendingBreak();
+      }
       this.#sync();
       if (this.layout !== "normal") await this.setLayout("normal");
     } finally {
@@ -1279,7 +1303,7 @@ export class Study {
     return null;
   }
 
-  /** The notification when a session ends, which is also when the break starts. */
+  /** The notification when a session ends. The break starts once the notes are saved or skipped. */
   #focusDoneText(minutes: number): { doneTitle: string; doneBody: string } {
     if (!this.settings.autoBreak) {
       return {
@@ -1292,7 +1316,7 @@ export class Study {
     const rest = breakAfter(this.#sessionInBlock(running), this.#preset);
     return {
       doneTitle: `${minutes} minutes done! ${rest.long ? "Long break" : "Break"}: ${rest.minutes} min`,
-      doneBody: "Your break has started. Note what you remember, then stand up and stretch.",
+      doneBody: "Note what you remember. Your break starts when you are done.",
     };
   }
 

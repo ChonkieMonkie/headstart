@@ -197,7 +197,7 @@
         {#if todos.length > 0}
           <ul class="todos" data-reorder="session">
             {#each todos as todo (todo.id)}
-              <li data-reorder-id={todo.id}>
+              <li class="todo-row" data-reorder-id={todo.id}>
                 <DragHandle
                   dark
                   label={todo.text}
@@ -341,7 +341,8 @@
     gap: 4px;
   }
 
-  .todos label {
+  /* Styled through the row's own class, so the drag ghost (a copy of the row placed in <body>) looks the same. */
+  .todo-row label {
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -350,21 +351,21 @@
     cursor: pointer;
   }
 
-  .todos li {
+  .todo-row {
     display: flex;
     align-items: flex-start;
     gap: 4px;
   }
 
-  .todos label.done {
+  .todo-row label.done {
     color: var(--hs-focus-text-muted);
   }
 
-  .todos label.done .todo-text {
+  .todo-row label.done .todo-text {
     text-decoration: line-through;
   }
 
-  .todos input {
+  .todo-row input {
     width: 18px;
     height: 18px;
     margin: 2px 0 0;
