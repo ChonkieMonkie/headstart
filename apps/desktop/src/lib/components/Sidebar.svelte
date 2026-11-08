@@ -16,9 +16,9 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Main navigation with the level and Stardust at a glance. Screens that are not built yet are shown, but disabled. -->
+<!-- Main navigation with the level and Insight at a glance. Screens that are not built yet are shown, but disabled. -->
 <script lang="ts">
-  import { Logo, StardustIcon } from "@headstart/ui";
+  import { Logo, InsightIcon } from "@headstart/ui";
   import { page } from "$app/state";
   import { useApp } from "$lib/context.ts";
 
@@ -82,7 +82,7 @@
       <div class="bar" aria-hidden="true">
         <div class="bar-fill" style:width="{(level.xpIntoLevel / level.xpForNextLevel) * 100}%"></div>
       </div>
-      <p class="stardust">{study.summary?.stardust ?? 0} <StardustIcon size={14} /> Stardust</p>
+      <p class="insight">{study.summary?.stardust ?? 0} <InsightIcon size={14} /> Insight</p>
     </div>
   {/if}
 
@@ -246,7 +246,7 @@
   }
 
   .level-xp,
-  .stardust {
+  .insight {
     font-size: 12px;
     font-weight: 700;
     color: var(--hs-ink-subtle);
@@ -265,7 +265,7 @@
     background: var(--hs-accent);
   }
 
-  .stardust {
+  .insight {
     display: flex;
     align-items: center;
     gap: 4px;

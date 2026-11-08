@@ -19,7 +19,7 @@
 <!-- Crates: open the Study Crates you have earned, with the odds shown before you open one. -->
 <script lang="ts">
   import { formatPercent, type OddsRow } from "@headstart/core";
-  import { lookFor, Mascot, MASCOT_NAMES, previewSpecies, rarityColorsLight as rarityColors, StardustIcon } from "@headstart/ui";
+  import { lookFor, Mascot, MASCOT_NAMES, previewSpecies, rarityColorsLight as rarityColors, InsightIcon } from "@headstart/ui";
   import StudyCrate from "$lib/components/StudyCrate.svelte";
   import { useApp } from "$lib/context.ts";
   import { plural } from "$lib/format.ts";
@@ -139,7 +139,7 @@
           {#if look}
             <Mascot {look} mood="celebrate" size={240} />
           {:else}
-            <StardustIcon size={140} label="Stardust" />
+            <InsightIcon size={140} label="Insight" />
           {/if}
         </div>
       </div>
@@ -151,12 +151,12 @@
           {#if item && !drop.duplicate}<span class="tag light new">New</span>{/if}
           {#if drop.duplicate}<span class="tag light dup">Duplicate</span>{/if}
         </div>
-        <h2 aria-live="polite">{item?.name ?? "Stardust"}</h2>
+        <h2 aria-live="polite">{item?.name ?? "Insight"}</h2>
         {#if item?.description}<p class="text">{item.description}</p>{/if}
         {#if drop.stardust > 0}
           <p class="text dust">
-            +{drop.stardust} <StardustIcon size={18} /> Stardust
-            {#if drop.duplicate}<span>You already had this, so it turned into Stardust.</span>{/if}
+            +{drop.stardust} <InsightIcon size={18} /> Insight
+            {#if drop.duplicate}<span>You already had this, so it turned into Insight.</span>{/if}
           </p>
         {/if}
         {#if set && item}
@@ -225,8 +225,8 @@
               {#each crate.drops as d, i (i)}
                 <li>
                   <span class="dot" style:background={rarityColors[d.rarity].dot} aria-hidden="true"></span>
-                  {study.item(d.itemId)?.name ?? "Stardust"}
-                  <span class="muted">{RARITY_LABEL[d.rarity]}{d.duplicate ? ` · +${d.stardust} Stardust` : ""}</span>
+                  {study.item(d.itemId)?.name ?? "Insight"}
+                  <span class="muted">{RARITY_LABEL[d.rarity]}{d.duplicate ? ` · +${d.stardust} Insight` : ""}</span>
                 </li>
               {/each}
             {/each}
@@ -235,7 +235,7 @@
       {/if}
     </div>
   {/if}
-  <p class="footnote">Crates are earned by studying, never sold. Duplicates turn into Stardust automatically.</p>
+  <p class="footnote">Crates are earned by studying, never sold. Duplicates turn into Insight automatically.</p>
 </div>
 
 <style>

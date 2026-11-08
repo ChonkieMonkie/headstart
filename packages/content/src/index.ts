@@ -40,7 +40,7 @@ export const sets = validateSets(setsJson);
 /** The item catalogue, validated when the module loads. */
 export const items = validateItems(itemsJson, sets);
 
-/** Crate definitions, odds, pity limits and Stardust values. */
+/** Crate definitions, odds, pity limits and Insight values. */
 export const crateRules = validateCrateRules(cratesJson);
 
 /** XP, bonus and level rules. */

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+export { default as InsightIcon } from "./InsightIcon.svelte";
 export { default as Logo } from "./Logo.svelte";
 export {
   GEOMETRY,
@@ -26,7 +27,6 @@ export {
 export { itemPreview, lookFor, previewSpecies, starterSkin } from "./mascot/look.ts";
 export { default as Mascot } from "./mascot/Mascot.svelte";
 export { type MascotLook, mascotLabel, renderMascot } from "./mascot/render.ts";
-export { default as StardustIcon } from "./StardustIcon.svelte";
 export {
   colors,
   courseColor,

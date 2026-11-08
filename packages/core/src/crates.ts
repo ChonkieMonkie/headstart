@@ -239,6 +239,6 @@ export function craftBlocker(
   }
   if ((owned.get(item.id) ?? 0) > 0) return "You already have this item";
   const cost = rules.craftCost[item.rarity];
-  if (stardust < cost) return `Needs ${cost} Stardust, you have ${stardust}`;
+  if (stardust < cost) return `Needs ${cost} Insight, you have ${stardust}`;
   return null;
 }

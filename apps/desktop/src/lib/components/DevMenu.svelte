@@ -137,14 +137,14 @@
       </div>
     </section>
     <section>
-      <h3>Crates, Stardust and XP</h3>
+      <h3>Crates, Insight and XP</h3>
       <div class="row">
         <Select bind:value={crateType} groups={crateGroups} label="Crate" />
         <button type="button" onclick={async () => say(await study.dev((_, c) => developer.addCrate(`dev:${study.newId()}`, crateType, c)), "Crate added.")}>Add crate</button>
       </div>
       <div class="row">
-        <input type="number" min="0" step="100" bind:value={stardust} aria-label="Stardust" />
-        <button type="button" onclick={async () => say(await study.dev((_, c) => developer.setStardust(Number(stardust), c)), "Stardust set.")}>Set Stardust</button>
+        <input type="number" min="0" step="100" bind:value={stardust} aria-label="Insight" />
+        <button type="button" onclick={async () => say(await study.dev((_, c) => developer.setStardust(Number(stardust), c)), "Insight set.")}>Set Insight</button>
         <button type="button" onclick={async () => say(await study.dev((_, c) => developer.addXp(100, c)), "+100 XP.")}>+100 XP</button>
         <button type="button" onclick={async () => say(await study.dev((_, c) => developer.addXp(1000, c)), "+1000 XP.")}>+1000 XP</button>
       </div>

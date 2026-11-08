@@ -16,7 +16,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Collection: dress up the mascot, browse every item (and craft missing ones with Stardust) and follow the sets. -->
+<!-- Collection: dress up the mascot, browse every item (and craft missing ones with Insight) and follow the sets. -->
 <script lang="ts">
   import { ITEM_RARITIES, type Item, MASCOTS, type Slot, SLOTS } from "@headstart/content";
   import { craftBlocker, itemFits } from "@headstart/core";
@@ -30,7 +30,7 @@
     type Mood,
     previewSpecies,
     rarityColors,
-    StardustIcon,
+    InsightIcon,
   } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import LazyMascot from "$lib/components/LazyMascot.svelte";
@@ -55,7 +55,7 @@
     aura: { title: "Aura", plural: "Aura", note: "Effects around the mascot" },
   };
   const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary", exotic: "Exotic" };
-  /** Stardust to craft an item. Exotic items are never crafted, so they have no price. */
+  /** Insight to craft an item. Exotic items are never crafted, so they have no price. */
   const craftCost = (item: Item) => (item.rarity === "exotic" ? 0 : study.context.crates.craftCost[item.rarity]);
   const TRY_MOODS: Mood[] = ["idle", "focus", "celebrate", "sleepy", "welcome"];
 
@@ -112,7 +112,7 @@
 
   async function craft(item: Item): Promise<void> {
     const reason = await study.craft(item.id);
-    message = reason ?? `${item.name} crafted for ${craftCost(item)} Stardust.`;
+    message = reason ?? `${item.name} crafted for ${craftCost(item)} Insight.`;
   }
 
   function onTabKey(event: KeyboardEvent, index: number): void {
@@ -130,7 +130,7 @@
   </div>
   <div class="pills">
     <span class="pill">{study.collection.owned} of {study.collection.total} items</span>
-    <span class="pill">{stardust} <StardustIcon size={14} /> Stardust</span>
+    <span class="pill">{stardust} <InsightIcon size={14} /> Insight</span>
   </div>
 </header>
 
@@ -312,15 +312,15 @@
             <p class="note">Only found in crates. It cannot be crafted.</p>
           {:else}
             <button type="button" class="primary" disabled={blocker !== null} onclick={() => craft(selected)}>
-              Craft for {craftCost(selected)} <StardustIcon size={16} />
+              Craft for {craftCost(selected)} <InsightIcon size={16} label="Insight" />
             </button>
             {#if blocker}<p class="note">{blocker}.</p>{/if}
           {/if}
         {:else}
           <h2>Pick an item</h2>
           <p class="note">
-            See where it belongs, put it on your mascot, or craft it with Stardust if you have not found it yet.
-            Duplicates from crates turn into Stardust.
+            See where it belongs, put it on your mascot, or craft it with Insight if you have not found it yet.
+            Duplicates from crates turn into Insight.
           </p>
         {/if}
       </aside>

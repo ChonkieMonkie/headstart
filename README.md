@@ -59,7 +59,7 @@ Pick **Inky**, **Axo** or **Maple** when you first open the app. Your buddy show
   <img src="docs/readme/moods.png" width="900" alt="Maple in seven moods: idle, focus, break, celebrate, nudge, sleepy and welcome">
 </p>
 
-There are **154 items** to find in five themed sets, from simple commons to animated legendary skins. Duplicates turn into **Stardust**, which crafts the exact item you are missing. Bad luck has a ceiling: an Epic is guaranteed within 15 crates and a Legendary within 60, and every drop chance is shown before you open a crate.
+There are **154 items** to find in five themed sets, from simple commons to animated legendary skins. Duplicates turn into **Insight**, which crafts the exact item you are missing. Bad luck has a ceiling: an Epic is guaranteed within 15 crates and a Legendary within 60, and every drop chance is shown before you open a crate.
 
 ## A look inside
 
@@ -101,7 +101,7 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 - **Focus sessions** of 25 or 50 minutes or just 5, with breaks that follow the length, a long break after every fourth session in a row, and an optional automatic start of the next one.
 - **Three ways to focus:** the normal window, full screen that stays on top, or a compact timer you can drag anywhere.
 - **Menu bar and tray:** a progress ring with the countdown beside it on macOS, a panel to run a whole session without opening the app, and a global shortcut (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>, <kbd>⌥⇧H</kbd> on a Mac).
-- **Rewards:** XP and levels, Study Crates, Stardust, crafting and a pity timer.
+- **Rewards:** XP and levels, Study Crates, Insight, crafting and a pity timer.
 - **Light and dark:** a calm dark theme, a light one, or follow your computer. Picked during setup and changeable any time.
 - **Settings:** theme, session length, breaks, reminders, nudges, sound, reduced motion and a test notification.
 - **Updates** install from inside the app.

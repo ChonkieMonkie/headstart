@@ -32,10 +32,11 @@ export type FocusRating = 1 | 2 | 3 | 4 | 5;
 
 /** One item that came out of a crate. Stored in the event so results never change later. */
 export interface CrateDrop {
-  /** Null when no item of the rolled rarity existed; the drop then became Stardust. */
+  /** Null when no item of the rolled rarity existed; the drop then became Insight. */
   itemId: string | null;
   rarity: Rarity;
   duplicate: boolean;
+  /** Insight from this drop (the saved field keeps its old name). */
   stardust: number;
 }
 

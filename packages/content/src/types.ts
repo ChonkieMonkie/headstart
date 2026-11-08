@@ -214,9 +214,9 @@ export interface CrateRules {
   crates: Record<CrateType, CrateDefinition>;
   /** An Epic (or better) is guaranteed within this many crates, a Legendary within the other. */
   pity: { epic: number; legendary: number };
-  /** Stardust you get for a duplicate, by rarity. */
+  /** Insight you get for a duplicate, by rarity (stored as "stardust"). */
   duplicateStardust: RarityTable;
-  /** Stardust it costs to craft an item, by rarity. */
+  /** Insight it costs to craft an item, by rarity. */
   craftCost: RarityTable;
 }
 

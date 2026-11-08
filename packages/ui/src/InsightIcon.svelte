@@ -16,13 +16,13 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- The Stardust symbol: a four-pointed star with a small sparkle beside it. -->
+<!-- The Insight symbol: a tall crystal shard with a front ridge, lit from the top left. -->
 <script lang="ts">
   let { size = 14, label = "" }: { size?: number; label?: string } = $props();
 </script>
 
 <svg
-  class="stardust-icon"
+  class="insight-icon"
   viewBox="0 0 24 24"
   width={size}
   height={size}
@@ -30,24 +30,24 @@
   aria-label={label || undefined}
   aria-hidden={label ? undefined : "true"}
 >
-  <path
-    d="M10 2.5 L12.1 7.9 L17.5 10 L12.1 12.1 L10 17.5 L7.9 12.1 L2.5 10 L7.9 7.9 Z"
-    fill="#F5B82E"
-    stroke="#2A1F2D"
-    stroke-width="1.6"
-    stroke-linejoin="round"
-  />
-  <path
-    d="M18.5 14.5 L19.4 16.6 L21.5 17.5 L19.4 18.4 L18.5 20.5 L17.6 18.4 L15.5 17.5 L17.6 16.6 Z"
-    fill="#A99BFF"
-    stroke="#2A1F2D"
-    stroke-width="1.2"
-    stroke-linejoin="round"
-  />
+  <!-- Faces: light on the left, mid in the middle, dark at the bottom right. -->
+  <polygon points="12 1.6 5.8 7.6 10.6 9.4" fill="#FFFFFF" />
+  <polygon points="12 1.6 10.6 9.4 18.2 7.6" fill="#D4CCFF" />
+  <polygon points="5.8 7.6 10.6 9.4 10.6 18.4 5.8 16.6" fill="#FFFFFF" />
+  <polygon points="10.6 9.4 18.2 7.6 18.2 16.6 10.6 18.4" fill="#D4CCFF" />
+  <polygon points="5.8 16.6 10.6 18.4 12 22.6" fill="#D4CCFF" />
+  <polygon points="10.6 18.4 18.2 16.6 12 22.6" fill="#8E7DFF" />
+  <!-- Facet lines, then the outline on top. -->
+  <g fill="none" stroke="#2A1F2D" stroke-linejoin="round" stroke-linecap="round">
+    <polyline points="12 1.6 10.6 9.4 10.6 18.4 12 22.6" stroke-width="0.9" />
+    <polyline points="5.8 7.6 10.6 9.4 18.2 7.6" stroke-width="0.9" />
+    <polyline points="5.8 16.6 10.6 18.4 18.2 16.6" stroke-width="0.9" />
+    <polygon points="12 1.6 18.2 7.6 18.2 16.6 12 22.6 5.8 16.6 5.8 7.6" stroke-width="1.6" />
+  </g>
 </svg>
 
 <style>
-  .stardust-icon {
+  .insight-icon {
     display: inline-block;
     flex: none;
     vertical-align: -0.15em;

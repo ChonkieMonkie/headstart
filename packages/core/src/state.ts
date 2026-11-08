@@ -140,6 +140,7 @@ export interface EarnedCrate {
 
 export interface ProgressState {
   xp: number;
+  /** Insight balance. The name "stardust" is kept because saved events use it. */
   stardust: number;
   mascot: MascotId | null;
   active: ActiveSession | null;
