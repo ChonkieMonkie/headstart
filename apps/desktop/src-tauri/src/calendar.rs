@@ -43,11 +43,9 @@ pub async fn fetch_calendar(url: String) -> Result<String, String> {
         }))
         .build()
         .map_err(|_| "Could not fetch the calendar".to_string())?;
-    let response = client
-        .get(&url)
-        .send()
-        .await
-        .map_err(|_| "Could not reach the calendar. Check the link and your connection.".to_string())?;
+    let response = client.get(&url).send().await.map_err(|_| {
+        "Could not reach the calendar. Check the link and your connection.".to_string()
+    })?;
     if !response.status().is_success() {
         return Err(format!(
             "The calendar answered with an error ({})",

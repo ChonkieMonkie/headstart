@@ -158,7 +158,10 @@ mod mac {
                     store.requestFullAccessToEventsWithCompletion(RcBlock::as_ptr(&block));
                 } else {
                     #[allow(deprecated)]
-                    store.requestAccessToEntityType_completion(EKEntityType::Event, RcBlock::as_ptr(&block));
+                    store.requestAccessToEntityType_completion(
+                        EKEntityType::Event,
+                        RcBlock::as_ptr(&block),
+                    );
                 }
             }
             let granted = rx
@@ -173,7 +176,8 @@ mod mac {
     fn is_icloud(calendar: &EKCalendar) -> bool {
         unsafe {
             calendar.source().is_some_and(|s| {
-                s.sourceType() == EKSourceType::CalDAV && s.title().to_string().to_lowercase().contains("icloud")
+                s.sourceType() == EKSourceType::CalDAV
+                    && s.title().to_string().to_lowercase().contains("icloud")
             })
         }
     }
@@ -186,7 +190,10 @@ mod mac {
                 .map(|calendar| CalendarInfo {
                     id: calendar.calendarIdentifier().to_string(),
                     title: calendar.title().to_string(),
-                    source: calendar.source().map(|s| s.title().to_string()).unwrap_or_default(),
+                    source: calendar
+                        .source()
+                        .map(|s| s.title().to_string())
+                        .unwrap_or_default(),
                     icloud: is_icloud(&calendar),
                     writable: calendar.allowsContentModifications(),
                 })
@@ -200,15 +207,23 @@ mod mac {
         run(QUICK, move |store| unsafe {
             let sources = store.sources();
             let icloud = sources.iter().find(|s| {
-                s.sourceType() == EKSourceType::CalDAV && s.title().to_string().to_lowercase().contains("icloud")
+                s.sourceType() == EKSourceType::CalDAV
+                    && s.title().to_string().to_lowercase().contains("icloud")
             });
             let fallback = store.defaultCalendarForNewEvents().and_then(|c| c.source());
-            let local = sources.iter().find(|s| s.sourceType() == EKSourceType::Local);
-            let source = icloud.or(fallback).or(local).ok_or("No calendar account found")?;
+            let local = sources
+                .iter()
+                .find(|s| s.sourceType() == EKSourceType::Local);
+            let source = icloud
+                .or(fallback)
+                .or(local)
+                .ok_or("No calendar account found")?;
             let calendar = EKCalendar::calendarForEntityType_eventStore(EKEntityType::Event, store);
             calendar.setTitle(&NSString::from_str(&title));
             calendar.setSource(Some(&source));
-            store.saveCalendar_commit_error(&calendar, true).map_err(reason)?;
+            store
+                .saveCalendar_commit_error(&calendar, true)
+                .map_err(reason)?;
             Ok(calendar.calendarIdentifier().to_string())
         })
     }
@@ -227,7 +242,11 @@ mod mac {
         }
     }
 
-    pub fn events(calendar_ids: Vec<String>, from: f64, to: f64) -> Result<Vec<CalendarEvent>, String> {
+    pub fn events(
+        calendar_ids: Vec<String>,
+        from: f64,
+        to: f64,
+    ) -> Result<Vec<CalendarEvent>, String> {
         run(QUICK, move |store| unsafe {
             let calendars: Vec<Retained<EKCalendar>> = calendar_ids
                 .iter()
@@ -237,15 +256,25 @@ mod mac {
                 return Ok(Vec::new());
             }
             let array = NSArray::from_retained_slice(&calendars);
-            let predicate = store.predicateForEventsWithStartDate_endDate_calendars(&date(from), &date(to), Some(&array));
-            Ok(store.eventsMatchingPredicate(&predicate).iter().filter_map(|e| to_event(&e)).collect())
+            let predicate = store.predicateForEventsWithStartDate_endDate_calendars(
+                &date(from),
+                &date(to),
+                Some(&array),
+            );
+            Ok(store
+                .eventsMatchingPredicate(&predicate)
+                .iter()
+                .filter_map(|e| to_event(&e))
+                .collect())
         })
     }
 
     /// One event by id, or None when it no longer exists.
     pub fn get(id: String) -> Result<Option<CalendarEvent>, String> {
         run(QUICK, move |store| unsafe {
-            Ok(store.eventWithIdentifier(&NSString::from_str(&id)).and_then(|e| to_event(&e)))
+            Ok(store
+                .eventWithIdentifier(&NSString::from_str(&id))
+                .and_then(|e| to_event(&e)))
         })
     }
 
@@ -254,22 +283,33 @@ mod mac {
             let calendar = store
                 .calendarWithIdentifier(&NSString::from_str(&input.calendar_id))
                 .ok_or("The calendar for sessions is gone. Pick one again in Settings.")?;
-            let existing = input.id.as_ref().and_then(|id| store.eventWithIdentifier(&NSString::from_str(id)));
-            let event: Retained<EKEvent> = existing.unwrap_or_else(|| EKEvent::eventWithEventStore(store));
+            let existing = input
+                .id
+                .as_ref()
+                .and_then(|id| store.eventWithIdentifier(&NSString::from_str(id)));
+            let event: Retained<EKEvent> =
+                existing.unwrap_or_else(|| EKEvent::eventWithEventStore(store));
             event.setCalendar(Some(&calendar));
             event.setTitle(Some(&NSString::from_str(&input.title)));
             event.setNotes(Some(&NSString::from_str(&input.notes)));
             event.setStartDate(Some(&date(input.start)));
             event.setEndDate(Some(&date(input.end)));
-            store.saveEvent_span_commit_error(&event, EKSpan::ThisEvent, true).map_err(reason)?;
-            event.eventIdentifier().map(|id| id.to_string()).ok_or("The event was not saved".to_string())
+            store
+                .saveEvent_span_commit_error(&event, EKSpan::ThisEvent, true)
+                .map_err(reason)?;
+            event
+                .eventIdentifier()
+                .map(|id| id.to_string())
+                .ok_or("The event was not saved".to_string())
         })
     }
 
     pub fn delete(id: String) -> Result<(), String> {
         run(QUICK, move |store| unsafe {
             if let Some(event) = store.eventWithIdentifier(&NSString::from_str(&id)) {
-                store.removeEvent_span_commit_error(&event, EKSpan::ThisEvent, true).map_err(reason)?;
+                store
+                    .removeEvent_span_commit_error(&event, EKSpan::ThisEvent, true)
+                    .map_err(reason)?;
             }
             Ok(())
         })
@@ -284,12 +324,13 @@ mod mac {
             let _ = app.emit(EVENT_CHANGED, ());
         });
         unsafe {
-            let observer = NSNotificationCenter::defaultCenter().addObserverForName_object_queue_usingBlock(
-                Some(EKEventStoreChangedNotification),
-                None,
-                None,
-                &block,
-            );
+            let observer = NSNotificationCenter::defaultCenter()
+                .addObserverForName_object_queue_usingBlock(
+                    Some(EKEventStoreChangedNotification),
+                    None,
+                    None,
+                    &block,
+                );
             std::mem::forget(observer);
         }
     }
@@ -328,7 +369,9 @@ mod mac {
 
 pub use mac::watch;
 
-async fn blocking<T: Send + 'static>(work: impl FnOnce() -> Result<T, String> + Send + 'static) -> Result<T, String> {
+async fn blocking<T: Send + 'static>(
+    work: impl FnOnce() -> Result<T, String> + Send + 'static,
+) -> Result<T, String> {
     tauri::async_runtime::spawn_blocking(work)
         .await
         .map_err(|_| "Apple Calendar did not answer".to_string())?
@@ -355,7 +398,11 @@ pub async fn apple_calendar_create(title: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub async fn apple_calendar_events(calendar_ids: Vec<String>, from: f64, to: f64) -> Result<Vec<CalendarEvent>, String> {
+pub async fn apple_calendar_events(
+    calendar_ids: Vec<String>,
+    from: f64,
+    to: f64,
+) -> Result<Vec<CalendarEvent>, String> {
     blocking(move || mac::events(calendar_ids, from, to)).await
 }
 
