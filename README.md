@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/readme/hero.png" width="900" alt="Headstart's Today screen with the next planned session and its to-do, a compact timer floating on top counting down 15:44, the same countdown with a progress ring in the menu bar, and Maple the red panda beside it saying: 15 minutes to your break, you've got this">
+  <img src="docs/readme/hero.png" width="900" alt="Headstart's Week plan: three days of study sessions grouped into blocks around lectures from an imported schedule, with the tasks still to plan beside them. A compact timer floats on top counting down 15:44, the same countdown shows with a progress ring in the menu bar, and Maple the red panda says: 15 minutes to your break. You've got this!">
 </p>
 
 ## Why Headstart
@@ -40,13 +40,30 @@ Headstart turns studying into small, concrete sessions:
 ## How a session works
 
 <p align="center">
-  <img src="docs/readme/loop.png" width="900" alt="Four steps. Plan: a task with its to-dos. Focus: the countdown with Maple. Recall: writing down what you remember and rating your focus. Collect: a Study Crate revealing a rare Telescope">
+  <img src="docs/readme/loop.png" width="900" alt="Four steps. Plan: study blocks in the week plan. Focus: the countdown with Maple. Recall: writing down what you remember and rating your focus. Collect: a Study Crate revealing an epic Study Lantern">
 </p>
 
 1. **Plan.** Add your courses, their tasks and to-dos. Drag a task into the week plan, or drag over free time, and it fills with sessions and breaks.
 2. **Focus.** Start in one click from the app, the menu bar or a keyboard shortcut. Study in the window, in full screen or with a small timer that floats above everything else.
 3. **Recall.** When the timer ends, write down what you remember, rate your focus and tick off what you got done. The rest goes back on the list.
 4. **Collect.** Every three sessions earn a Study Crate. Open it for an item, put it on your buddy, and work towards complete sets.
+
+## Plan your week
+
+<p align="center">
+  <img src="docs/readme/screen-plan.png" width="820" alt="The Week plan showing Monday to Wednesday: study blocks in the colour of each course, such as Mechanics 10:30 to 11:25 as 2 × 25 minutes and Programming 15:30 to 16:55 as 3 × 25 minutes with their breaks marked on the left edge, lectures from the autumn schedule as grey busy time, and a To plan list with tasks sorted by due date and how many sessions each still needs">
+</p>
+<p align="center"><b>Week plan.</b> The next few days, one day or the whole week, with your lectures as busy time and the tasks that still need sessions beside it.</p>
+
+- **Drag to plan.** Drag over free time, or drag a task from To plan into the calendar. Two hours become 4 × 25 minutes with breaks, kept together as one block that you move and change in one go.
+- **Tasks know what is left.** Give a task a rough size or your own number of sessions and a date. To plan shows what is done, planned and still to plan, soonest first.
+- **Your schedule comes along.** Add a TimeEdit, Canvas or other calendar link, or import an `.ics` file, and plan around your lectures. On macOS, every session can also show up in Apple Calendar, on your phone too.
+- **Moves like a calendar.** Swipe with two fingers to go back and forth, and fold To plan away when you only want the calendar.
+
+<p align="center">
+  <img src="docs/readme/screen-lookahead.png" width="820" alt="The weekly look-ahead, step two of four: the week ahead day by day with lectures and deadlines from the calendar and task dates, how much free time each day has, and a note that there are two deadlines this week">
+</p>
+<p align="center"><b>Weekly look-ahead.</b> Optional, two minutes on a day you choose: last week in numbers, the week ahead, a goal and planning the next two days.</p>
 
 ## Meet your study buddy
 
@@ -65,6 +82,11 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 ## A look inside
 
 <p align="center">
+  <img src="docs/readme/screen-today.png" width="820" alt="The Today screen: the next session, Problem set 3 at 10:30, with its next step and if-then plan, the on-time streak at 22 in a row, focus time, crate progress, and today's plan below">
+</p>
+<p align="center"><b>Today.</b> The next session with its first step and if-then plan, one click from starting, and the rest of today's plan below.</p>
+
+<p align="center">
   <img src="docs/readme/screen-focus.png" width="820" alt="The focus view: a large countdown ring at 15:45, Maple focusing, and the session's checklist with one to-do ticked off">
 </p>
 <p align="center"><b>Focus.</b> A big, calm countdown and the to-dos this session is for. Space pauses, +5 min extends, and you can switch course mid-session.</p>
@@ -75,17 +97,17 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 <p align="center"><b>Session complete.</b> What you earned, then a minute to write down what you remember.</p>
 
 <p align="center">
-  <img src="docs/readme/screen-crate.png" width="820" alt="A Study Crate revealing a rare Telescope on Maple, part of the Space set">
+  <img src="docs/readme/screen-crate.png" width="820" alt="A Study Crate revealing an epic Study Lantern on Maple, part of the Cosy set">
 </p>
 <p align="center"><b>Study Crates.</b> Each item is revealed on your own buddy and can be put on right away.</p>
 
 <p align="center">
-  <img src="docs/readme/screen-collection.png" width="820" alt="The wardrobe: Maple wearing a party hat, glasses, a scarf and a telescope, with the items found so far for each slot">
+  <img src="docs/readme/screen-collection.png" width="820" alt="The wardrobe: Maple wearing a striped beanie, blue glasses, a teal lanyard and the Study Lantern, with the items found so far for each slot">
 </p>
 <p align="center"><b>Collection.</b> A wardrobe for each buddy, every item in the catalogue and your progress on each set.</p>
 
 <p align="center">
-  <img src="docs/readme/screen-courses.png" width="820" alt="The Courses page: Linear Algebra with the task Eigenvalues, chapter 5 and its to-dos, each with a grip to drag it into order and a picker to give it to a session">
+  <img src="docs/readme/screen-courses.png" width="820" alt="The Courses page: Linear Algebra with the task Eigenvalues, chapter 5 and its to-dos, each with a grip to drag it into order, and the next step marked">
 </p>
 <p align="center"><b>Courses.</b> Course codes, tasks and to-dos you drag into the order you want. The top one is always the next step.</p>
 
@@ -117,11 +139,11 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/readme/roadmap-dark.png">
-    <img src="docs/readme/roadmap-light.png" width="900" alt="Three stages. 1, The study loop: everything you need to study well on your own. 2, Habits and depth: a week planner, spaced reviews, focus tools, weekly goals and plaques, a bigger collection and deeper stats. 3, Friends and sync: accounts and sync through a server, friends and leaderboards, study rooms, group goals and a phone companion">
+    <img src="docs/readme/roadmap-light.png" width="900" alt="Three stages. 1, The study loop, all done: everything you need to study well on your own. 2, Habits and depth, under way: the week planner with calendar import and sync and dark mode are done; spaced reviews, focus tools, weekly goals and plaques, a bigger collection and deeper stats are next. 3, Friends and sync: accounts and sync through a server, friends and leaderboards, study rooms, group goals and a phone companion">
   </picture>
 </p>
 
-Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is under way, starting with the week planner. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
+Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is under way: the week planner and dark mode came in [v0.3.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.3.0). Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
 
 ## Built to run all day
 

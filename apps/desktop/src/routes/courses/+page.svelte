@@ -62,7 +62,7 @@
 <header class="top">
   <div>
     <h1>Courses</h1>
-    <p class="lead">Add the courses you study, then tasks and to-dos. Give to-dos to a planned session to decide what it is for.</p>
+    <p class="lead">Add the courses you study, then tasks and to-dos. The top to-do of a task is always its next step.</p>
   </div>
   {#if open !== "course:new"}
     <button type="button" class="primary" onclick={() => (open = "course:new")}>Add course</button>

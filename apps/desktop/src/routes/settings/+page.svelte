@@ -114,10 +114,12 @@
   }
 
   async function importFile(event: Event): Promise<void> {
-    const file = (event.currentTarget as HTMLInputElement).files?.[0];
+    // currentTarget is gone once the handler awaits, so keep the input.
+    const input = event.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
     calendarError = calendars.addFile(file.name, await file.text());
-    (event.currentTarget as HTMLInputElement).value = "";
+    input.value = "";
   }
 
   let connecting = $state(false);
