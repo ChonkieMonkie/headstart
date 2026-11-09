@@ -21,6 +21,8 @@
 
 use serde::{Deserialize, Serialize};
 
+// Only used by the macOS code; elsewhere the stubs never build or read them.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CalendarInfo {
@@ -32,6 +34,8 @@ pub struct CalendarInfo {
     writable: bool,
 }
 
+// Only used by the macOS code; elsewhere the stubs never build or read them.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CalendarEvent {
@@ -45,6 +49,8 @@ pub struct CalendarEvent {
     all_day: bool,
 }
 
+// Only used by the macOS code; elsewhere the stubs never build or read them.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EventInput {
