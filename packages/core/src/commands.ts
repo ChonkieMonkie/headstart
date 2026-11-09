@@ -21,7 +21,7 @@
 import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
 import { craftBlocker, itemFits, rollCrate } from "./crates.ts";
 import { DEVELOPER_KEYS, readGrant, type Signed } from "./developer.ts";
-import type { FocusRating, StudyEvent } from "./events.ts";
+import type { FocusRating, StudyEvent, TaskSize } from "./events.ts";
 import { checkSettings, type Settings } from "./settings.ts";
 import {
   type CoreContext,
@@ -47,6 +47,13 @@ export const MAX_NAME_LENGTH = 60;
 export const MAX_TITLE_LENGTH = 120;
 export const MAX_STEP_LENGTH = 200;
 export const MAX_CODE_LENGTH = 16;
+export const MAX_IF_THEN_LENGTH = 200;
+export const MAX_CALENDAR_NAME_LENGTH = 60;
+export const TASK_SIZES: readonly TaskSize[] = ["small", "medium", "large"];
+/** The most sessions a task can be guessed to take. */
+export const MAX_TASK_SESSIONS = 99;
+
+const validSessions = (n: number) => Number.isInteger(n) && n >= 1 && n <= MAX_TASK_SESSIONS;
 
 export interface StartSessionInput {
   sessionId: string;
@@ -416,7 +423,15 @@ export function archiveCourse(
 
 export function createTask(
   state: ProgressState,
-  input: { taskId: string; courseId: string; title: string; nextStep: string },
+  input: {
+    taskId: string;
+    courseId: string;
+    title: string;
+    nextStep: string;
+    size?: TaskSize | null;
+    sessions?: number | null;
+    dueDay?: string | null;
+  },
 ): CommandResult<EventOf<"task.created">> {
   if (state.tasks.has(input.taskId)) return reject("That task already exists");
   const course = state.courses.get(input.courseId);
@@ -425,19 +440,33 @@ export function createTask(
   if ("reason" in title) return reject(title.reason);
   const nextStep = cleanText(input.nextStep, "The next step", MAX_STEP_LENGTH);
   if ("reason" in nextStep) return reject(nextStep.reason);
+  if (input.size && !TASK_SIZES.includes(input.size)) return reject("Pick a size");
+  if (input.sessions != null && !validSessions(input.sessions)) {
+    return reject(`Sessions must be 1 to ${MAX_TASK_SESSIONS}`);
+  }
+  if (input.dueDay && !isDateKey(input.dueDay)) return reject("Pick a date");
   return accept({
     type: "task.created",
     taskId: input.taskId,
     courseId: input.courseId,
     title: title.text,
     nextStep: nextStep.text,
+    ...(input.size ? { size: input.size } : {}),
+    ...(input.sessions != null ? { sessions: input.sessions } : {}),
+    ...(input.dueDay ? { dueDay: input.dueDay } : {}),
   });
 }
 
 export function updateTask(
   state: ProgressState,
   taskId: string,
-  changes: { title?: string; nextStep?: string },
+  changes: {
+    title?: string;
+    nextStep?: string;
+    size?: TaskSize | null;
+    sessions?: number | null;
+    dueDay?: string | null;
+  },
 ): CommandResult<EventOf<"task.updated">> {
   const task = state.tasks.get(taskId);
   if (!task) return reject("Unknown task");
@@ -452,7 +481,21 @@ export function updateTask(
     if ("reason" in nextStep) return reject(nextStep.reason);
     if (nextStep.text !== task.nextStep) event.nextStep = nextStep.text;
   }
-  if (event.title === undefined && event.nextStep === undefined) return reject("Nothing changed");
+  if (changes.size !== undefined) {
+    if (changes.size !== null && !TASK_SIZES.includes(changes.size)) return reject("Pick a size");
+    if (changes.size !== task.size) event.size = changes.size;
+  }
+  if (changes.sessions !== undefined) {
+    if (changes.sessions !== null && !validSessions(changes.sessions)) {
+      return reject(`Sessions must be 1 to ${MAX_TASK_SESSIONS}`);
+    }
+    if (changes.sessions !== task.sessions) event.sessions = changes.sessions;
+  }
+  if (changes.dueDay !== undefined) {
+    if (changes.dueDay !== null && !isDateKey(changes.dueDay)) return reject("Pick a date");
+    if (changes.dueDay !== task.dueDay) event.dueDay = changes.dueDay;
+  }
+  if (Object.keys(event).length === 2) return reject("Nothing changed");
   return accept(event);
 }
 
@@ -480,7 +523,15 @@ export function reopenTask(
 
 export function planSession(
   state: ProgressState,
-  input: { planId: string; startAt: Date; minutes: number; taskId?: string; courseId?: string },
+  input: {
+    planId: string;
+    startAt: Date;
+    minutes: number;
+    taskId?: string;
+    courseId?: string;
+    ifThen?: string;
+    blockId?: string;
+  },
 ): CommandResult<EventOf<"session.planned">> {
   if (state.plans.has(input.planId)) return reject("That session is already planned");
   if (Number.isNaN(input.startAt.getTime())) return reject("Pick a time");
@@ -492,6 +543,8 @@ export function planSession(
   if (input.taskId && !task) return reject("Unknown task");
   const courseId = input.courseId ?? task?.courseId;
   if (courseId && !state.courses.has(courseId)) return reject("Unknown course");
+  const ifThen = optionalText(input.ifThen, "The if-then plan", MAX_IF_THEN_LENGTH);
+  if (ifThen !== null && typeof ifThen === "object") return reject(ifThen.reason);
   return accept({
     type: "session.planned",
     planId: input.planId,
@@ -499,7 +552,123 @@ export function planSession(
     minutes,
     ...(courseId ? { courseId } : {}),
     ...(input.taskId ? { taskId: input.taskId } : {}),
+    ...(ifThen ? { ifThen } : {}),
+    ...(input.blockId ? { blockId: input.blockId } : {}),
   });
+}
+
+/** Optional text: "" or only spaces means none. A string, null for none, or a reason. */
+function optionalText(
+  text: string | null | undefined,
+  what: string,
+  max: number,
+): string | null | { reason: string } {
+  const clean = (text ?? "").trim().replace(/\s+/g, " ");
+  if (clean === "") return null;
+  if (clean.length > max) return { reason: `${what} can be at most ${max} characters` };
+  return clean;
+}
+
+/**
+ * Changes a planned session that has not started: its length, what it is for
+ * (a task sets its course too; `taskId: null` keeps the course) and its
+ * if-then plan.
+ */
+export function updatePlan(
+  state: ProgressState,
+  planId: string,
+  changes: {
+    minutes?: number;
+    taskId?: string | null;
+    courseId?: string | null;
+    ifThen?: string | null;
+    blockId?: string | null;
+  },
+): CommandResult<EventOf<"plan.updated">> {
+  const found = openPlan(state, planId);
+  if ("reason" in found) return reject(found.reason);
+  const { plan } = found;
+  const event: EventOf<"plan.updated"> = { type: "plan.updated", planId };
+  if (changes.minutes !== undefined && changes.minutes !== plan.minutes) {
+    const m = changes.minutes;
+    if (!Number.isInteger(m) || m < 1 || m > MAX_SESSION_MINUTES) {
+      return reject(`A session is 1 to ${MAX_SESSION_MINUTES} minutes`);
+    }
+    event.minutes = m;
+  }
+  if (changes.taskId !== undefined && changes.taskId !== plan.taskId) {
+    if (changes.taskId !== null) {
+      const task = state.tasks.get(changes.taskId);
+      if (!task) return reject("Unknown task");
+      if (task.courseId !== plan.courseId) event.courseId = task.courseId;
+    }
+    event.taskId = changes.taskId;
+  }
+  if (
+    changes.courseId !== undefined &&
+    event.courseId === undefined &&
+    changes.courseId !== plan.courseId
+  ) {
+    if (changes.courseId !== null && !state.courses.has(changes.courseId))
+      return reject("Unknown course");
+    event.courseId = changes.courseId;
+    // A task of another course no longer fits.
+    const task = plan.taskId ? state.tasks.get(plan.taskId) : undefined;
+    if (task && task.courseId !== changes.courseId && event.taskId === undefined)
+      event.taskId = null;
+  }
+  if (changes.ifThen !== undefined) {
+    const ifThen = optionalText(changes.ifThen, "The if-then plan", MAX_IF_THEN_LENGTH);
+    if (typeof ifThen === "object" && ifThen !== null) return reject(ifThen.reason);
+    if (ifThen !== plan.ifThen) event.ifThen = ifThen;
+  }
+  if (changes.blockId !== undefined && changes.blockId !== plan.blockId)
+    event.blockId = changes.blockId;
+  if (Object.keys(event).length === 2) return reject("Nothing changed");
+  return accept(event);
+}
+
+// Calendar links
+
+/**
+ * A calendar link as https, or a reason. Subscription links often start with
+ * webcal://, which is the same address over https.
+ */
+export function cleanCalendarUrl(url: string): { url: string } | { reason: string } {
+  const trimmed = url.trim().replace(/^webcals?:\/\//i, "https://");
+  const match = /^([a-z][a-z0-9+.-]*):\/\/([^\s/?#]+)([^\s]*)$/i.exec(trimmed);
+  if (!match) return { reason: "That does not look like a link" };
+  if ((match[1] ?? "").toLowerCase() !== "https")
+    return { reason: "The link must start with https://" };
+  return { url: `https://${match[2]}${match[3] || "/"}` };
+}
+
+export function addCalendar(
+  state: ProgressState,
+  input: { calendarId: string; name: string; url: string },
+): CommandResult<EventOf<"calendar.added">> {
+  if (state.calendars.has(input.calendarId)) return reject("That calendar is already added");
+  const name = cleanText(input.name, "The name", MAX_CALENDAR_NAME_LENGTH);
+  if ("reason" in name) return reject(name.reason);
+  const url = cleanCalendarUrl(input.url);
+  if ("reason" in url) return reject(url.reason);
+  for (const existing of state.calendars.values()) {
+    if (existing.url === url.url) return reject("That link is already added");
+  }
+  return accept({
+    type: "calendar.added",
+    calendarId: input.calendarId,
+    name: name.text,
+    url: url.url,
+  });
+}
+
+export function removeCalendar(
+  state: ProgressState,
+  calendarId: string,
+): CommandResult<EventOf<"calendar.removed">> {
+  if (!state.calendars.has(calendarId)) return reject("Unknown calendar");
+  return accept({ type: "calendar.removed", calendarId });
 }
 
 function openPlan(state: ProgressState, planId: string): { plan: Plan } | { reason: string } {

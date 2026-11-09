@@ -17,6 +17,8 @@
 // Shares the one Study and Updater of the main window with every screen.
 
 import { getContext, setContext } from "svelte";
+import type { AppleSync } from "./applecal.svelte.ts";
+import type { Calendars } from "./calendars.svelte.ts";
 import type { Study } from "./study.svelte.ts";
 import type { Updater } from "./updater.svelte.ts";
 
@@ -25,6 +27,8 @@ const KEY = Symbol("headstart");
 interface AppContext {
   study: Study;
   updater: Updater;
+  calendars: Calendars;
+  apple: AppleSync;
 }
 
 export function provideApp(context: AppContext): void {

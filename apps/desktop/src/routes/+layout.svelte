@@ -30,9 +30,12 @@
   import StartPicker from "$lib/components/StartPicker.svelte";
   import DevMenu from "$lib/components/DevMenu.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
+  import Lookahead from "$lib/components/Lookahead.svelte";
   import Onboarding from "$lib/components/Onboarding.svelte";
   import SessionComplete from "$lib/components/SessionComplete.svelte";
   import Sidebar from "$lib/components/Sidebar.svelte";
+  import { AppleSync } from "$lib/applecal.svelte.ts";
+  import { Calendars } from "$lib/calendars.svelte.ts";
   import { provideApp } from "$lib/context.ts";
   import { Study } from "$lib/study.svelte.ts";
   import { inTauri } from "$lib/tauri.ts";
@@ -44,7 +47,9 @@
   const isPanel = page.url.pathname.startsWith("/panel");
   const study = isPanel ? null : new Study();
   const updater = isPanel ? null : new Updater();
-  if (study && updater) provideApp({ study, updater });
+  const calendars = study ? new Calendars(study) : null;
+  const apple = study && calendars ? new AppleSync(study, calendars) : null;
+  if (study && updater && calendars && apple) provideApp({ study, updater, calendars, apple });
   let version = $state("dev");
   let devOpen = $state(false);
   /** Shown once on a fresh install, decided when the saved progress has loaded. */
@@ -99,7 +104,10 @@
     };
     if (!study || !updater) return stopPausing;
     study.onCheckUpdates = () => updater.check();
-    study.open();
+    study.open().then(() => {
+      calendars?.start();
+      apple?.start();
+    });
     if (inTauri) {
       getVersion().then((v) => {
         version = v;
@@ -108,6 +116,8 @@
     }
     return () => {
       stopPausing();
+      calendars?.stop();
+      apple?.stop();
       study.close();
     };
   });
@@ -152,6 +162,9 @@
     </main>
   </div>
   <StartPicker {study} />
+  {#if study.lookaheadOpen}
+    <Lookahead onClose={() => (study.lookaheadOpen = false)} />
+  {/if}
 {/if}
 
 <style>

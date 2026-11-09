@@ -17,8 +17,9 @@
 -->
 
 <!--
-  The to-dos of a course, or of one task: tick them off, edit them in place
-  and give them to a planned session (or the one that is running).
+  The to-dos of a course, or of one task: tick them off and edit them in
+  place. A course's own to-dos can also go to a planned session (or the one
+  that is running); a task's to-dos come along with sessions for the task.
 -->
 <script lang="ts">
   import type { Todo } from "@headstart/core";
@@ -163,7 +164,8 @@
               {todo.text}
             </button>
           {/if}
-          {#if (sessionGroups[0]?.options.length ?? 0) > 1}
+          <!-- A task's to-dos come along when a session for the task starts, so they need no session menu. -->
+          {#if !taskId && (sessionGroups[0]?.options.length ?? 0) > 1}
             <span class="place">
               {#key resets}
                 <Select

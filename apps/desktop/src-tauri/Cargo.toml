@@ -42,11 +42,18 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-notification = "2"
 tauri-plugin-global-shortcut = "2"
+# Fetch calendar links (https only), set up the same way as the updater, so they add nothing new.
+reqwest = { version = "0.13", default-features = false, features = ["rustls-no-provider"] }
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
 
 # The menu bar title uses a font with digits of equal width (see tray.rs).
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"
 objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSButton", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSStatusBarButton", "NSStatusItem", "NSView"] }
+# Two-way sync with Apple Calendar (EventKit), only when the user turns it on.
+objc2-event-kit = { version = "0.3", default-features = false, features = ["std", "block2", "EKCalendar", "EKCalendarItem", "EKEvent", "EKEventStore", "EKObject", "EKSource", "EKTypes"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "block2", "NSArray", "NSDate", "NSError", "NSNotification", "NSObject", "NSOperation", "NSPredicate", "NSString"] }
+block2 = "0.6"
 
 # Size-focused release profile, see https://tauri.app/concept/size/
 [profile.release]

@@ -30,6 +30,9 @@ export const EVENT_SCHEMA = 1;
 
 export type FocusRating = 1 | 2 | 3 | 4 | 5;
 
+/** A rough size for a task: Small is about 1 session, Medium 2 to 3, Large 4 or more. */
+export type TaskSize = "small" | "medium" | "large";
+
 /** One item that came out of a crate. Stored in the event so results never change later. */
 export interface CrateDrop {
   /** Null when no item of the rolled rarity existed; the drop then became Insight. */
@@ -101,9 +104,26 @@ export type StudyEvent =
       /** The concrete first action, so starting never needs a decision. It
        * becomes the task's first to-do, with the id `<taskId>:first`. */
       nextStep: string;
+      /** A rough size, so the planner knows how many sessions are left. */
+      size?: TaskSize;
+      /** The user's own guess of sessions it takes. Wins over `size`. */
+      sessions?: number;
+      /** Local date it should be done by, "YYYY-MM-DD". */
+      dueDay?: string;
     }
-  /** Older logs change the first to-do through `nextStep`; new code uses `todo.*`. */
-  | { type: "task.updated"; taskId: string; title?: string; nextStep?: string }
+  /**
+   * Older logs change the first to-do through `nextStep`; new code uses `todo.*`.
+   * `size`, `sessions` and `dueDay` set a value, or remove it with null.
+   */
+  | {
+      type: "task.updated";
+      taskId: string;
+      title?: string;
+      nextStep?: string;
+      size?: TaskSize | null;
+      sessions?: number | null;
+      dueDay?: string | null;
+    }
   | { type: "task.completed"; taskId: string }
   | { type: "task.reopened"; taskId: string }
   | {
@@ -113,8 +133,23 @@ export type StudyEvent =
       minutes: number;
       courseId?: string;
       taskId?: string;
+      /** "If it is 09:00 and I am at my desk, then I open problem 4.12." */
+      ifThen?: string;
+      /** Sessions planned together ("4 × 25 min") share a block: shown, moved and synced as one. */
+      blockId?: string;
     }
   | { type: "plan.moved"; planId: string; startAt: string }
+  /** Changes to a planned session that has not started. Null removes a value. */
+  | {
+      type: "plan.updated";
+      planId: string;
+      minutes?: number;
+      courseId?: string | null;
+      taskId?: string | null;
+      ifThen?: string | null;
+      /** Puts it in a block with other sessions (null: on its own). */
+      blockId?: string | null;
+    }
   | { type: "plan.cancelled"; planId: string }
   /** A to-do under a course (and maybe a task), such as "Redo problem 3.7 d". */
   | {
@@ -152,6 +187,9 @@ export type StudyEvent =
   | { type: "dev.xp.added"; xp: number }
   | { type: "item.equipped"; mascot: MascotId; slot: Slot; itemId: string | null }
   | { type: "mascot.chosen"; mascot: MascotId }
+  /** A calendar link (such as a TimeEdit schedule) shown as busy time in the planner. */
+  | { type: "calendar.added"; calendarId: string; name: string; url: string }
+  | { type: "calendar.removed"; calendarId: string }
   /** Only the settings that changed. */
   | { type: "settings.changed"; changes: Partial<Settings> };
 

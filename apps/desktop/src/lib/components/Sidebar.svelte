@@ -29,7 +29,7 @@
     { href: "/", label: "Today", icon: "M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8" },
     { href: "/courses", label: "Courses", icon: "M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z" },
     { href: "/stats", label: "Stats", icon: "M5 20V12M10 20V6M15 20v-6M20 20V9" },
-    { href: null, label: "Week plan", icon: "M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" },
+    { href: "/plan", label: "Week plan", icon: "M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" },
     { href: "/collection", label: "Collection", icon: "M12 3l2.6 5.4 5.9.7-4.4 4 1.2 5.9L12 16.1 6.7 19l1.2-5.9-4.4-4 5.9-.7z" },
     { href: "/crates", label: "Crates", icon: "M3 8l9-4.5L21 8v8.5L12 21l-9-4.5zM3 8l9 4.5L21 8M12 12.5V21" },
     {

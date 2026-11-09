@@ -18,6 +18,7 @@
 // tray and reminders.
 
 import type { RewardRules } from "@headstart/content";
+import type { TaskSize } from "./events.ts";
 import {
   byOrder,
   type Course,
@@ -27,6 +28,7 @@ import {
   type Task,
   type Todo,
 } from "./state.ts";
+import { breakAfter, type TimerPreset } from "./timer.ts";
 
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
@@ -186,6 +188,8 @@ export function upcomingReminders(
     .filter((plan) => !plan.cancelled && plan.sessionId === null)
     .sort((a, b) => a.startAt - b.startAt);
   for (const plan of plans) {
+    // Within a block, only its first session reminds: the rest follow its breaks.
+    if (plan.blockId !== null && blockStart(state, plan.blockId) < plan.startAt) continue;
     const soon = rules.soonMinutes === null ? null : plan.startAt - rules.soonMinutes * MINUTE;
     const late = plan.startAt + rules.lateMinutes * MINUTE;
     const day = dayKey(plan.startAt);
@@ -231,4 +235,180 @@ export function todosForSession(state: ProgressState, sessionId: string): Todo[]
   return [...state.todos.values()]
     .filter((t) => t.sessionId === sessionId || t.doneInSessionId === sessionId || ids.has(t.id))
     .sort(byOrder);
+}
+
+// The week planner
+
+/** Sessions a task size stands for: Small 1, Medium 2 to 3, Large 4 or more. */
+export const SIZE_SESSIONS: Record<TaskSize, number> = { small: 1, medium: 3, large: 5 };
+
+export interface TaskProgress {
+  /** Sessions done for the task. */
+  done: number;
+  /** Sessions planned for it that can still be started. */
+  planned: number;
+  /** The user's own guess, else what the size stands for, or null when neither is set. */
+  estimate: number | null;
+  /** Sessions still to plan, or null when the task has no size. */
+  left: number | null;
+}
+
+/** How far a task has come: sessions done, planned and still to plan. */
+export function taskProgress(state: ProgressState, taskId: string, now: number): TaskProgress {
+  let done = 0;
+  for (const record of state.sessions.values()) if (record.taskId === taskId) done += 1;
+  let planned = 0;
+  for (const plan of state.plans.values()) {
+    if (
+      plan.taskId === taskId &&
+      !plan.cancelled &&
+      plan.sessionId === null &&
+      !isMissed(plan, now)
+    ) {
+      planned += 1;
+    }
+  }
+  const task = state.tasks.get(taskId);
+  const estimate = task?.sessions ?? (task?.size ? SIZE_SESSIONS[task.size] : null);
+  return {
+    done,
+    planned,
+    estimate,
+    left: estimate === null ? null : Math.max(0, estimate - done - planned),
+  };
+}
+
+export interface TaskToPlan {
+  task: Task;
+  course: Course;
+  progress: TaskProgress;
+  /** The task's own date, or else its course's exam date ("YYYY-MM-DD"), or null. */
+  due: string | null;
+  dueIsExam: boolean;
+}
+
+/**
+ * Open tasks that still need sessions: without a size, or with sessions left
+ * to plan. The soonest date first; tasks without one last, oldest first.
+ */
+export function tasksToPlan(state: ProgressState, now: number): TaskToPlan[] {
+  const rows: TaskToPlan[] = [];
+  for (const task of openTasks(state)) {
+    const course = state.courses.get(task.courseId);
+    if (!course) continue;
+    const progress = taskProgress(state, task.id, now);
+    if (progress.left === 0) continue;
+    const due = task.dueDay ?? course.examDate;
+    rows.push({ task, course, progress, due, dueIsExam: task.dueDay === null && due !== null });
+  }
+  return rows.sort((a, b) => {
+    if (a.due !== b.due) {
+      if (a.due === null) return 1;
+      if (b.due === null) return -1;
+      return a.due < b.due ? -1 : 1;
+    }
+    return a.task.createdAt - b.task.createdAt;
+  });
+}
+
+/** One planned session of a block. */
+export interface BlockSlot {
+  startAt: number;
+  minutes: number;
+}
+
+/** `count` sessions of `minutes` from `startAt`, with the preset's breaks between them. */
+export function blockSlots(
+  startAt: number,
+  count: number,
+  minutes: number,
+  preset: TimerPreset,
+): BlockSlot[] {
+  const slots: BlockSlot[] = [];
+  let at = startAt;
+  for (let i = 1; i <= count; i++) {
+    slots.push({ startAt: at, minutes });
+    at += minutes * MINUTE + breakAfter(i, preset).ms;
+  }
+  return slots;
+}
+
+/** When the last session of a block ends. */
+export function blockEnd(slots: readonly BlockSlot[]): number {
+  const last = slots[slots.length - 1];
+  return last ? last.startAt + last.minutes * MINUTE : 0;
+}
+
+/**
+ * How a stretch of free time fills with sessions. Room for two or more gives
+ * sessions of the usual length with breaks between them (55 minutes: 2 × 25);
+ * less gives one session as long as the stretch, in steps of 5 minutes.
+ */
+export function fitSessions(
+  totalMinutes: number,
+  sessionMinutes: number,
+  preset: TimerPreset,
+): { count: number; minutes: number } {
+  let count = 0;
+  let used = 0;
+  while (true) {
+    const next = used + (count > 0 ? breakAfter(count, preset).minutes : 0) + sessionMinutes;
+    if (next > totalMinutes) break;
+    used = next;
+    count += 1;
+  }
+  if (count >= 2) return { count, minutes: sessionMinutes };
+  const minutes = Math.min(240, Math.max(5, Math.round(totalMinutes / 5) * 5));
+  return { count: 1, minutes };
+}
+
+// Blocks: sessions planned together
+
+/** The key that groups plans: their block, or the plan itself when on its own. */
+export const blockKey = (plan: Plan): string => plan.blockId ?? plan.id;
+
+/** The earliest start of a block's sessions that are not cancelled. */
+function blockStart(state: ProgressState, blockId: string): number {
+  let first = Number.POSITIVE_INFINITY;
+  for (const p of state.plans.values()) {
+    if (p.blockId === blockId && !p.cancelled) first = Math.min(first, p.startAt);
+  }
+  return first;
+}
+
+/** A block's sessions that are not cancelled, in time order. A plan on its own is a block of one. */
+export function blockPlans(state: ProgressState, plan: Plan): Plan[] {
+  if (plan.blockId === null) return plan.cancelled ? [] : [plan];
+  return [...state.plans.values()]
+    .filter((p) => p.blockId === plan.blockId && !p.cancelled)
+    .sort((a, b) => a.startAt - b.startAt);
+}
+
+export interface BlockView {
+  key: string;
+  /** Its sessions in time order. */
+  views: PlanView[];
+  start: number;
+  end: number;
+}
+
+/** Groups a day's plans into blocks (a plan on its own is a block of one). */
+export function groupBlocks(views: readonly PlanView[]): BlockView[] {
+  const groups = new Map<string, PlanView[]>();
+  for (const view of views) {
+    const key = blockKey(view.plan);
+    groups.set(key, [...(groups.get(key) ?? []), view]);
+  }
+  return [...groups.entries()]
+    .map(([key, list]) => {
+      const sorted = [...list].sort((a, b) => a.plan.startAt - b.plan.startAt);
+      const last = sorted[sorted.length - 1] ?? sorted[0];
+      return {
+        key,
+        views: sorted,
+        start: sorted[0]?.plan.startAt ?? 0,
+        end: last ? last.plan.startAt + last.plan.minutes * MINUTE : 0,
+      };
+    })
+    .sort((a, b) => a.start - b.start);
 }

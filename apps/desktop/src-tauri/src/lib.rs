@@ -17,6 +17,8 @@
 // The Tauri shell. It stays thin: windows, tray and OS integrations live here,
 // all study logic lives in the TypeScript `@headstart/core` package.
 
+mod apple_calendar;
+mod calendar;
 mod focus;
 mod panel;
 mod ring;
@@ -80,6 +82,15 @@ pub fn run() {
         .manage(focus::LayoutState::default())
         .manage(LaunchStart(AtomicBool::new(launch_start)))
         .invoke_handler(tauri::generate_handler![
+            calendar::fetch_calendar,
+            apple_calendar::apple_calendar_status,
+            apple_calendar::apple_calendar_request,
+            apple_calendar::apple_calendar_list,
+            apple_calendar::apple_calendar_create,
+            apple_calendar::apple_calendar_events,
+            apple_calendar::apple_calendar_get,
+            apple_calendar::apple_calendar_save,
+            apple_calendar::apple_calendar_delete,
             timer::set_timer,
             timer::set_reminders,
             timer::test_notification,
@@ -94,6 +105,7 @@ pub fn run() {
             tray::create(app.handle())?;
             timer::start_ticker(app.handle().clone());
             register_shortcut(app.handle());
+            apple_calendar::watch(app.handle().clone());
             Ok(())
         })
         .on_window_event(|window, event| match event {

@@ -29,7 +29,7 @@ import {
 } from "@headstart/content";
 import { NO_PITY, nextPity, type PityState, rarityRank } from "./crates.ts";
 import { DEVELOPER_KEYS, readGrant } from "./developer.ts";
-import type { CrateDrop, EventEnvelope, FocusRating, StudyEvent } from "./events.ts";
+import type { CrateDrop, EventEnvelope, FocusRating, StudyEvent, TaskSize } from "./events.ts";
 import {
   type LevelInfo,
   levelInfo,
@@ -93,6 +93,12 @@ export interface Task {
   done: boolean;
   createdAt: number;
   completedAt: number | null;
+  /** A rough size, or null when not estimated. */
+  size: TaskSize | null;
+  /** The user's own guess of sessions, or null. Wins over `size`. */
+  sessions: number | null;
+  /** Local date it should be done by, "YYYY-MM-DD", or null. */
+  dueDay: string | null;
 }
 
 export interface Todo {
@@ -126,6 +132,18 @@ export interface Plan {
   cancelled: boolean;
   /** The session that carries it out, once started. */
   sessionId: string | null;
+  /** An if-then plan for the start, or null. */
+  ifThen: string | null;
+  /** The block it was planned in with other sessions, or null on its own. */
+  blockId: string | null;
+}
+
+/** A calendar link shown as busy time. Its events are fetched, never stored in the log. */
+export interface CalendarLink {
+  id: string;
+  name: string;
+  url: string;
+  addedAt: number;
 }
 
 export interface EarnedCrate {
@@ -166,6 +184,7 @@ export interface ProgressState {
   /** The `order` the next new to-do gets: always after every other to-do. */
   nextTodoOrder: number;
   plans: Map<string, Plan>;
+  calendars: Map<string, CalendarLink>;
   settings: Settings;
   lastEventAt: number | null;
 }
@@ -206,6 +225,7 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     todos: new Map(),
     nextTodoOrder: 1,
     plans: new Map(),
+    calendars: new Map(),
     settings: { ...DEFAULT_SETTINGS },
     lastEventAt: null,
   };
@@ -346,6 +366,9 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         done: false,
         createdAt: at,
         completedAt: null,
+        size: event.size ?? null,
+        sessions: event.sessions ?? null,
+        dueDay: event.dueDay ?? null,
       });
       state.todos.set(
         firstTodoId(event.taskId),
@@ -357,6 +380,9 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       const task = state.tasks.get(event.taskId);
       if (!task) return;
       if (event.title !== undefined) task.title = event.title;
+      if (event.size !== undefined) task.size = event.size;
+      if (event.sessions !== undefined) task.sessions = event.sessions;
+      if (event.dueDay !== undefined) task.dueDay = event.dueDay;
       if (event.nextStep !== undefined) {
         // The old "next step" field: change the first to-do, or add one if it is done.
         const first = state.todos.get(firstTodoId(task.id));
@@ -396,7 +422,33 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         taskId: event.taskId ?? null,
         cancelled: false,
         sessionId: null,
+        ifThen: event.ifThen ?? null,
+        blockId: event.blockId ?? null,
       });
+      return;
+    }
+    case "plan.updated": {
+      const plan = state.plans.get(event.planId);
+      if (!plan || plan.sessionId !== null || plan.cancelled) return;
+      if (event.minutes !== undefined) plan.minutes = event.minutes;
+      if (event.courseId !== undefined) plan.courseId = event.courseId;
+      if (event.taskId !== undefined) plan.taskId = event.taskId;
+      if (event.ifThen !== undefined) plan.ifThen = event.ifThen;
+      if (event.blockId !== undefined) plan.blockId = event.blockId;
+      return;
+    }
+    case "calendar.added": {
+      if (state.calendars.has(event.calendarId)) return;
+      state.calendars.set(event.calendarId, {
+        id: event.calendarId,
+        name: event.name,
+        url: event.url,
+        addedAt: at,
+      });
+      return;
+    }
+    case "calendar.removed": {
+      state.calendars.delete(event.calendarId);
       return;
     }
     case "plan.moved": {

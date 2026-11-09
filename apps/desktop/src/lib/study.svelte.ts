@@ -73,6 +73,7 @@ import {
   planForTask,
   plansOn,
   planToStartNow,
+  presetFor,
   rateSession,
   readDeveloperToken,
   readGrant,
@@ -113,6 +114,7 @@ import {
   saveProfile,
 } from "./debug-clock.ts";
 import { clockTime } from "./format.ts";
+import { nextLookahead } from "./lookahead.ts";
 import { mascotLine, mascotMood } from "./mascot.ts";
 import { courseLabel } from "./options.ts";
 import {
@@ -227,6 +229,8 @@ export class Study {
   /** When the next session starts by itself, during the short countdown after a break. */
   startingAt = $state<number | null>(null);
   completion = $state<Completion | null>(null);
+  /** The weekly look-ahead is open (from Today, the Plan page or its notification). */
+  lookaheadOpen = $state(false);
   /** A short message for the Today screen, such as a discarded session. */
   notice = $state<string | null>(null);
   distractions = $state(0);
@@ -1257,9 +1261,11 @@ export class Study {
             id: reminder.id,
             at: this.#toShell(reminder.at),
             title: `Starting at ${clockTime(reminder.plan.startAt)}`,
-            body: task?.nextStep
-              ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
-              : `Time for ${what}.`,
+            body: reminder.plan.ifThen
+              ? reminder.plan.ifThen
+              : task?.nextStep
+                ? `${course ? courseLabel(course) : task.title}: ${task.nextStep}`
+                : `Time for ${what}.`,
           };
         }
         return {
@@ -1270,6 +1276,18 @@ export class Study {
         };
       },
     );
+    // The weekly look-ahead, when it is turned on and comes within a day.
+    if (state.settings.weeklyLookahead) {
+      const at = nextLookahead(state.settings, Date.now());
+      if (at - Date.now() < 24 * 60 * MINUTE) {
+        reminders.push({
+          id: `lookahead:${at}`,
+          at: this.#toShell(at),
+          title: "Your week look-ahead is ready",
+          body: "Two minutes: last week, what is coming up, and the next two days.",
+        });
+      }
+    }
     setReminders(reminders);
   }
 
@@ -1382,10 +1400,4 @@ export class Study {
  */
 function copy<T extends object>(value: T): T {
   return { ...value };
-}
-
-/** The break rhythm that fits a session length. */
-function presetFor(minutes: number): TimerPreset {
-  if (minutes <= TIMER_PRESETS.justFive.focusMinutes) return TIMER_PRESETS.justFive;
-  return minutes >= TIMER_PRESETS.deep.focusMinutes ? TIMER_PRESETS.deep : TIMER_PRESETS.classic;
 }

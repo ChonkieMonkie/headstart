@@ -82,6 +82,61 @@ export async function setReminders(reminders: ShellReminder[]): Promise<void> {
   if (inTauri) await invoke("set_reminders", { reminders });
 }
 
+/** The text of a calendar link (https only). Throws a readable message on failure. */
+export async function fetchCalendar(url: string): Promise<string> {
+  if (inTauri) return invoke<string>("fetch_calendar", { url });
+  // In a plain browser most calendar servers block this, but some allow it.
+  const response = await fetch(url).catch(() => null);
+  if (!response?.ok)
+    throw "Could not reach the calendar. In the browser preview, most links are blocked.";
+  return response.text();
+}
+
+// Apple Calendar (macOS). See src-tauri/src/apple_calendar.rs.
+
+export interface AppleCalendarInfo {
+  id: string;
+  title: string;
+  source: string;
+  icloud: boolean;
+  writable: boolean;
+}
+
+export interface AppleEvent {
+  id: string;
+  calendarId: string;
+  title: string;
+  location: string;
+  start: number;
+  end: number;
+  allDay: boolean;
+}
+
+export const appleCalendar = {
+  status: () => invoke<string>("apple_calendar_status"),
+  request: () => invoke<boolean>("apple_calendar_request"),
+  list: () => invoke<AppleCalendarInfo[]>("apple_calendar_list"),
+  create: (title: string) => invoke<string>("apple_calendar_create", { title }),
+  events: (calendarIds: string[], from: number, to: number) =>
+    invoke<AppleEvent[]>("apple_calendar_events", { calendarIds, from, to }),
+  get: (id: string) => invoke<AppleEvent | null>("apple_calendar_get", { id }),
+  save: (event: {
+    id: string | null;
+    calendarId: string;
+    title: string;
+    notes: string;
+    start: number;
+    end: number;
+  }) => invoke<string>("apple_calendar_save", { event }),
+  delete: (id: string) => invoke<void>("apple_calendar_delete", { id }),
+  /** Calls back whenever the calendar database changes, from any app. */
+  onChange: (handler: () => void): (() => void) => {
+    let stop = () => {};
+    listen("apple-calendar-changed", handler).then((unlisten) => (stop = unlisten));
+    return () => stop();
+  },
+};
+
 export async function openMainWindow(): Promise<void> {
   if (inTauri) await invoke("open_main_window");
 }

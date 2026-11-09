@@ -36,6 +36,18 @@ export interface Settings {
   motion: "system" | "reduced";
   /** "system" follows the computer's light or dark mode; "light" and "dark" stay put. */
   theme: Theme;
+  /** The weekly look-ahead: a short guided look at the week. Off unless turned on. */
+  weeklyLookahead: boolean;
+  /** Day of the week it is offered, 0 = Sunday … 6 = Saturday. */
+  lookaheadDay: number;
+  /** Local time it is offered, "HH:MM". */
+  lookaheadTime: string;
+  /** The planner has asked once whether to turn the look-ahead on. */
+  lookaheadOffered: boolean;
+  /** Days a week to study, 1 to 7. Seven means no rest day. */
+  studyDays: number;
+  /** The planned rest day, 0 = Sunday … 6 = Saturday, or null for none. */
+  restDay: number | null;
 }
 
 export const THEMES = ["system", "light", "dark"] as const;
@@ -50,6 +62,12 @@ export const DEFAULT_SETTINGS: Settings = {
   maxNudgesPerDay: 3,
   motion: "system",
   theme: "system",
+  weeklyLookahead: false,
+  lookaheadDay: 0,
+  lookaheadTime: "18:00",
+  lookaheadOffered: false,
+  studyDays: 5,
+  restDay: 0,
 };
 
 /** Choices offered on the settings screen. */
@@ -59,6 +77,19 @@ export const REMIND_BEFORE = [1, 2, 5, 10, 15] as const;
 /** A settings change, or a reason it is not allowed. */
 export function checkSettings(changes: Partial<Settings>): string | null {
   const { focusMinutes, remindBeforeMinutes, maxNudgesPerDay, motion, theme } = changes;
+  const { lookaheadDay, lookaheadTime, studyDays, restDay } = changes;
+  const isWeekday = (d: unknown) => Number.isInteger(d) && (d as number) >= 0 && (d as number) <= 6;
+  if (lookaheadDay !== undefined && !isWeekday(lookaheadDay)) return "Pick a day of the week";
+  if (lookaheadTime !== undefined && !/^([01]\d|2[0-3]):[0-5]\d$/.test(String(lookaheadTime))) {
+    return "Pick a time";
+  }
+  if (
+    studyDays !== undefined &&
+    !(Number.isInteger(studyDays) && studyDays >= 1 && studyDays <= 7)
+  ) {
+    return "Study days must be 1 to 7";
+  }
+  if (restDay !== undefined && restDay !== null && !isWeekday(restDay)) return "Pick a rest day";
   if (focusMinutes !== undefined && !(FOCUS_LENGTHS as readonly number[]).includes(focusMinutes)) {
     return "Pick one of the session lengths";
   }
@@ -78,7 +109,13 @@ export function checkSettings(changes: Partial<Settings>): string | null {
   if (motion !== undefined && motion !== "system" && motion !== "reduced")
     return "Unknown motion setting";
   if (theme !== undefined && !(THEMES as readonly string[]).includes(theme)) return "Unknown theme";
-  for (const key of ["autoBreak", "autoStartNext", "chime"] as const) {
+  for (const key of [
+    "autoBreak",
+    "autoStartNext",
+    "chime",
+    "weeklyLookahead",
+    "lookaheadOffered",
+  ] as const) {
     if (changes[key] !== undefined && typeof changes[key] !== "boolean")
       return "Unknown on/off setting";
   }

@@ -98,6 +98,12 @@ export const TIMER_PRESETS = {
   },
 } as const satisfies Record<string, TimerPreset>;
 
+/** The break rhythm that fits a session length. */
+export function presetFor(minutes: number): TimerPreset {
+  if (minutes <= TIMER_PRESETS.justFive.focusMinutes) return TIMER_PRESETS.justFive;
+  return minutes >= TIMER_PRESETS.deep.focusMinutes ? TIMER_PRESETS.deep : TIMER_PRESETS.classic;
+}
+
 /** The break that follows the n-th session of a run (n starts at 1). */
 export function breakAfter(
   sessionNumber: number,

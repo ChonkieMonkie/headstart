@@ -31,9 +31,10 @@ The hardest part of studying is starting. A blank afternoon and a vague "I shoul
 Headstart turns studying into small, concrete sessions:
 
 - **Starting takes one click.** Every task has a first to-do, such as "Redo problem 5.7 d", so you never sit down wondering where to begin.
-- **Sessions are short and calm.** A 25-minute countdown (or 50, or just 5 to get going), then a break that starts by itself.
+- **Sessions are short and calm.** A 25-minute countdown (or 50, or just 5 to get going), then a break that starts once you have written down what you remember, so writing never eats into it.
 - **You remember more.** After each session you write down what you recall without looking. Retrieving what you learned is one of the best-tested ways to make it stick.
 - **Showing up is what counts.** Starting on time, staying focused and writing your recall earn XP and Study Crates. Crates hold items for your study buddy, and they are only ever earned by studying, never sold.
+- **Planning fits your week.** Plan the next few days around your lectures, drag tasks into free time, and see every session in your own calendar.
 - **It is yours.** Everything is stored on your computer. No account, no ads, no tracking.
 
 ## How a session works
@@ -42,7 +43,7 @@ Headstart turns studying into small, concrete sessions:
   <img src="docs/readme/loop.png" width="900" alt="Four steps. Plan: a task with its to-dos. Focus: the countdown with Maple. Recall: writing down what you remember and rating your focus. Collect: a Study Crate revealing a rare Telescope">
 </p>
 
-1. **Plan.** Add your courses, their tasks and to-dos. Plan a session for a time, and pick what it is for.
+1. **Plan.** Add your courses, their tasks and to-dos. Drag a task into the week plan, or drag over free time, and it fills with sessions and breaks.
 2. **Focus.** Start in one click from the app, the menu bar or a keyboard shortcut. Study in the window, in full screen or with a small timer that floats above everything else.
 3. **Recall.** When the timer ends, write down what you remember, rate your focus and tick off what you got done. The rest goes back on the list.
 4. **Collect.** Every three sessions earn a Study Crate. Open it for an item, put it on your buddy, and work towards complete sets.
@@ -95,15 +96,20 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 
 ## What it does today
 
-- **Today:** the next planned session with its to-dos, today's plan, focus time, your on-time streak and crate progress.
-- **Courses, tasks and to-dos:** course codes, exam dates with a countdown, and to-dos you can drag into order or give to a planned session.
+- **Today:** the next planned session with its to-dos and if-then plan, today's plan (sessions planned together show as one block), focus time, your on-time streak and crate progress.
+- **Week plan:** the next few days or the whole week as a calendar, with your tasks beside it. Drag over free time or drag a task in: two hours become 4 × 25 minutes with breaks, kept together as one block you move and change in one go. Swipe with two fingers to go back and forth, and fold the task list away when you only want the calendar.
+- **Tasks that know what is left:** give a task a rough size (Small, Medium, Large) or your own number of sessions and a date, and the planner shows what is done, planned and still to plan, soonest first.
+- **Your schedule as busy time:** add a calendar link (TimeEdit, Canvas or any other `.ics` link, refreshed every hour) or import an `.ics` file. Lectures show in the week plan, so sessions fit around them.
+- **Apple Calendar sync (macOS):** sessions you plan appear in a Headstart calendar in iCloud, on your phone too, and moving or deleting one in Calendar changes it in Headstart. Your other calendars can show as busy time.
+- **Weekly look-ahead (optional):** two minutes on a day of your choice: last week in numbers, what is coming up, a goal for the week and planning the next two days.
+- **Courses, tasks and to-dos:** course codes, exam dates with a countdown, and to-dos you can drag into order.
 - **Planned sessions and reminders:** a notification before a session starts and one gentle nudge if it has not, at most a few a day. Starting on time earns a bonus.
-- **Focus sessions** of 25 or 50 minutes or just 5, with breaks that follow the length, a long break after every fourth session in a row, and an optional automatic start of the next one.
+- **Focus sessions** of 25 or 50 minutes or just 5, with breaks that follow the length and start once your notes are done, a long break after every fourth session in a row, and an optional automatic start of the next one.
 - **Three ways to focus:** the normal window, full screen that stays on top, or a compact timer you can drag anywhere.
 - **Menu bar and tray:** a progress ring with the countdown beside it on macOS, a panel to run a whole session without opening the app, and a global shortcut (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>, <kbd>⌥⇧H</kbd> on a Mac).
 - **Rewards:** XP and levels, Study Crates, Insight, crafting and a pity timer.
 - **Light and dark:** a calm dark theme, a light one, or follow your computer. Picked during setup and changeable any time.
-- **Settings:** theme, session length, breaks, reminders, nudges, sound, reduced motion and a test notification.
+- **Settings:** theme, session length, breaks, reminders, nudges, sound, calendars, the weekly look-ahead, reduced motion and a test notification.
 - **Updates** install from inside the app.
 
 ## Roadmap
@@ -115,7 +121,7 @@ There are **154 items** to find in five themed sets, from simple commons to anim
   </picture>
 </p>
 
-Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is what comes next. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
+Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is under way, starting with the week planner. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
 
 ## Built to run all day
 
@@ -124,7 +130,7 @@ Headstart sits in your menu bar or tray from morning to night, so it is built to
 - **Small:** a 3 to 5 MB installer (the Linux AppImage bundles its own libraries), using the system's own web view instead of a bundled browser.
 - **Quiet:** the timer runs natively and the tray only redraws when the ring moves a visible step. A hidden window updates every 15 seconds instead of every second, and the tray panel is only created the first time you open it.
 - **Still when unseen:** every animation pauses while the window is hidden or has been in the background for a minute, and reduced motion turns them off.
-- **Private:** everything is stored locally in an append-only event log (SQLite). Nothing leaves your computer.
+- **Private:** everything is stored locally in an append-only event log (SQLite). Nothing leaves your computer, unless you turn on Apple Calendar sync, which puts your sessions in your own calendar. Calendar links are only read, and what they hold stays on your computer.
 
 ## Install
 
@@ -133,7 +139,7 @@ Download the installer for your system from the latest [release](https://github.
 The builds are not code signed yet, so the operating system warns the first time:
 
 - **Windows:** SmartScreen says "Windows protected your PC". Click **More info → Run anyway**.
-- **macOS:** right-click (or Control-click) **Headstart** in Applications and choose **Open**, then **Open** again. If macOS says the app is damaged, run `xattr -cr /Applications/Headstart.app` in Terminal once.
+- **macOS:** right-click (or Control-click) **Headstart** in Applications and choose **Open**, then **Open** again. If macOS says the app is damaged, run `xattr -cr /Applications/Headstart.app` in Terminal once. If you turn on Apple Calendar sync, macOS asks once whether Headstart may use your calendars.
 - **Linux:** use the `.deb` (Debian, Ubuntu), the `.rpm` (Fedora) or the `.AppImage` (any distro: `chmod +x` it first). On GNOME, the tray icon needs the *AppIndicator and KStatusNotifierItem Support* extension.
 
 After that, updates install from inside the app.
@@ -161,8 +167,10 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml   # Rust shell test
 
 ```
 apps/desktop/         Tauri 2 app: SvelteKit UI in src/, Rust shell in src-tauri/
-                      (tray, focus layouts, notifications, global shortcut)
-packages/core/        domain logic in pure TypeScript: event log, timer, XP, crates, pity
+                      (tray, focus layouts, notifications, global shortcut,
+                      calendar links and Apple Calendar through EventKit)
+packages/core/        domain logic in pure TypeScript: event log, timer, XP, crates, pity,
+                      the week planner and a small .ics reader
 packages/content/     items (with how each is drawn), sets, crate odds and reward rules as JSON,
                       validated at startup
 packages/ui/          design tokens, fonts, the mascot renderer and shared Svelte components

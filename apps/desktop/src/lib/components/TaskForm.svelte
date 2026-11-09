@@ -16,11 +16,17 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Adds a task to a course, or renames one. A new task needs a first to-do: a concrete first action makes starting easy. -->
+<!--
+  Adds a task to a course, or changes one. A new task needs a first to-do: a
+  concrete first action makes starting easy. Size and date are optional; they
+  tell the planner how much is left and what comes first.
+-->
 <script lang="ts">
   import { untrack } from "svelte";
-  import { createTask, type Task, updateTask } from "@headstart/core";
+  import { createTask, formatMinutes, MAX_TASK_SESSIONS, type Task, type TaskSize, updateTask } from "@headstart/core";
+  import { shortDate } from "$lib/format.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import DatePicker from "./DatePicker.svelte";
 
   let {
     study,
@@ -32,12 +38,53 @@
   const initial = untrack(() => task);
   let title = $state(initial?.title ?? "");
   let nextStep = $state(initial?.nextStep ?? "");
+  let size = $state<TaskSize | null>(initial?.size ?? null);
+  /** The user's own number of sessions; set, it replaces the size. */
+  let custom = $state<number | null>(initial?.sessions ?? null);
+  let customOpen = $state(initial?.sessions != null);
+  let dueDay = $state(initial?.dueDay ?? "");
   let error = $state<string | null>(null);
 
+  const SIZES: { value: TaskSize; label: string; hint: string }[] = [
+    { value: "small", label: "Small", hint: "1 session" },
+    { value: "medium", label: "Medium", hint: "2 to 3" },
+    { value: "large", label: "Large", hint: "4 or more" },
+  ];
+  const exam = $derived(study.course(courseId)?.examDate ?? null);
+  const focus = $derived(study.settings.focusMinutes);
+
+  function pickSize(value: TaskSize): void {
+    size = size === value && !customOpen ? null : value;
+    customOpen = false;
+    custom = null;
+  }
+
+  function pickCustom(): void {
+    customOpen = !customOpen;
+    if (customOpen) {
+      size = null;
+      custom ??= 4;
+    } else custom = null;
+  }
+
   async function submit(): Promise<void> {
+    const due = dueDay || null;
+    const sessions = customOpen && custom ? Math.round(custom) : null;
     const result = initial
-      ? await study.run((s) => updateTask(s, initial.id, { title }))
-      : await study.run((s) => createTask(s, { taskId: study.newId(), courseId, title, nextStep }));
+      ? await study.run((s) =>
+          updateTask(s, initial.id, { title, size, sessions, dueDay: due }),
+        )
+      : await study.run((s) =>
+          createTask(s, {
+            taskId: study.newId(),
+            courseId,
+            title,
+            nextStep,
+            size,
+            sessions,
+            dueDay: due,
+          }),
+        );
     if (result.ok || result.reason === "Nothing changed") onDone();
     else error = result.reason;
   }
@@ -66,6 +113,45 @@
       />
     </label>
   {/if}
+  <div class="field">
+    <span id="size-label">How much work? <em>Optional</em></span>
+    <div class="sizes" role="group" aria-labelledby="size-label">
+      {#each SIZES as option (option.value)}
+        <button
+          type="button"
+          class="size"
+          aria-pressed={size === option.value && !customOpen}
+          onclick={() => pickSize(option.value)}
+        >
+          <b>{option.label}</b><small>{option.hint}</small>
+        </button>
+      {/each}
+      <button type="button" class="size" aria-pressed={customOpen} onclick={pickCustom}>
+        <b>Own</b><small>{customOpen && custom ? `${custom} sessions` : "Set a number"}</small>
+      </button>
+    </div>
+    {#if customOpen}
+      <label class="custom">
+        <input
+          type="number"
+          min="1"
+          max={MAX_TASK_SESSIONS}
+          step="1"
+          bind:value={custom}
+          aria-label="Sessions it takes"
+        />
+        <span>sessions{custom && custom > 0 ? `, about ${formatMinutes(custom * focus)} with ${focus}-minute sessions` : ""}</span>
+      </label>
+    {/if}
+    <small class="hint">A rough guess is fine. Headstart counts the sessions you spend and shows what is left.</small>
+  </div>
+  <div class="field">
+    <span>Done by <em>Optional</em></span>
+    <DatePicker bind:value={dueDay} label="Done by" optional />
+    {#if exam && !dueDay}
+      <small class="hint">Leave it empty and the exam date is used ({shortDate(new Date(`${exam}T12:00`).getTime())}).</small>
+    {/if}
+  </div>
   <div class="actions">
     <button type="submit" class="primary">{initial ? "Save task" : "Add task"}</button>
     <button type="button" class="secondary" onclick={onDone}>Cancel</button>
@@ -102,6 +188,75 @@
     font: inherit;
     font-weight: 600;
     color: var(--hs-ink);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field > span {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--hs-ink-muted);
+  }
+
+  em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--hs-ink-subtle);
+  }
+
+  .sizes {
+    display: flex;
+    gap: 8px;
+  }
+
+  .size {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    min-height: 52px;
+    padding: 4px 8px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 12px;
+    background: var(--hs-surface);
+    color: var(--hs-ink);
+  }
+
+  .custom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--hs-ink-muted);
+  }
+
+  .custom input {
+    width: 84px;
+  }
+
+  .size small {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hs-ink-subtle);
+  }
+
+  .size[aria-pressed="true"] {
+    border: 2px solid var(--hs-accent);
+    background: var(--hs-accent-soft);
+    color: var(--hs-accent-strong);
+  }
+
+  .hint {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--hs-ink-subtle);
   }
 
   .actions {

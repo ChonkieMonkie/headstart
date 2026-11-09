@@ -18,7 +18,17 @@
 
 <!-- Today: what is up next, how the day is going and the day's plan. -->
 <script lang="ts">
-  import { cancelPlan, daysUntil, formatDuration, formatMinutes, movePlan, TIMER_PRESETS } from "@headstart/core";
+  import {
+    type BlockView,
+    cancelPlan,
+    daysUntil,
+    formatDuration,
+    formatMinutes,
+    groupBlocks,
+    movePlan,
+    type PlanStatus,
+    TIMER_PRESETS,
+  } from "@headstart/core";
   import { courseColor, Mascot, MASCOT_TINTS } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
@@ -27,6 +37,7 @@
   import { taskGroups } from "$lib/options.ts";
   import { useApp } from "$lib/context.ts";
   import { clockTime, examLabel, plural } from "$lib/format.ts";
+  import { lookaheadDue } from "$lib/lookahead.ts";
 
   const { study } = useApp();
   const shortcut = /Mac/.test(navigator.userAgent) ? "⌥⇧H" : "Alt+Shift+H";
@@ -70,6 +81,34 @@
     planned: "Planned",
   } as const;
 
+  // Sessions planned together show as one block; it can open to show each session.
+  const blocks = $derived(groupBlocks(plans));
+  let expanded = $state(new Set<string>());
+  function toggle(key: string): void {
+    const next = new Set(expanded);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    expanded = next;
+  }
+  const isOpen = (status: PlanStatus) => status === "next" || status === "planned" || status === "missed";
+
+  /** One status for a block, and its label: "Up next", "2 of 5 done" and so on. */
+  function blockStatus(block: BlockView): { status: PlanStatus; label: string } {
+    const all = block.views.map((v) => v.status);
+    const done = all.filter((s) => s === "done").length;
+    if (all.includes("running")) return { status: "running", label: STATUS.running };
+    if (done === all.length) return { status: "done", label: STATUS.done };
+    if (all.includes("next")) return { status: "next", label: done > 0 ? `Up next · ${done} of ${all.length} done` : STATUS.next };
+    if (all.every((s) => s === "missed" || s === "done")) return { status: "missed", label: STATUS.missed };
+    return { status: "planned", label: done > 0 ? `${done} of ${all.length} done` : STATUS.planned };
+  }
+
+  async function removeBlock(block: BlockView): Promise<void> {
+    for (const v of block.views) {
+      if (isOpen(v.status)) await study.run((s) => cancelPlan(s, v.plan.id));
+    }
+  }
+
   async function move(planId: string, startAt: number, byMinutes: number): Promise<void> {
     const result = await study.run((s) => movePlan(s, planId, new Date(Math.max(Date.now(), startAt) + byMinutes * MINUTE)));
     moveError = result.ok ? null : result.reason;
@@ -94,6 +133,16 @@
     {study.notice}
     <button type="button" class="link" onclick={() => (study.notice = null)}>Dismiss</button>
   </p>
+{/if}
+
+{#if study.ready && lookaheadDue(study.settings, study.now)}
+  <section class="card lookahead" aria-label="Weekly look-ahead">
+    <div>
+      <p class="lookahead-title">Look ahead at your week</p>
+      <p>Two minutes: last week, what is coming up, and the next two days.</p>
+    </div>
+    <button type="button" class="secondary" onclick={() => (study.lookaheadOpen = true)}>Open</button>
+  </section>
 {/if}
 
 {#if study.breakTimer}
@@ -170,6 +219,12 @@
       </div>
     {:else if nextTask?.nextStep}
       <p class="step"><span>Next step</span> {nextTask.nextStep}</p>
+    {/if}
+    {#if next.ifThen}
+      <p class="if-then">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h10M11 6l6 6-6 6" /></svg>
+        <span>{next.ifThen}</span>
+      </p>
     {/if}
     <div class="actions">
       <button type="button" class="primary" onclick={() => study.start({ planId: next.id })}>Start now</button>
@@ -269,32 +324,82 @@
     </p>
   {:else}
     <ol class="plan">
-      {#each plans as view (view.plan.id)}
-        <li class:is-next={view.status === "next"}>
-          <span class="time">{clockTime(view.plan.startAt)}</span>
-          <span class="bar" style:background={courseColor(view.course?.color)} aria-hidden="true"></span>
+      {#each blocks as blk (blk.key)}
+        {@const first = blk.views[0]}
+        {@const state = blockStatus(blk)}
+        {@const multi = blk.views.length > 1}
+        {@const nextOpen = blk.views.find((v) => isOpen(v.status))}
+        {@const todos = blk.views.reduce((n, v) => n + study.todosForPlan(v.plan.id).length, 0)}
+        <li class:is-next={state.status === "next"}>
+          <span class="time">{clockTime(blk.start)}{#if multi}<small>to {clockTime(blk.end)}</small>{/if}</span>
+          <span class="bar" style:background={courseColor(first?.course?.color)} aria-hidden="true"></span>
           <span class="what">
-            <strong>{#if view.course}<CourseName course={view.course} dot={false} />{:else}Study session{/if}</strong>
+            <strong>{#if first?.course}<CourseName course={first.course} dot={false} />{:else}Study session{/if}</strong>
             <span>
-              {view.task?.title ?? `${view.plan.minutes} min`}{#if study.todosForPlan(view.plan.id).length > 0}
-                · {plural(study.todosForPlan(view.plan.id).length, "to-do")}{/if}
+              {first?.task?.title ?? "Free session"} · {multi ? `${blk.views.length} × ${first?.plan.minutes} min` : `${first?.plan.minutes} min`}{#if todos > 0}
+                · {plural(todos, "to-do")}{/if}
             </span>
+            {#if multi}
+              <span class="pips" role="img" aria-label={state.label}>
+                {#each blk.views as v (v.plan.id)}<span class="pip pip-{v.status}" style:--c={courseColor(first?.course?.color, "var(--hs-accent)")}></span>{/each}
+              </span>
+            {/if}
           </span>
-          <span class="status status-{view.status}">{STATUS[view.status]}</span>
-          {#if view.status === "next" || view.status === "planned" || view.status === "missed"}
+          <span class="status status-{state.status}">{state.label}</span>
+          {#if nextOpen}
             <span class="row-actions">
-              <button type="button" class="small" onclick={() => study.start({ planId: view.plan.id })}>Start</button>
+              <button type="button" class="small" onclick={() => study.start({ planId: nextOpen.plan.id })}>
+                {multi && nextOpen !== first ? `Start session ${blk.views.indexOf(nextOpen) + 1}` : "Start"}
+              </button>
               <button
                 type="button"
                 class="small ghost"
-                aria-label="Remove the {clockTime(view.plan.startAt)} session"
-                onclick={() => study.run((s) => cancelPlan(s, view.plan.id))}
+                aria-label={multi ? `Remove the ${clockTime(blk.start)} block` : `Remove the ${clockTime(blk.start)} session`}
+                onclick={() => removeBlock(blk)}
               >
                 Remove
               </button>
             </span>
           {/if}
+          {#if multi}
+            <button
+              type="button"
+              class="small ghost expand"
+              aria-expanded={expanded.has(blk.key)}
+              aria-label={expanded.has(blk.key) ? "Hide the sessions" : "Show the sessions"}
+              onclick={() => toggle(blk.key)}
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6.5l3.5 3.5 3.5-3.5" /></svg>
+            </button>
+          {:else}
+            <!-- Keeps the buttons in line with the blocks' rows. -->
+            <span class="expand-space" aria-hidden="true"></span>
+          {/if}
         </li>
+        {#if multi && expanded.has(blk.key)}
+          <li class="sessions">
+            <ol>
+              {#each blk.views as v, i (v.plan.id)}
+                <li>
+                  <span class="time small-time">{clockTime(v.plan.startAt)}</span>
+                  <span class="pip pip-{v.status}" style:--c={courseColor(first?.course?.color, "var(--hs-accent)")} aria-hidden="true"></span>
+                  <span class="session-name">Session {i + 1} of {blk.views.length} · {v.plan.minutes} min</span>
+                  <span class="status status-{v.status}">{STATUS[v.status]}</span>
+                  {#if isOpen(v.status)}
+                    <button
+                      type="button"
+                      class="small ghost"
+                      aria-label="Remove session {i + 1} at {clockTime(v.plan.startAt)}"
+                      onclick={() => study.run((s) => cancelPlan(s, v.plan.id))}
+                    >
+                      Remove
+                    </button>
+                  {/if}
+                </li>
+              {/each}
+            </ol>
+          </li>
+        {/if}
       {/each}
     </ol>
   {/if}
@@ -481,6 +586,47 @@
     color: var(--hs-ink-subtle);
   }
 
+  .lookahead {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .lookahead p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--hs-ink-muted);
+  }
+
+  .lookahead .lookahead-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--hs-ink);
+  }
+
+  .if-then {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    color: var(--hs-ink-muted);
+  }
+
+  .if-then svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    fill: none;
+    stroke: var(--hs-accent);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   .actions {
     display: flex;
     flex-wrap: wrap;
@@ -622,8 +768,100 @@
 
   .time {
     width: 48px;
+    display: flex;
+    flex-direction: column;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+  }
+
+  .time small {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hs-ink-subtle);
+  }
+
+  /* A block's sessions as pieces, like the rail in the week plan. */
+  .pips {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .pip {
+    width: 16px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--c);
+  }
+
+  .pip-done {
+    background: var(--hs-success);
+  }
+
+  .pip-missed {
+    background: var(--hs-field-line);
+  }
+
+  .pip-running {
+    box-shadow:
+      0 0 0 1.5px var(--hs-surface),
+      0 0 0 3px var(--c);
+  }
+
+  .expand,
+  .expand-space {
+    width: 40px;
+    flex: none;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .expand svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.15s;
+  }
+
+  .expand[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  .plan li.sessions {
+    display: block;
+    min-height: 0;
+    padding: 0 10px 6px 70px;
+  }
+
+  .sessions ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sessions li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 36px;
+    font-size: 14px;
+  }
+
+  .small-time {
+    width: 42px;
+    font-size: 14px;
+  }
+
+  .session-name {
+    flex: 1 1 auto;
+    color: var(--hs-ink-muted);
   }
 
   .bar {

@@ -32,6 +32,7 @@ export * from "./crates.ts";
 export * from "./developer.ts";
 export * from "./engine.ts";
 export * from "./events.ts";
+export * from "./ics.ts";
 export * from "./ids.ts";
 export * from "./planner.ts";
 export * from "./rewards.ts";
