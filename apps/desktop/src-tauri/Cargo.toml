@@ -16,7 +16,7 @@
 
 [package]
 name = "headstart"
-version = "0.2.0"
+version = "0.3.0"
 description = "Headstart: a study companion that helps you get started, stay focused and keep going"
 authors = ["Headstart contributors"]
 license = "GPL-3.0-or-later"
