@@ -22,6 +22,7 @@
   task right here.
 -->
 <script lang="ts">
+  import MathText from "../MathText.svelte";
   import { daysUntil, type TaskSize, type TaskToPlan, tasksToPlan, updateTask } from "@headstart/core";
   import { courseColor } from "@headstart/ui";
   import { examLabel, plural, weekdayOf } from "$lib/format.ts";
@@ -167,7 +168,7 @@
           {#each study.todosOf(row.course.id, row.task.id) as todo (todo.id)}
             <label class="todo">
               <input type="checkbox" checked={todo.done} onchange={() => study.toggleTodo(todo)} />
-              <span>{todo.text}</span>
+              <span><MathText text={todo.text} /></span>
             </label>
           {:else}
             <p class="empty">No open to-dos.</p>

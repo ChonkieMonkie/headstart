@@ -17,6 +17,8 @@
 // The focus timer works from timestamps, never by counting ticks, so sleep
 // mode, a frozen UI or a closed laptop can never make it drift.
 
+import type { WorkMode } from "./events.ts";
+
 const MINUTE = 60_000;
 
 /** A focus session in progress. All times are epoch milliseconds. */
@@ -33,6 +35,8 @@ export interface ActiveSession {
   planId: string | null;
   courseId: string | null;
   taskId: string | null;
+  /** The work mode, if one was picked. Optional so older saved sessions still fit. */
+  mode?: WorkMode | null;
 }
 
 /** Time actually spent focusing so far (pauses excluded). */

@@ -22,6 +22,8 @@
   that is running); a task's to-dos come along with sessions for the task.
 -->
 <script lang="ts">
+  import MathField from "./MathField.svelte";
+  import MathText from "./MathText.svelte";
   import type { Todo } from "@headstart/core";
   import { clockTime, shortDate } from "$lib/format.ts";
   import { dragRow, type Drop, KeyboardMove } from "$lib/reorder.svelte.ts";
@@ -45,6 +47,8 @@
   } = $props();
 
   let text = $state("");
+  /** The symbol bar and preview for the new to-do: hidden until ∑ is pressed. */
+  let mathOpen = $state(false);
   let editing = $state<string | null>(null);
   let draft = $state("");
   let showDone = $state(false);
@@ -161,7 +165,7 @@
               }}
             >
               {#if i === 0 && taskId}<span class="first">Next</span>{/if}
-              {todo.text}
+              <MathText text={todo.text} />
             </button>
           {/if}
           <!-- A task's to-dos come along when a session for the task starts, so they need no session menu. -->
@@ -193,7 +197,14 @@
       add();
     }}
   >
-    <input type="text" bind:value={text} maxlength="200" placeholder="{addLabel}, e.g. redo problem 3.7 d" aria-label="{addLabel}{course ? ` to ${course.name}` : ''}" />
+    {#if mathOpen}
+      <div class="math-new">
+        <MathField bind:value={text} multiline={false} compact maxlength={200} placeholder="Prove $a^2+b^2=c^2$" label="{addLabel}{course ? ` to ${course.name}` : ''}" />
+      </div>
+    {:else}
+      <input type="text" bind:value={text} maxlength="200" placeholder="{addLabel}, e.g. redo problem 3.7 d" aria-label="{addLabel}{course ? ` to ${course.name}` : ''}" />
+    {/if}
+    <button type="button" class="sum" aria-label="Math tools" title="Math tools" aria-pressed={mathOpen} onclick={() => (mathOpen = !mathOpen)}>∑</button>
     {#if text.trim()}<button type="submit" class="small">Add</button>{/if}
   </form>
 
@@ -206,7 +217,7 @@
         {#each done as todo (todo.id)}
           <li>
             <input type="checkbox" checked aria-label="Not done: {todo.text}" onchange={() => study.toggleTodo(todo)} />
-            <s>{todo.text}</s>
+            <s><MathText text={todo.text} /></s>
           </li>
         {/each}
       </ul>
@@ -347,7 +358,32 @@
 
   .new {
     display: flex;
+    align-items: flex-start;
     gap: 8px;
+  }
+
+  .math-new {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .sum {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 10px;
+    background: var(--hs-surface);
+    color: var(--hs-ink-muted);
+    font-family: "Times New Roman", serif;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .sum[aria-pressed="true"] {
+    border: 1.5px solid var(--hs-accent);
+    background: var(--hs-accent-soft);
+    color: var(--hs-accent-strong);
   }
 
   .new input {

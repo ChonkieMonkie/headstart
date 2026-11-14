@@ -29,7 +29,15 @@ import {
 } from "@headstart/content";
 import { NO_PITY, nextPity, type PityState, rarityRank } from "./crates.ts";
 import { DEVELOPER_KEYS, readGrant } from "./developer.ts";
-import type { CrateDrop, EventEnvelope, FocusRating, StudyEvent, TaskSize } from "./events.ts";
+import type {
+  CrateDrop,
+  EventEnvelope,
+  FocusRating,
+  StudyEvent,
+  TaskSize,
+  WorkMode,
+} from "./events.ts";
+import { applyReview, type ReviewRecord, scheduleNote } from "./reviews.ts";
 import {
   type LevelInfo,
   levelInfo,
@@ -64,6 +72,10 @@ export interface SessionRecord {
   distractions: number;
   recallXp: number;
   recallText: string | null;
+  /** "A question for future you", the front of the note's reviews, or null. */
+  recallQuestion: string | null;
+  /** What kind of studying it was, or null when not picked. */
+  mode: WorkMode | null;
   focusRating: FocusRating | null;
   planId: string | null;
   courseId: string | null;
@@ -184,6 +196,8 @@ export interface ProgressState {
   /** The `order` the next new to-do gets: always after every other to-do. */
   nextTodoOrder: number;
   plans: Map<string, Plan>;
+  /** Session id → the review schedule of its recall note. */
+  reviews: Map<string, ReviewRecord>;
   calendars: Map<string, CalendarLink>;
   settings: Settings;
   lastEventAt: number | null;
@@ -225,6 +239,7 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     todos: new Map(),
     nextTodoOrder: 1,
     plans: new Map(),
+    reviews: new Map(),
     calendars: new Map(),
     settings: { ...DEFAULT_SETTINGS },
     lastEventAt: null,
@@ -257,6 +272,7 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
         planId: plan ? plan.id : null,
         courseId: event.courseId ?? null,
         taskId: event.taskId ?? null,
+        mode: event.mode ?? null,
       };
       if (plan) {
         for (const todo of state.todos.values()) {
@@ -318,10 +334,26 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       const record = state.sessions.get(event.sessionId);
       if (!record) return;
       record.recallText = event.text;
+      record.recallQuestion = event.question?.trim() || null;
       if (record.recallXp === 0 && recallEarnsBonus(event.text, ctx.rewards)) {
         record.recallXp = ctx.rewards.recallBonusXp;
         state.xp += record.recallXp;
       }
+      scheduleNote(state, record, ctx);
+      return;
+    }
+    case "session.mode.changed": {
+      const active = matching(state, event.sessionId);
+      if (active) {
+        active.mode = event.mode;
+        return;
+      }
+      const record = state.sessions.get(event.sessionId);
+      if (record) record.mode = event.mode;
+      return;
+    }
+    case "review.completed": {
+      applyReview(state, event.sessionId, event.remembered, at, ctx);
       return;
     }
     case "session.rated": {
@@ -638,6 +670,8 @@ function completeSession(
     distractions,
     recallXp: 0,
     recallText: null,
+    recallQuestion: null,
+    mode: active.mode ?? null,
     focusRating: focusRating ?? null,
     planId: active.planId,
     courseId: active.courseId,

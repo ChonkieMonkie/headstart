@@ -18,9 +18,13 @@
 
 <!-- Before a task's session starts: tick the to-dos to bring along. The next step is ticked, so Enter just starts. -->
 <script lang="ts">
+  import { WORK_MODES, type WorkMode } from "@headstart/core";
+  import { MODE_LABELS } from "$lib/modes.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import MathText from "./MathText.svelte";
 
   let { study }: { study: Study } = $props();
+  let mode = $state<WorkMode | null>(null);
 
   let dialog = $state<HTMLDialogElement | null>(null);
   let startButton = $state<HTMLButtonElement | null>(null);
@@ -35,6 +39,7 @@
     if (!dialog) return;
     if (choosing && !dialog.open) {
       chosen = new Set(todos.slice(0, 1).map((t) => t.id));
+      mode = choosing.options.mode ?? study.lastModeFor(choosing.taskId);
       dialog.showModal();
       startButton?.focus();
     } else if (!choosing && dialog.open) {
@@ -49,7 +54,7 @@
     chosen = next;
   }
 
-  const start = (ids: string[]) => study.startChosen(ids);
+  const start = (ids: string[]) => study.startChosen(ids, mode);
 </script>
 
 <dialog
@@ -78,11 +83,19 @@
         <li>
           <label>
             <input type="checkbox" checked={chosen.has(todo.id)} onchange={(e) => toggle(todo.id, e.currentTarget.checked)} />
-            {todo.text}
+            <MathText text={todo.text} />
           </label>
         </li>
       {/each}
     </ul>
+    <fieldset class="modes">
+      <legend>How will you work? <span>Optional</span></legend>
+      <div class="mode-list">
+        {#each WORK_MODES as m (m)}
+          <button type="button" class="mode" aria-pressed={mode === m} title={MODE_LABELS[m].hint} onclick={() => (mode = mode === m ? null : m)}>{MODE_LABELS[m].name}</button>
+        {/each}
+      </div>
+    </fieldset>
     <div class="actions">
       <button type="submit" class="primary" bind:this={startButton}>
         Start{chosen.size > 0 ? ` with ${chosen.size}` : ""}
@@ -102,6 +115,49 @@
     background: var(--hs-surface);
     color: var(--hs-ink);
     box-shadow: var(--hs-shadow-dialog);
+  }
+
+  .modes {
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+  }
+
+  .modes legend {
+    padding: 0;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .modes legend span {
+    font-weight: 600;
+    color: var(--hs-ink-muted);
+  }
+
+  .mode-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mode {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 999px;
+    background: var(--hs-surface);
+    color: var(--hs-ink);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .mode[aria-pressed="true"] {
+    border: 1.5px solid var(--hs-accent);
+    background: var(--hs-accent-soft);
+    color: var(--hs-accent-strong);
   }
 
   dialog::backdrop {

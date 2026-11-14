@@ -144,6 +144,8 @@ fn register_shortcut(app: &AppHandle) {
 fn open_main_window(app: AppHandle) {
     panel::hide(&app);
     show_main_window(&app);
+    // The main window may be the small compact timer: the UI grows it back.
+    let _ = app.emit(tray::EVENT_ACTION, "open");
 }
 
 #[tauri::command]
@@ -208,6 +210,7 @@ fn migrations() -> Vec<Migration> {
 
 pub(crate) fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
+        focus::repair_normal(&window, &app.state::<focus::LayoutState>());
         let _ = window.unminimize();
         let _ = window.show();
         let _ = window.set_focus();

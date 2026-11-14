@@ -19,12 +19,15 @@
 <!-- Shown when a session ends: what it earned, then recall, a focus rating and the next step. Every field is optional. -->
 <script lang="ts">
   import { untrack } from "svelte";
-  import { formatDuration } from "@headstart/core";
+  import { formatDuration, WORK_MODES, type WorkMode } from "@headstart/core";
   import { Mascot, MASCOT_TINTS } from "@headstart/ui";
   import { goto } from "$app/navigation";
   import { plural } from "$lib/format.ts";
   import { courseLabel } from "$lib/options.ts";
   import type { Study } from "$lib/study.svelte.ts";
+  import { MODE_LABELS } from "$lib/modes.ts";
+  import MathField from "./MathField.svelte";
+  import MathText from "./MathText.svelte";
 
   let { study }: { study: Study } = $props();
 
@@ -33,6 +36,9 @@
   const RATINGS = ["Scattered", "Distracted", "Okay", "Focused", "In the zone"];
 
   let recall = $state("");
+  let question = $state("");
+  let mode = $state<WorkMode | null>(untrack(() => (done ? (study.state?.sessions.get(done.sessionId)?.mode ?? null) : null)));
+  let changingMode = $state(false);
   let rating = $state<number | null>(null);
   let nextTodo = $state("");
   let ticked = $state(new Set((done?.todos ?? []).filter((t) => t.done).map((t) => t.id)));
@@ -55,6 +61,14 @@
     return `${plural(done.focusMinutes, "minute")}${what}.${streak}`;
   });
 
+  /** Ideas for the question, from what was ticked off: "What was the key step in "5.7 d"?" */
+  const ideas = $derived(
+    (done?.todos ?? [])
+      .filter((t) => ticked.has(t.id))
+      .slice(0, 2)
+      .map((t) => `What was the key step in "${t.text.trim().replace(/[.?!:;,]+$/, "")}"?`),
+  );
+
   function tick(id: string, on: boolean): void {
     const next = new Set(ticked);
     if (on) next.add(id);
@@ -64,7 +78,7 @@
 
   async function save(thenOpenCrate = false): Promise<void> {
     saving = true;
-    error = await study.saveCompletion({ recall, rating, done: ticked, nextTodo, taskDone });
+    error = await study.saveCompletion({ recall, question, mode, rating, done: ticked, nextTodo, taskDone });
     saving = false;
     if (!error && thenOpenCrate) await goto("/crates");
   }
@@ -132,7 +146,40 @@
             Write down everything you can recall from this session, without looking. A minute is
             enough. This is the step that makes it stick.
           </p>
-          <textarea rows="5" bind:value={recall} aria-labelledby="recall-h" aria-describedby="recall-hint"></textarea>
+          <MathField bind:value={recall} rows={5} labelledby="recall-h" describedby="recall-hint" />
+        </div>
+
+        {#if recall.trim()}
+          <div class="field question">
+            <label for="question-in">
+              <h2>A question for future you <small>Optional</small></h2>
+              <span class="hint">What should you be able to answer in three days? It becomes the front of the review, and the note above is the answer.</span>
+            </label>
+            <input id="question-in" type="text" bind:value={question} maxlength="240" placeholder="Why could 5.7 d be solved without expanding the determinant?" />
+            {#if ideas.length > 0 && !question}
+              <div class="ideas">
+                <span>Ideas from what you did:</span>
+                {#each ideas as idea (idea)}
+                  <button type="button" class="idea" onclick={() => (question = idea)}><MathText text={idea} /></button>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        {/if}
+
+        <div class="field mode-row">
+          <h2 id="mode-h">What kind of studying was it?</h2>
+          {#if changingMode || !mode}
+            <div class="modes" role="radiogroup" aria-labelledby="mode-h">
+              {#each WORK_MODES as m (m)}
+                <button type="button" role="radio" aria-checked={mode === m} class="mode" onclick={() => { mode = mode === m ? null : m; changingMode = false; }}>
+                  <strong>{MODE_LABELS[m].name}</strong><span>{MODE_LABELS[m].hint}</span>
+                </button>
+              {/each}
+            </div>
+          {:else}
+            <p class="mode-now"><span class="chip">{MODE_LABELS[mode].name}</span> <button type="button" class="link" onclick={() => (changingMode = true)}>Change</button></p>
+          {/if}
         </div>
 
         <fieldset class="field">
@@ -162,7 +209,7 @@
                   <label class="check">
                     <input type="checkbox" checked={ticked.has(todo.id)} onchange={(e) => tick(todo.id, e.currentTarget.checked)} />
                     <span>
-                      {todo.text}
+                      <MathText text={todo.text} />
                       {#if todo.taskId && todo.taskId !== done.task?.id && study.task(todo.taskId)}<small class="todo-task">{study.task(todo.taskId)?.title}</small>{/if}
                     </span>
                   </label>
@@ -358,7 +405,6 @@
     color: var(--hs-ink-muted);
   }
 
-  textarea,
   input[type="text"] {
     box-sizing: border-box;
     width: 100%;
@@ -368,11 +414,6 @@
     font: inherit;
     color: var(--hs-ink);
     background: var(--hs-surface);
-  }
-
-  textarea {
-    resize: vertical;
-    line-height: 1.5;
   }
 
   .ratings {
@@ -501,9 +542,101 @@
   }
 
   button:focus-visible,
-  textarea:focus-visible,
   input:focus-visible {
     outline: 3px solid var(--hs-accent);
     outline-offset: 2px;
+  }
+
+  .question h2 small {
+    font-family: var(--hs-font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hs-ink-muted);
+  }
+
+  .question label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ideas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--hs-ink-muted);
+  }
+
+  .idea {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 999px;
+    background: var(--hs-surface);
+    color: var(--hs-ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .mode {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 12px;
+    background: var(--hs-surface);
+    color: var(--hs-ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mode[aria-checked="true"] {
+    border: 1.5px solid var(--hs-accent);
+    background: var(--hs-accent-soft);
+  }
+
+  .mode span {
+    font-size: 12.5px;
+    color: var(--hs-ink-muted);
+  }
+
+  .mode-now {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chip {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--hs-accent-soft);
+    color: var(--hs-accent-strong);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .mode-now .link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--hs-accent-strong);
+    cursor: pointer;
   }
 </style>

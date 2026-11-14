@@ -225,6 +225,8 @@ export interface RewardRules {
   xpPerFocusMinute: number;
   onTimeBonusXp: number;
   recallBonusXp: number;
+  /** XP for answering a review of a recall note that was due. */
+  reviewXp: number;
   distractionFreeBonusXp: number;
   /** A start counts as on time from this many minutes before to this many after the plan. */
   onTimeWindowMinutes: { early: number; late: number };

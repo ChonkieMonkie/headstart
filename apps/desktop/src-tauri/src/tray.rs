@@ -57,7 +57,11 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
         // no clicks and always open the menu.
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
-            "open" => crate::show_main_window(app),
+            "open" => {
+                crate::show_main_window(app);
+                // The main window may be the small compact timer: the UI grows it back.
+                let _ = app.emit(EVENT_ACTION, "open");
+            }
             "updates" => {
                 crate::show_main_window(app);
                 let _ = app.emit(EVENT_CHECK_UPDATES, ());

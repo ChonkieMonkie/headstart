@@ -18,7 +18,9 @@
 
 <!-- The running session: a big countdown and the few controls a focused person needs. Used in the normal window and in full screen. -->
 <script lang="ts">
-  import { formatDuration } from "@headstart/core";
+  import MathText from "./MathText.svelte";
+  import { formatDuration, WORK_MODES, type WorkMode } from "@headstart/core";
+  import { MODE_LABELS } from "$lib/modes.ts";
   import { taskGroups } from "$lib/options.ts";
   import { Mascot } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
@@ -51,6 +53,14 @@
   let changing = $state(false);
   let changeError = $state<string | null>(null);
   const target = $derived(task ? `task:${task.id}` : course ? `course:${course.id}` : "");
+  const mode = $derived(study.active?.mode ?? null);
+  const modeGroups = [
+    { label: "", options: [{ value: "", label: "No mode" }, ...WORK_MODES.map((m) => ({ value: m, label: MODE_LABELS[m].name, hint: MODE_LABELS[m].hint }))] },
+  ];
+  async function changeMode(value: string): Promise<void> {
+    const id = study.active?.sessionId;
+    if (id) await study.setMode(id, (value || null) as WorkMode | null);
+  }
 
   // A click anywhere outside the popover closes it.
   let subLine = $state<HTMLElement | null>(null);
@@ -120,7 +130,7 @@
       </p>
       <div class="sub-line" bind:this={subLine}>
         <p class="sub">
-          {task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today ·
+          {task ? `${task.title} · ` : ""}Session {sessionsToday + 1} today ·{#if mode}{` ${MODE_LABELS[mode].name} ·`}{/if}
           <button type="button" class="inline" aria-expanded={changing} onclick={() => (changing = !changing)}>Change</button>
         </p>
         {#if changing}
@@ -149,6 +159,7 @@
               onchange={(value) => retarget(value)}
             />
             <p class="hint">The whole session moves, so its time counts for the new choice.</p>
+            <Select dark value={mode ?? ""} label="How you are working" groups={modeGroups} onchange={(value) => changeMode(value)} />
             {#if changeError}<p class="todo-error" role="alert">{changeError}</p>{/if}
             <button type="button" class="link" onclick={() => (changing = false)}>Cancel</button>
           </div>
@@ -210,7 +221,7 @@
                 <label class:done={todo.done}>
                   <input type="checkbox" checked={todo.done} onchange={() => study.toggleTodo(todo)} />
                   <span>
-                    <span class="todo-text">{todo.text}</span>
+                    <span class="todo-text"><MathText text={todo.text} /></span>
                     {#if taskOf(todo.taskId)}<small class="todo-task">{taskOf(todo.taskId)}</small>{/if}
                   </span>
                 </label>
@@ -219,7 +230,7 @@
           </ul>
           <p class="reorder-live" aria-live="polite">{keys.message}</p>
         {:else if task?.nextStep}
-          <p class="plain">{task.nextStep}</p>
+          <p class="plain"><MathText text={task.nextStep} /></p>
         {/if}
         {#if course}
           <div class="add">

@@ -18,6 +18,7 @@
 
 <!-- Today: what is up next, how the day is going and the day's plan. -->
 <script lang="ts">
+  import MathText from "$lib/components/MathText.svelte";
   import {
     type BlockView,
     cancelPlan,
@@ -33,6 +34,7 @@
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
+  import ReviewsCard from "$lib/components/ReviewsCard.svelte";
   import Select from "$lib/components/Select.svelte";
   import { taskGroups } from "$lib/options.ts";
   import { useApp } from "$lib/context.ts";
@@ -214,11 +216,11 @@
       <div class="step">
         <span>In this session</span>
         <ul class="todos">
-          {#each nextTodos as todo (todo.id)}<li>{todo.text}</li>{/each}
+          {#each nextTodos as todo (todo.id)}<li><MathText text={todo.text} /></li>{/each}
         </ul>
       </div>
     {:else if nextTask?.nextStep}
-      <p class="step"><span>Next step</span> {nextTask.nextStep}</p>
+      <p class="step"><span>Next step</span> <MathText text={nextTask.nextStep} /></p>
     {/if}
     {#if next.ifThen}
       <p class="if-then">
@@ -306,6 +308,8 @@
     </div>
   </section>
 {/if}
+
+<ReviewsCard {study} />
 
 <section class="card" aria-labelledby="plan-h">
   <div class="card-head">

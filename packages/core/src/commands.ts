@@ -21,7 +21,13 @@
 import type { CrateType, MascotId, Rarity, Slot } from "@headstart/content";
 import { craftBlocker, itemFits, rollCrate } from "./crates.ts";
 import { DEVELOPER_KEYS, readGrant, type Signed } from "./developer.ts";
-import type { FocusRating, StudyEvent, TaskSize } from "./events.ts";
+import {
+  type FocusRating,
+  type StudyEvent,
+  type TaskSize,
+  WORK_MODES,
+  type WorkMode,
+} from "./events.ts";
 import { checkSettings, type Settings } from "./settings.ts";
 import {
   type CoreContext,
@@ -69,6 +75,8 @@ export interface StartSessionInput {
   adoptPlan?: boolean;
   courseId?: string;
   taskId?: string;
+  /** What kind of studying it is meant to be. */
+  mode?: WorkMode;
 }
 
 export function startSession(
@@ -99,6 +107,7 @@ export function startSession(
     ...(plan ? { planId: plan.id } : {}),
     ...(courseId ? { courseId } : {}),
     ...(taskId ? { taskId } : {}),
+    ...(input.mode && WORK_MODES.includes(input.mode) ? { mode: input.mode } : {}),
   });
 }
 
@@ -171,14 +180,44 @@ export function abandonSession(state: ProgressState): CommandResult<EventOf<"ses
   return accept({ type: "session.abandoned", sessionId: state.active.sessionId });
 }
 
+/** Longest "question for future you". */
+export const MAX_QUESTION_CHARS = 240;
+
 export function writeRecall(
   state: ProgressState,
   sessionId: string,
   text: string,
+  question?: string,
 ): CommandResult<EventOf<"recall.written">> {
   if (!state.sessions.has(sessionId)) return reject("That session is not finished");
   if (text.trim() === "") return reject("Write at least a few words");
-  return accept({ type: "recall.written", sessionId, text });
+  const q = question?.trim().replace(/\s+/g, " ") ?? "";
+  if (q.length > MAX_QUESTION_CHARS) {
+    return reject(`The question can be at most ${MAX_QUESTION_CHARS} characters`);
+  }
+  return accept({ type: "recall.written", sessionId, text, ...(q ? { question: q } : {}) });
+}
+
+/** Sets or clears the work mode of the running session or a finished one. */
+export function setSessionMode(
+  state: ProgressState,
+  sessionId: string,
+  mode: WorkMode | null,
+): CommandResult<EventOf<"session.mode.changed">> {
+  const running = state.active?.sessionId === sessionId;
+  if (!running && !state.sessions.has(sessionId)) return reject("No such session");
+  if (mode !== null && !WORK_MODES.includes(mode)) return reject("Unknown work mode");
+  return accept({ type: "session.mode.changed", sessionId, mode });
+}
+
+/** Answers a review of a session's recall note. */
+export function completeReview(
+  state: ProgressState,
+  sessionId: string,
+  remembered: boolean,
+): CommandResult<EventOf<"review.completed">> {
+  if (!state.reviews.has(sessionId)) return reject("That note has no reviews");
+  return accept({ type: "review.completed", sessionId, remembered });
 }
 
 export function openCrate(

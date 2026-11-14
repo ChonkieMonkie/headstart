@@ -31,6 +31,7 @@
   import DevMenu from "$lib/components/DevMenu.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
   import Lookahead from "$lib/components/Lookahead.svelte";
+  import ReviewDialog from "$lib/components/ReviewDialog.svelte";
   import Onboarding from "$lib/components/Onboarding.svelte";
   import SessionComplete from "$lib/components/SessionComplete.svelte";
   import Sidebar from "$lib/components/Sidebar.svelte";
@@ -165,6 +166,9 @@
   {#if study.lookaheadOpen}
     <Lookahead onClose={() => (study.lookaheadOpen = false)} />
   {/if}
+{/if}
+{#if study && study.layout !== "compact" && !study.completion}
+  <ReviewDialog {study} />
 {/if}
 
 <style>

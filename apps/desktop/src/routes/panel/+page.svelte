@@ -18,6 +18,7 @@
 
 <!-- The tray panel window. It renders a snapshot from the main window and sends actions back; it never touches the database. -->
 <script lang="ts">
+  import MathText from "$lib/components/MathText.svelte";
   import { items } from "@headstart/content";
   import { formatDuration, formatMinutes } from "@headstart/core";
   import { lookFor, Mascot } from "@headstart/ui";
@@ -112,7 +113,7 @@
               <label class:done={todo.done}>
                 <input type="checkbox" checked={todo.done} onchange={() => act(`toggle-todo:${todo.id}`, false)} />
                 <span>
-                  <span class="todo-text">{todo.text}</span>
+                  <span class="todo-text"><MathText text={todo.text} /></span>
                   {#if todo.task}<small>{todo.task}</small>{/if}
                 </span>
               </label>
@@ -122,7 +123,7 @@
             <li class="more">+ {snapshot.todos.length - 4} more</li>
           {/if}
         </ul>
-      {:else if snapshot?.nextStep}<p class="step">Next step: {snapshot.nextStep}</p>{/if}
+      {:else if snapshot?.nextStep}<p class="step">Next step: <MathText text={snapshot.nextStep} /></p>{/if}
       <div class="buttons">
         {#if timer.endsAt === null}
           <button type="button" class="primary" onclick={() => act("resume", false)}>Resume</button>
@@ -164,7 +165,7 @@
         </p>
         <p class="heading">{snapshot.upNext.task ?? snapshot.upNext.course}</p>
         <p class="sub">{snapshot.upNext.course} · {snapshot.upNext.time}</p>
-        {#if snapshot.nextStep}<p class="step">Next step: {snapshot.nextStep}</p>{/if}
+        {#if snapshot.nextStep}<p class="step">Next step: <MathText text={snapshot.nextStep} /></p>{/if}
       {:else}
         <p class="eyebrow">Ready when you are</p>
         <p class="heading">Nothing planned right now</p>
@@ -176,6 +177,19 @@
         <button type="button" class="ghost" onclick={() => act("start-five")}>Just 5 minutes</button>
       </div>
     </section>
+  {/if}
+
+  {#if snapshot && snapshot.reviewsDue > 0}
+    <div class="reviews">
+      <span><strong>{snapshot.reviewsDue} {snapshot.reviewsDue === 1 ? "review" : "reviews"} due</strong><small>About {snapshot.reviewsDue} {snapshot.reviewsDue === 1 ? "minute" : "minutes"}</small></span>
+      <button
+        type="button"
+        class="primary small-btn"
+        onclick={async () => {
+          await act("review", false);
+          await openMainWindow();
+        }}>Review</button>
+    </div>
   {/if}
 
   {#if snapshot}
@@ -420,5 +434,30 @@
   button:focus-visible {
     outline: 3px solid var(--hs-focus-accent);
     outline-offset: 2px;
+  }
+
+  .reviews {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--hs-ground);
+  }
+
+  .reviews span {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reviews small {
+    font-size: 12.5px;
+    color: var(--hs-ink-muted);
+  }
+
+  .small-btn {
+    min-height: 34px;
+    padding: 0 14px;
   }
 </style>

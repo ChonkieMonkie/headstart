@@ -38,6 +38,10 @@ export type TrayAction =
   | "done-today"
   | "full"
   | "compact"
+  /** The main window was opened from the tray or panel: leave the compact timer. */
+  | "open"
+  /** Open today's reviews in the main window. */
+  | "review"
   /** Ticks a to-do of the running session off (or back on), from the panel. */
   | `toggle-todo:${string}`;
 
@@ -163,6 +167,8 @@ export interface PanelSnapshot {
   crateProgress: number;
   crateEvery: number;
   cratesWaiting: number;
+  /** Reviews due today (at most ten). */
+  reviewsDue: number;
   /** Length of a session started without a plan. */
   focusMinutes: number;
   /** The mascot as it looks right now, or null before one is chosen. */

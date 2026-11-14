@@ -36,6 +36,7 @@ import {
   chooseMascot,
   claimGrant,
   collectionCount,
+  completeReview,
   completeSession,
   completeTask,
   completeTodo,
@@ -46,6 +47,7 @@ import {
   createUlidFactory,
   DEFAULT_SETTINGS,
   type DeveloperToken,
+  type DueReview,
   defaultContext,
   deleteTodo,
   type EarnedCrate,
@@ -82,6 +84,7 @@ import {
   reopenTodo,
   resumeSession,
   retargetSession,
+  reviewsForToday,
   type SetProgress,
   type Settings,
   StudyEngine,
@@ -89,6 +92,7 @@ import {
   type StudyStats,
   sessionInBlock,
   setProgress,
+  setSessionMode,
   simulateStudy,
   startSession,
   type Task,
@@ -102,6 +106,7 @@ import {
   upcomingPlan,
   upcomingReminders,
   updateTodo,
+  type WorkMode,
   writeRecall,
 } from "@headstart/core";
 import { lookFor, MASCOT_NAMES, type MascotLook, type Mood } from "@headstart/ui";
@@ -141,6 +146,15 @@ const SHELL_GRACE_MS = inTauri ? 3_000 : 0;
 const AUTO_START_MS = 10_000;
 const REMINDER_REFRESH_MS = 10 * MINUTE;
 const LAYOUT_KEY = "headstart.focusLayout";
+/** Reviews skipped for today: { day, ids }. Only hides them until tomorrow. */
+const SKIPPED_KEY = "headstart.reviews.skipped";
+
+/** The reviews being answered, one after another. */
+export interface Reviewing {
+  queue: string[];
+  index: number;
+  results: { sessionId: string; remembered: boolean | null }[];
+}
 
 export type PresetId = keyof typeof TIMER_PRESETS;
 
@@ -204,6 +218,10 @@ export interface StartOptions {
    * the task's next step, unless a plan already brings to-dos.
    */
   todoIds?: string[];
+  /** The work mode. Left out, the task's last mode is used. */
+  mode?: WorkMode | null;
+  /** Open the due reviews over the focus view once the session runs. */
+  withReviews?: boolean;
 }
 
 export class Study {
@@ -231,6 +249,10 @@ export class Study {
   completion = $state<Completion | null>(null);
   /** The weekly look-ahead is open (from Today, the Plan page or its notification). */
   lookaheadOpen = $state(false);
+  /** Reviews being answered, or null when the review dialog is closed. */
+  reviewing = $state<Reviewing | null>(null);
+  /** Session ids of reviews skipped today. */
+  skippedReviews = $state<string[]>([]);
   /** A short message for the Today screen, such as a discarded session. */
   notice = $state<string | null>(null);
   distractions = $state(0);
@@ -378,6 +400,93 @@ export class Study {
       .sort((a, b) => b.endedAt - a.endedAt)
       .slice(0, limit)
       .map((r) => ({ endedAt: r.endedAt, text: r.recallText ?? "" }));
+  }
+
+  // Reviews
+
+  /** Today's reviews: due notes, soonest exam first, at most ten, without the skipped ones. */
+  get reviewsToday(): DueReview[] {
+    const state = this.state;
+    if (!state) return [];
+    const today = localDayKey(this.now);
+    const skipped = new Set(this.#skippedOn(today));
+    return reviewsForToday(state, today).filter((r) => !skipped.has(r.record.sessionId));
+  }
+
+  /** Opens the review dialog for the given notes, or for all of today's. */
+  openReviews(sessionIds?: string[]): void {
+    const queue = sessionIds ?? this.reviewsToday.map((r) => r.record.sessionId);
+    if (queue.length === 0) return;
+    this.reviewing = {
+      queue,
+      index: 0,
+      results: queue.map((sessionId) => ({ sessionId, remembered: null })),
+    };
+  }
+
+  closeReviews(): void {
+    this.reviewing = null;
+  }
+
+  /** Answers the current review and moves to the next one. */
+  async answerReview(remembered: boolean): Promise<string | null> {
+    const reviewing = this.reviewing;
+    const sessionId = reviewing?.queue[reviewing.index];
+    if (!reviewing || !sessionId) return null;
+    const result = await this.run((s) => completeReview(s, sessionId, remembered));
+    if (!result.ok) return result.reason;
+    this.reviewing = {
+      ...reviewing,
+      index: reviewing.index + 1,
+      results: reviewing.results.map((r) => (r.sessionId === sessionId ? { ...r, remembered } : r)),
+    };
+    return null;
+  }
+
+  /** Hides the current review until tomorrow, without answering it. */
+  skipReview(): void {
+    const reviewing = this.reviewing;
+    const sessionId = reviewing?.queue[reviewing.index];
+    if (!reviewing || !sessionId) return;
+    const today = localDayKey(Date.now());
+    const ids = [...new Set([...this.#skippedOn(today), sessionId])];
+    this.skippedReviews = ids;
+    try {
+      localStorage.setItem(SKIPPED_KEY, JSON.stringify({ day: today, ids }));
+    } catch {
+      // Private mode or full storage: the skip just lasts until the app closes.
+    }
+    this.reviewing = { ...reviewing, index: reviewing.index + 1 };
+  }
+
+  #skippedOn(day: string): string[] {
+    if (this.skippedReviews.length > 0) return this.skippedReviews;
+    try {
+      const saved = JSON.parse(localStorage.getItem(SKIPPED_KEY) ?? "null") as {
+        day: string;
+        ids: string[];
+      } | null;
+      return saved?.day === day ? saved.ids : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Changes the work mode of the running or a finished session. */
+  async setMode(sessionId: string, mode: WorkMode | null): Promise<void> {
+    await this.run((s) => setSessionMode(s, sessionId, mode));
+  }
+
+  /** The mode last used for a task, so it is usually already picked. */
+  lastModeFor(taskId: string | null): WorkMode | null {
+    const state = this.engine?.state;
+    if (!state || !taskId) return null;
+    let latest: { at: number; mode: WorkMode } | null = null;
+    for (const r of state.sessions.values()) {
+      if (r.taskId === taskId && r.mode && (!latest || r.endedAt > latest.at))
+        latest = { at: r.endedAt, mode: r.mode };
+    }
+    return latest?.mode ?? null;
   }
 
   // Settings
@@ -718,10 +827,11 @@ export class Study {
   }
 
   /** Finishes a start that was waiting for the to-do choice. */
-  async startChosen(todoIds: string[]): Promise<void> {
+  async startChosen(todoIds: string[], mode?: WorkMode | null): Promise<void> {
     const choosing = this.choosing;
     this.choosing = null;
-    if (choosing) await this.start({ ...choosing.options, todoIds });
+    if (choosing)
+      await this.start({ ...choosing.options, todoIds, ...(mode !== undefined ? { mode } : {}) });
   }
 
   async start(options: StartOptions = {}): Promise<void> {
@@ -755,6 +865,10 @@ export class Study {
             .slice(0, 1)
             .map((t) => t.id)
         : []);
+    const mode =
+      options.mode === undefined
+        ? this.lastModeFor(options.taskId ?? plan?.taskId ?? null)
+        : options.mode;
     const result = await engine.run((s) =>
       startSession(s, {
         sessionId: this.#newId(),
@@ -762,6 +876,7 @@ export class Study {
         ...(planId ? { planId } : {}),
         ...(adoptPlan ? { adoptPlan } : {}),
         ...(options.taskId ? { taskId: options.taskId } : {}),
+        ...(mode ? { mode } : {}),
       }),
     );
     if (!result.ok) {
@@ -779,7 +894,9 @@ export class Study {
     this.breakOver = false;
     this.startingAt = null;
     this.#sync();
-    if (options.show !== false) await this.setLayout(this.preferredLayout);
+    if (options.show !== false)
+      await this.setLayout(options.withReviews ? "normal" : this.preferredLayout);
+    if (options.withReviews) this.openReviews();
   }
 
   async pause(): Promise<void> {
@@ -1014,6 +1131,10 @@ export class Study {
    */
   async saveCompletion(input: {
     recall: string;
+    /** "A question for future you", the front of the note's reviews. */
+    question?: string;
+    /** The work mode, as picked or changed on the screen. */
+    mode?: WorkMode | null;
     rating: number | null;
     /** To-dos ticked off on the "session complete" screen. */
     done: ReadonlySet<string>;
@@ -1025,8 +1146,16 @@ export class Study {
     if (!completion) return null;
     const { sessionId, task, course } = completion;
     if (input.recall.trim()) {
-      const result = await this.run((s) => writeRecall(s, sessionId, input.recall.trim()));
+      const result = await this.run((s) =>
+        writeRecall(s, sessionId, input.recall.trim(), input.question),
+      );
       if (!result.ok) return result.reason;
+    }
+    if (
+      input.mode !== undefined &&
+      input.mode !== (this.state?.sessions.get(sessionId)?.mode ?? null)
+    ) {
+      await this.run((s) => setSessionMode(s, sessionId, input.mode ?? null));
     }
     if (input.rating !== null) await this.run((s) => rateSession(s, sessionId, input.rating ?? 0));
     for (const todo of completion.todos) {
@@ -1171,6 +1300,14 @@ export class Study {
       case "full":
       case "compact":
         this.setLayout(action);
+        return;
+      case "open":
+        // Opening the app from the tray means the big window, not the compact timer.
+        if (this.layout === "compact" && (this.active || this.breakTimer)) this.setLayout("normal");
+        return;
+      case "review":
+        if (this.layout === "compact" && (this.active || this.breakTimer)) this.setLayout("normal");
+        this.openReviews();
         return;
     }
   }
@@ -1380,6 +1517,7 @@ export class Study {
       crateProgress: state?.crateProgress ?? 0,
       crateEvery: this.context.rewards.studyCrateEvery,
       cratesWaiting: state ? unopenedCrates(state).length : 0,
+      reviewsDue: this.reviewsToday.length,
       focusMinutes: this.settings.focusMinutes,
       mascot:
         state?.mascot != null

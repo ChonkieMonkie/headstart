@@ -18,6 +18,7 @@
 
 <!-- Plans a session for a task (or just a course) at a set time, and which to-dos it is for. -->
 <script lang="ts">
+  import MathText from "./MathText.svelte";
   import { untrack } from "svelte";
   import { localDayKey, planSession } from "@headstart/core";
   import { fromInputs, toTimeInput } from "$lib/format.ts";
@@ -149,7 +150,7 @@
             />
             <label class="check">
               <input type="checkbox" checked={chosen.has(todo.id)} onchange={(e) => choose(todo.id, e.currentTarget.checked)} />
-              {todo.text}
+              <MathText text={todo.text} />
               {#if todo.taskId && todo.taskId !== picked?.taskId}<span class="muted">{study.task(todo.taskId)?.title}</span>{/if}
             </label>
           </li>

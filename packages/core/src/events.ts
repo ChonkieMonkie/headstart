@@ -33,6 +33,11 @@ export type FocusRating = 1 | 2 | 3 | 4 | 5;
 /** A rough size for a task: Small is about 1 session, Medium 2 to 3, Large 4 or more. */
 export type TaskSize = "small" | "medium" | "large";
 
+/** What kind of studying a session was, an optional tag. */
+export type WorkMode = "test" | "mixed" | "explain" | "read";
+
+export const WORK_MODES: readonly WorkMode[] = ["test", "mixed", "explain", "read"];
+
 /** One item that came out of a crate. Stored in the event so results never change later. */
 export interface CrateDrop {
   /** Null when no item of the rolled rarity existed; the drop then became Insight. */
@@ -54,6 +59,8 @@ export type StudyEvent =
       planId?: string;
       courseId?: string;
       taskId?: string;
+      /** What kind of studying it is meant to be. */
+      mode?: WorkMode;
     }
   | { type: "session.paused"; sessionId: string }
   | { type: "session.resumed"; sessionId: string }
@@ -72,7 +79,18 @@ export type StudyEvent =
       focusRating?: FocusRating;
     }
   | { type: "session.abandoned"; sessionId: string }
-  | { type: "recall.written"; sessionId: string; text: string }
+  /** The note of what was remembered. A later one for the same session replaces it. */
+  | {
+      type: "recall.written";
+      sessionId: string;
+      text: string;
+      /** A question for future you: the front of the note's reviews. */
+      question?: string;
+    }
+  /** The work mode of a session changed, during it or at session complete. Null removes it. */
+  | { type: "session.mode.changed"; sessionId: string; mode: WorkMode | null }
+  /** A review of a session's recall note: tried to remember, then checked the note. */
+  | { type: "review.completed"; sessionId: string; remembered: boolean }
   /** How focused the session felt, given on the "session complete" screen. */
   | { type: "session.rated"; sessionId: string; focusRating: FocusRating }
   | {

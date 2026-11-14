@@ -48,8 +48,12 @@ const MINUTE = 60_000;
 /** 9 November 2026, 08:00 local time. */
 const MORNING = new Date(2026, 10, 9, 8, 0).getTime();
 
+/** The test clock, so results never depend on the real date. */
+let now = MORNING;
+const clock = () => now;
+
 async function setup() {
-  let now = MORNING;
+  now = MORNING;
   const engine = await StudyEngine.open(
     new MemoryEventStore(),
     { deviceId: "test", now: () => new Date(now) },
@@ -135,14 +139,14 @@ describe("a task's own guess of sessions", () => {
         sessions: 7,
       }),
     );
-    expect(taskProgress(engine.state, "t1", Date.now())).toMatchObject({ estimate: 7, left: 7 });
+    expect(taskProgress(engine.state, "t1", clock())).toMatchObject({ estimate: 7, left: 7 });
     expect(updateTask(engine.state, "t1", { sessions: 0 })).toEqual({
       ok: false,
       reason: "Sessions must be 1 to 99",
     });
     await run((s) => updateTask(s, "t1", { sessions: null }));
     // Without its own guess, the size counts again.
-    expect(taskProgress(engine.state, "t1", Date.now()).estimate).toBe(1);
+    expect(taskProgress(engine.state, "t1", clock()).estimate).toBe(1);
   });
 });
 
@@ -185,16 +189,16 @@ describe("tasks to plan", () => {
       }),
     );
 
-    expect(taskProgress(engine.state, "big", Date.now())).toEqual({
+    expect(taskProgress(engine.state, "big", clock())).toEqual({
       done: 1,
       planned: 1,
       estimate: 3,
       left: 1,
     });
-    expect(taskProgress(engine.state, "free", Date.now()).left).toBeNull();
+    expect(taskProgress(engine.state, "free", clock()).left).toBeNull();
 
     // Soonest date first; the exam date counts when a task has none; no date last.
-    const rows = tasksToPlan(engine.state, Date.now());
+    const rows = tasksToPlan(engine.state, clock());
     expect(rows.map((r) => r.task.id)).toEqual(["soon", "big", "free"]);
     expect(rows[1]).toMatchObject({ due: "2026-12-02", dueIsExam: true });
 
@@ -207,7 +211,7 @@ describe("tasks to plan", () => {
         taskId: "soon",
       }),
     );
-    expect(tasksToPlan(engine.state, Date.now()).map((r) => r.task.id)).toEqual(["big", "free"]);
+    expect(tasksToPlan(engine.state, clock()).map((r) => r.task.id)).toEqual(["big", "free"]);
   });
 });
 
@@ -258,7 +262,7 @@ describe("blocks", () => {
       planSession(s, { planId: "solo", startAt: at(17), minutes: 50, courseId: "la" }),
     );
 
-    const blocks = groupBlocks(plansOn(engine.state, "2026-11-09", Date.now()));
+    const blocks = groupBlocks(plansOn(engine.state, "2026-11-09", clock()));
     expect(blocks.map((b) => [b.key, b.views.length])).toEqual([
       ["A", 4],
       ["B", 1],
@@ -272,7 +276,7 @@ describe("blocks", () => {
     ).toEqual(["a0", "a1", "a2", "a3"]);
 
     // Only the first session of block A reminds, not the three after it.
-    const soon = upcomingReminders(engine.state, Date.now())
+    const soon = upcomingReminders(engine.state, clock())
       .filter((r) => r.kind === "soon")
       .map((r) => r.plan.id);
     expect(soon).toEqual(["a0", "b0", "solo"]);

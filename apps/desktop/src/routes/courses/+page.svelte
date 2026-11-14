@@ -18,6 +18,7 @@
 
 <!-- Courses, their tasks and to-dos. Every task starts with a concrete first to-do, so starting never needs a decision. -->
 <script lang="ts">
+  import MathText from "$lib/components/MathText.svelte";
   import { tick } from "svelte";
   import {
     archiveCourse,
@@ -106,6 +107,7 @@
         </div>
         <div class="row-actions">
           <button type="button" class="small" onclick={() => planCourse(course.id)}>Plan</button>
+          {#if recalls.length > 0}<a class="small" href="/notes?course={course.id}">Notes</a>{/if}
           <button type="button" class="small" onclick={() => (open = `course:${course.id}`)}>Edit</button>
           <button type="button" class="small ghost" onclick={() => (open = `archive:${course.id}`)}>Archive</button>
         </div>
@@ -216,10 +218,11 @@
         <summary>Latest recall notes</summary>
         {#each recalls as recall (recall.endedAt)}
           <blockquote>
-            <p>{recall.text}</p>
+            <p class="note-text"><MathText text={recall.text} /></p>
             <footer>{shortDate(recall.endedAt)}</footer>
           </blockquote>
         {/each}
+        <a class="all-notes" href="/notes?course={course.id}">All {course.name} notes</a>
       </details>
     {/if}
   </section>
@@ -493,5 +496,18 @@
   summary:focus-visible {
     outline: 3px solid var(--hs-accent);
     outline-offset: 2px;
+  }
+
+  a.small {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .all-notes {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 800;
+    color: var(--hs-accent-strong);
   }
 </style>

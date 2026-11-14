@@ -77,7 +77,17 @@ pub async fn set_focus_layout(
     };
     if previous != layout {
         leave(&window, previous).map_err(|e| e.to_string())?;
+        if previous == Layout::Compact {
+            wait_for_title_bar(&window);
+        }
         let saved = state.0.lock().map_err(|e| e.to_string())?.saved.take();
+        // Never straight from full screen to the compact timer or back: macOS
+        // finishes each change later, so go through the normal window first.
+        if previous != Layout::Normal && layout != Layout::Normal {
+            enter(&window, Layout::Normal, saved.as_ref()).map_err(|e| e.to_string())?;
+            settle();
+            leave(&window, Layout::Normal).map_err(|e| e.to_string())?;
+        }
         enter(&window, layout, saved.as_ref()).map_err(|e| e.to_string())?;
         if layout != Layout::Normal
             && let Ok(mut inner) = state.0.lock()
@@ -108,8 +118,12 @@ fn leave(window: &WebviewWindow, layout: Layout) -> tauri::Result<()> {
         Layout::Compact => {
             window.set_always_on_top(false)?;
             window.set_visible_on_all_workspaces(false)?;
-            window.set_decorations(true)?;
+            // Resizable first: on macOS the decorations change is applied
+            // later and is built from the resizable flag of this moment, so
+            // the other order brings the title bar back without resizing (a
+            // greyed zoom button and a window that cannot be moved).
             window.set_resizable(true)?;
+            window.set_decorations(true)?;
         }
     }
     Ok(())
@@ -144,8 +158,9 @@ fn enter(window: &WebviewWindow, layout: Layout, saved: Option<&Geometry>) -> ta
         }
         Layout::Compact => {
             window.set_min_size(None::<Size>)?;
-            window.set_decorations(false)?;
+            // Same order rule as in `leave`.
             window.set_resizable(false)?;
+            window.set_decorations(false)?;
             window.set_size(COMPACT)?;
             if let Some(monitor) = window.current_monitor()? {
                 let area = monitor.work_area();
@@ -162,6 +177,49 @@ fn enter(window: &WebviewWindow, layout: Layout, saved: Option<&Geometry>) -> ta
         }
     }
     Ok(())
+}
+
+/// Waits until macOS has really put the title bar back after the compact
+/// timer. The change is applied later on the main thread, and sizing the
+/// window before that leaves a see-through strip where the title bar goes.
+fn wait_for_title_bar(window: &WebviewWindow) {
+    if !cfg!(target_os = "macos") {
+        return;
+    }
+    for _ in 0..25 {
+        let titled = match (window.outer_size(), window.inner_size()) {
+            (Ok(outer), Ok(inner)) => outer.height > inner.height,
+            _ => true,
+        };
+        if titled && window.is_resizable().unwrap_or(true) {
+            return;
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
+/// A safety net when the main window is shown: in the normal layout it must
+/// have its title bar and be resizable. If a layout change left it without
+/// (see `leave`), put both back.
+pub fn repair_normal(window: &WebviewWindow, state: &LayoutState) {
+    let normal = state
+        .0
+        .lock()
+        .map(|inner| inner.current == Layout::Normal)
+        .unwrap_or(false);
+    if !normal || window.is_fullscreen().unwrap_or(false) {
+        return;
+    }
+    let titled = match (window.outer_size(), window.inner_size()) {
+        (Ok(outer), Ok(inner)) => outer.height > inner.height,
+        _ => true,
+    };
+    if cfg!(target_os = "macos") && (!titled || !window.is_resizable().unwrap_or(true)) {
+        let _ = window.set_resizable(true);
+        let _ = window.set_decorations(false);
+        let _ = window.set_decorations(true);
+        let _ = window.set_always_on_top(false);
+    }
 }
 
 /// Leaving full screen finishes asynchronously on some systems; resizing

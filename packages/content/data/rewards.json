@@ -2,6 +2,7 @@
   "xpPerFocusMinute": 0.4,
   "onTimeBonusXp": 5,
   "recallBonusXp": 5,
+  "reviewXp": 2,
   "distractionFreeBonusXp": 3,
   "onTimeWindowMinutes": { "early": 10, "late": 5 },
   "minRecallChars": 20,

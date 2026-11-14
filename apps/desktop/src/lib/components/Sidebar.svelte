@@ -39,8 +39,11 @@
     },
   ];
 
+  // A course's notes belong under Courses.
   const current = (href: string) =>
-    href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href);
+    href === "/"
+      ? page.url.pathname === "/"
+      : page.url.pathname.startsWith(href) || (href === "/courses" && page.url.pathname.startsWith("/notes"));
   const level = $derived(study.summary?.level);
   const waiting = $derived(study.summary?.cratesWaiting ?? 0);
 </script>

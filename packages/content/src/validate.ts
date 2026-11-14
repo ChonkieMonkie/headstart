@@ -289,6 +289,7 @@ export function validateRewardRules(value: unknown): RewardRules {
     xpPerFocusMinute: nonNegative(value.xpPerFocusMinute, "rewards.xpPerFocusMinute"),
     onTimeBonusXp: whole(value.onTimeBonusXp, "rewards.onTimeBonusXp"),
     recallBonusXp: whole(value.recallBonusXp, "rewards.recallBonusXp"),
+    reviewXp: whole(value.reviewXp, "rewards.reviewXp"),
     distractionFreeBonusXp: whole(value.distractionFreeBonusXp, "rewards.distractionFreeBonusXp"),
     onTimeWindowMinutes: {
       early: whole(window.early, "rewards.onTimeWindowMinutes.early"),
