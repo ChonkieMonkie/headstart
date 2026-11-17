@@ -1,0 +1,52 @@
+[
+  {
+    "id": "newcomer",
+    "name": "Newcomer",
+    "level": 1
+  },
+  {
+    "id": "starter",
+    "name": "Starter",
+    "level": 3
+  },
+  {
+    "id": "regular",
+    "name": "Regular",
+    "level": 5
+  },
+  {
+    "id": "focused",
+    "name": "Focused",
+    "level": 8
+  },
+  {
+    "id": "dedicated",
+    "name": "Dedicated",
+    "level": 11
+  },
+  {
+    "id": "scholar",
+    "name": "Scholar",
+    "level": 14
+  },
+  {
+    "id": "expert",
+    "name": "Expert",
+    "level": 17
+  },
+  {
+    "id": "master",
+    "name": "Master",
+    "level": 20
+  },
+  {
+    "id": "grandmaster",
+    "name": "Grandmaster",
+    "level": 25
+  },
+  {
+    "id": "legend",
+    "name": "Legend",
+    "level": 30
+  }
+]

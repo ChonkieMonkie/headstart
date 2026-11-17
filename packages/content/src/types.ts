@@ -240,4 +240,84 @@ export interface RewardRules {
   maxCrateSessionsPerDay: number;
   /** XP needed to go from level n to n + 1 is base × n ^ exponent, rounded to tens. */
   level: { base: number; exponent: number };
+  /** Insight for reaching a level: base + perLevel × the new level. */
+  levelInsight: { base: number; perLevel: number };
+  /** A freeze is earned for every `everyWeeks` weeks met in a row; at most `max` are saved. */
+  freeze: { everyWeeks: number; max: number };
+  /** After `daysAway` days without a session the week's goal is halved and a crate waits, at most once in `giftEveryDays`. */
+  welcomeBack: { daysAway: number; giftEveryDays: number };
+}
+
+/** A name for a band of levels, shown next to the level. */
+export interface Rank {
+  id: string;
+  name: string;
+  /** The first level that has this rank. */
+  level: number;
+}
+
+export const PLAQUE_GROUPS = [
+  "start",
+  "focus",
+  "memory",
+  "weeks",
+  "planning",
+  "collection",
+  "secret",
+] as const;
+export type PlaqueGroup = (typeof PLAQUE_GROUPS)[number];
+
+/** What a plaque counts. Each one is worked out from the log in `core`. */
+export const PLAQUE_METRICS = [
+  "sessions",
+  "focusHours",
+  "onTimeStreak",
+  "onTimeStarts",
+  "deepDays",
+  "longSessions",
+  "earlySessions",
+  "recalls",
+  "questions",
+  "dueReviews",
+  "learnedNotes",
+  "mixedSessions",
+  "testSessions",
+  "explainSessions",
+  "weekRun",
+  "restedWeeks",
+  "reflections",
+  "plannedWeeks",
+  "tasksDone",
+  "thoughtsParked",
+  "itemsOwned",
+  "itemsCrafted",
+  "level",
+  "habitFormed",
+  "comebacks",
+  "fullHouseWeeks",
+  "bigDays",
+  "perfectWeeks",
+] as const;
+export type PlaqueMetric = (typeof PLAQUE_METRICS)[number];
+
+/**
+ * A plaque. With five `tiers` it grows as its count passes each number; with
+ * one it is a one-time plaque.
+ */
+export interface PlaqueDef {
+  /** Permanent id. Never rename or reuse one: earned plaques refer to it forever. */
+  id: string;
+  name: string;
+  group: PlaqueGroup;
+  /** The picture in the middle, by name. The app holds the drawings. */
+  icon: string;
+  metric: PlaqueMetric;
+  /** What it takes, with "{n}" for the tier's number. */
+  what: string;
+  /** The same in the singular, for a tier that needs exactly 1. */
+  whatOne?: string;
+  /** The count each tier needs, rising. */
+  tiers: number[];
+  /** Hidden on the wall until it is earned. */
+  secret?: boolean;
 }

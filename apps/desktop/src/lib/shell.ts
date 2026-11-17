@@ -43,7 +43,9 @@ export type TrayAction =
   /** Open today's reviews in the main window. */
   | "review"
   /** Ticks a to-do of the running session off (or back on), from the panel. */
-  | `toggle-todo:${string}`;
+  | `toggle-todo:${string}`
+  /** Parks a thought, typed in the panel. */
+  | `park:${string}`;
 
 export interface TimerSnapshot {
   kind: TimerKind;
@@ -158,6 +160,10 @@ export interface PanelSnapshot {
   timer: TimerSnapshot | null;
   /** The running session, or the next planned one. */
   heading: string | null;
+  /** The course of the running session, for the nudge card. */
+  course: string | null;
+  /** Thoughts parked and not dealt with yet. */
+  thoughts: number;
   nextStep: string | null;
   /** The running session's to-dos, with the task each belongs to. */
   todos: { id: string; text: string; task: string | null; done: boolean }[];
@@ -218,8 +224,110 @@ export async function takeLaunchStart(): Promise<boolean> {
   return inTauri ? invoke<boolean>("take_launch_start") : false;
 }
 
+// The distraction guard. See src-tauri/src/guard.rs.
+
+/** An app as the system names it: `id` is a bundle id, a program name or a window class. */
+export interface AppInfo {
+  id: string;
+  name: string;
+}
+
+/** An app the user chose to guard. It matches by any of its ids, or by its name. */
+export interface GuardedApp {
+  name: string;
+  ids: string[];
+}
+
+/** Stand-ins for the browser preview (`pnpm dev`), where there is no shell to ask. */
+const PREVIEW_APPS: { running: AppInfo[]; installed: AppInfo[] } = {
+  running: [
+    { id: "com.example.notes", name: "Notes" },
+    { id: "com.example.music", name: "Music" },
+  ],
+  installed: [
+    { id: "com.hnc.Discord", name: "Discord" },
+    { id: "com.tinyspeck.slackmacgap", name: "Slack" },
+    { id: "com.example.notes", name: "Notes" },
+    { id: "com.example.music", name: "Music" },
+    { id: "com.example.chess", name: "Chess" },
+  ],
+};
+
+export const guard = {
+  /** Whether this system can tell which app is in front, and why not if it cannot. */
+  support: async (): Promise<{ supported: boolean; reason: string | null }> =>
+    inTauri
+      ? invoke("guard_support")
+      : import.meta.env.DEV
+        ? { supported: true, reason: null }
+        : { supported: false, reason: "The guard only works in the Headstart app." },
+  /** The apps open right now and the apps found on the computer. */
+  apps: async (): Promise<{ running: AppInfo[]; installed: AppInfo[] }> =>
+    inTauri
+      ? invoke("guard_apps")
+      : import.meta.env.DEV
+        ? PREVIEW_APPS
+        : { running: [], installed: [] },
+  start: async (session: string, apps: GuardedApp[]): Promise<void> => {
+    if (inTauri) await invoke("guard_start", { session, apps });
+  },
+  stop: async (): Promise<void> => {
+    if (inTauri) await invoke("guard_stop");
+  },
+  /** Nudge card: "I need it for this session". */
+  allow: async (): Promise<void> => {
+    if (inTauri) await invoke("guard_allow");
+  },
+  /** Nudge card: "Back to studying". */
+  back: async (): Promise<void> => {
+    if (inTauri) await invoke("guard_back");
+  },
+  /** Nudge card: calls back each time the card is shown. */
+  onShown: (handler: () => void): (() => void) => {
+    if (!inTauri) return () => {};
+    const pending = listen("guard://shown", handler);
+    return () => {
+      pending.then((fn) => fn());
+    };
+  },
+};
+
+// Do Not Disturb during sessions. See src-tauri/src/dnd.rs.
+
+export interface DndStatus {
+  /** How this system does it: Shortcuts on macOS, GNOME settings, or not at all. */
+  kind: "shortcuts" | "gnome" | "none";
+  ready: boolean;
+  /** The Shortcuts still to make, by name. */
+  missing: string[];
+}
+
+export const dnd = {
+  status: async (): Promise<DndStatus> =>
+    inTauri
+      ? invoke("dnd_status")
+      : import.meta.env.DEV
+        ? {
+            kind: "shortcuts",
+            ready: false,
+            missing: ["Headstart Focus On", "Headstart Focus Off"],
+          }
+        : { kind: "none", ready: false, missing: [] },
+  /** Throws a readable message when it did not work. */
+  set: async (on: boolean, recover = false): Promise<void> => {
+    if (inTauri) await invoke("dnd_set", { on, recover });
+  },
+  openSetup: async (): Promise<void> => {
+    if (inTauri) await invoke("dnd_open_setup");
+  },
+};
+
 export interface ShellHandlers {
   onTrayAction: (action: TrayAction) => void;
+  /** The guard showed its nudge card: one more distraction. */
+  onGuardNudge: () => void;
+  /** "I need it for this session": that nudge does not count after all. */
+  onGuardAllowed: () => void;
   onTimerDone: (kind: TimerKind) => void;
   /** The global shortcut or `headstart --start`. */
   onStartOrShow: () => void;
@@ -236,6 +344,8 @@ export function listenToShell(handlers: ShellHandlers): () => void {
     listen<TimerKind>("timer://done", (e) => handlers.onTimerDone(e.payload)),
     listen("app://start-or-show", () => handlers.onStartOrShow()),
     listen("tray://check-updates", () => handlers.onCheckUpdates()),
+    listen("guard://nudge", () => handlers.onGuardNudge()),
+    listen("guard://allowed", () => handlers.onGuardAllowed()),
   ];
   return () => {
     for (const unlisten of pending) unlisten.then((fn) => fn());

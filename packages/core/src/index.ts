@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { crateRules, items, rewardRules } from "@headstart/content";
+import { crateRules, items, plaques, rewardRules } from "@headstart/content";
 import type { CoreContext } from "./state.ts";
 
 export const APP_NAME = "Headstart";
@@ -24,6 +24,7 @@ export const defaultContext: CoreContext = {
   rewards: rewardRules,
   crates: crateRules,
   catalog: items,
+  plaques,
 };
 
 export * from "./collection.ts";
@@ -36,6 +37,7 @@ export * from "./ics.ts";
 export * from "./ids.ts";
 export * from "./math.ts";
 export * from "./planner.ts";
+export * from "./plaques.ts";
 export * from "./reviews.ts";
 export * from "./rewards.ts";
 export * from "./rng.ts";
@@ -46,3 +48,4 @@ export * from "./stats.ts";
 export * from "./store.ts";
 export { formatDuration, formatMinutes } from "./time.ts";
 export * from "./timer.ts";
+export * from "./weeks.ts";

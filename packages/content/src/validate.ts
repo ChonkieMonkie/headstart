@@ -24,7 +24,11 @@ import {
   type Item,
   type ItemSet,
   MASCOTS,
+  PLAQUE_GROUPS,
+  PLAQUE_METRICS,
+  type PlaqueDef,
   RARITIES,
+  type Rank,
   type RarityTable,
   type RewardRules,
   SKIN_ANIMATIONS,
@@ -276,8 +280,12 @@ export function validateRewardRules(value: unknown): RewardRules {
   if (!isObject(value)) fail("rewards", "expected an object");
   const window = value.onTimeWindowMinutes;
   const level = value.level;
+  const { levelInsight, freeze, welcomeBack } = value;
   if (!isObject(window)) fail("rewards.onTimeWindowMinutes", "expected { early, late }");
   if (!isObject(level)) fail("rewards.level", "expected { base, exponent }");
+  if (!isObject(levelInsight)) fail("rewards.levelInsight", "expected { base, perLevel }");
+  if (!isObject(freeze)) fail("rewards.freeze", "expected { everyWeeks, max }");
+  if (!isObject(welcomeBack)) fail("rewards.welcomeBack", "expected { daysAway, giftEveryDays }");
 
   const whole = (v: unknown, where: string) => {
     const n = nonNegative(v, where);
@@ -303,8 +311,93 @@ export function validateRewardRules(value: unknown): RewardRules {
       base: nonNegative(level.base, "rewards.level.base"),
       exponent: nonNegative(level.exponent, "rewards.level.exponent"),
     },
+    levelInsight: {
+      base: whole(levelInsight.base, "rewards.levelInsight.base"),
+      perLevel: whole(levelInsight.perLevel, "rewards.levelInsight.perLevel"),
+    },
+    freeze: {
+      everyWeeks: whole(freeze.everyWeeks, "rewards.freeze.everyWeeks"),
+      max: whole(freeze.max, "rewards.freeze.max"),
+    },
+    welcomeBack: {
+      daysAway: whole(welcomeBack.daysAway, "rewards.welcomeBack.daysAway"),
+      giftEveryDays: whole(welcomeBack.giftEveryDays, "rewards.welcomeBack.giftEveryDays"),
+    },
   };
   if (rules.studyCrateEvery < 1) fail("rewards.studyCrateEvery", "must be at least 1");
   if (rules.level.base <= 0) fail("rewards.level.base", "must be greater than 0");
+  if (rules.freeze.everyWeeks < 1) fail("rewards.freeze.everyWeeks", "must be at least 1");
+  if (rules.welcomeBack.daysAway < 1) fail("rewards.welcomeBack.daysAway", "must be at least 1");
   return rules;
+}
+
+/** Ranks, lowest first. The first one starts at level 1, and the levels rise. */
+export function validateRanks(value: unknown): Rank[] {
+  if (!Array.isArray(value) || value.length === 0) fail("ranks", "expected a list of ranks");
+  const ranks: Rank[] = [];
+  const ids = new Set<string>();
+  value.forEach((raw, i) => {
+    const where = `ranks[${i}]`;
+    if (!isObject(raw)) fail(where, "expected an object");
+    const rank: Rank = {
+      id: text(raw.id, `${where}.id`),
+      name: text(raw.name, `${where}.name`),
+      level: nonNegative(raw.level, `${where}.level`),
+    };
+    if (ids.has(rank.id)) fail(where, `duplicate id "${rank.id}"`);
+    ids.add(rank.id);
+    const before = ranks[ranks.length - 1];
+    if (!Number.isInteger(rank.level)) fail(`${where}.level`, "expected a whole number");
+    if (before ? rank.level <= before.level : rank.level !== 1) {
+      fail(`${where}.level`, "the first rank starts at level 1 and each rank is higher");
+    }
+    ranks.push(rank);
+  });
+  return ranks;
+}
+
+/** How many tiers a plaque that grows has. One-time plaques have a single one. */
+export const PLAQUE_TIERS = 5;
+
+export function validatePlaques(value: unknown): PlaqueDef[] {
+  if (!Array.isArray(value)) fail("plaques", "expected a list of plaques");
+  const ids = new Set<string>();
+  return value.map((raw, i) => {
+    const where = `plaques[${i}]`;
+    if (!isObject(raw)) fail(where, "expected an object");
+    const id = text(raw.id, `${where}.id`);
+    if (ids.has(id)) fail(where, `duplicate id "${id}"`);
+    ids.add(id);
+    // A colon marks the ids made for each course and set, so shipped ids never have one.
+    if (id.includes(":")) fail(`${where}.id`, "must not contain a colon");
+    if (
+      !Array.isArray(raw.tiers) ||
+      (raw.tiers.length !== 1 && raw.tiers.length !== PLAQUE_TIERS)
+    ) {
+      fail(`${where}.tiers`, `expected 1 or ${PLAQUE_TIERS} numbers`);
+    }
+    const tiers = raw.tiers.map((n, t) => {
+      const count = nonNegative(n, `${where}.tiers[${t}]`);
+      if (!Number.isInteger(count) || count < 1)
+        fail(`${where}.tiers[${t}]`, "expected a whole number of 1 or more");
+      return count;
+    });
+    if (tiers.some((n, t) => t > 0 && n <= (tiers[t - 1] ?? 0)))
+      fail(`${where}.tiers`, "each tier must need more than the one before");
+    const what = text(raw.what, `${where}.what`);
+    if (tiers.length > 1 && !what.includes("{n}"))
+      fail(`${where}.what`, 'a plaque with tiers needs "{n}"');
+    const plaque: PlaqueDef = {
+      id,
+      name: text(raw.name, `${where}.name`),
+      group: oneOf(raw.group, PLAQUE_GROUPS, `${where}.group`),
+      icon: text(raw.icon, `${where}.icon`),
+      metric: oneOf(raw.metric, PLAQUE_METRICS, `${where}.metric`),
+      what,
+      tiers,
+    };
+    if (raw.whatOne !== undefined) plaque.whatOne = text(raw.whatOne, `${where}.whatOne`);
+    if (raw.secret === true) plaque.secret = true;
+    return plaque;
+  });
 }

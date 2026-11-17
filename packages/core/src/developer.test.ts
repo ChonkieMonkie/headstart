@@ -153,7 +153,8 @@ describe("developer events", () => {
       type: "streak",
       openedAt: null,
     });
-    expect(engine.state.stardust).toBe(500);
+    // 250 XP is level 2, and reaching it gives 30 Insight on top of the 500.
+    expect(engine.state.stardust).toBe(530);
     expect(engine.state.xp).toBe(250);
     await run((s, c) => developer.takeItem(s, "head.halo", c));
     expect(engine.state.inventory.has("head.halo")).toBe(false);

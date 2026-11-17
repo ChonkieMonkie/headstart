@@ -90,6 +90,15 @@
   function onkeydown(event: KeyboardEvent): void {
     if (event.key === "Escape") hidePanel();
   }
+
+  // Park a thought without opening the app. The main window saves it.
+  let thought = $state("");
+  async function park(): Promise<void> {
+    const text = thought.trim();
+    if (!text) return;
+    thought = "";
+    await act(`park:${text}`, false);
+  }
 </script>
 
 <svelte:window {onkeydown} />
@@ -141,6 +150,23 @@
         <button type="button" class="ghost" onclick={() => act("full")}>Full screen</button>
         <button type="button" class="ghost" onclick={() => act("compact")}>Compact timer</button>
       </div>
+      <form
+        class="park"
+        onsubmit={(e) => {
+          e.preventDefault();
+          park();
+        }}
+      >
+        <input
+          type="text"
+          bind:value={thought}
+          maxlength="200"
+          placeholder={snapshot && snapshot.thoughts > 0 ? `Park a thought (${snapshot.thoughts} parked)` : "Park a thought for your break"}
+          aria-label="Park a thought"
+          autocomplete="off"
+        />
+        <button type="submit" class="ghost" disabled={!thought.trim()}>Park</button>
+      </form>
     </section>
   {:else if timer?.kind === "break"}
     <section class="now" aria-label="Break">
@@ -375,6 +401,44 @@
     border: 1px solid #3a4070;
     background: transparent;
     color: var(--hs-focus-text);
+  }
+
+  .park {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .park input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px dashed #4a5080;
+    border-radius: 12px;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--hs-focus-text);
+    user-select: text;
+  }
+
+  .park input::placeholder {
+    color: var(--hs-focus-text-muted);
+  }
+
+  .park input:focus-visible {
+    border-style: solid;
+    border-color: var(--hs-focus-accent);
+    outline: 2px solid var(--hs-focus-accent);
+    outline-offset: 1px;
+  }
+
+  .park button:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 
   .today {

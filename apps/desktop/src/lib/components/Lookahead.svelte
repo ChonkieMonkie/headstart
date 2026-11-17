@@ -22,7 +22,7 @@
   then planning just the next two days.
 -->
 <script lang="ts">
-  import { localDayKey, tasksToPlan } from "@headstart/core";
+  import { localDayKey, MAX_REFLECTION_LENGTH, reflectionWeek, tasksToPlan } from "@headstart/core";
   import { Mascot } from "@headstart/ui";
   import { useApp } from "$lib/context.ts";
   import { formatMinutes } from "@headstart/core";
@@ -149,8 +149,25 @@
   // Step 4: plan just the next two days.
   const firstDays = [addDays(today, 1), addDays(today, 2)];
 
+  // Step 1 also asks three short questions about the week that is ending.
+  const lookedBackAt = reflectionWeek(today);
+  const before = study.reflection(lookedBackAt);
+  let well = $state(before?.well ?? "");
+  let blocked = $state(before?.blocked ?? "");
+  let oneChange = $state(before?.change ?? "");
+  let reflectError = $state<string | null>(null);
+  async function nextFromLastWeek(): Promise<void> {
+    reflectError = null;
+    if (well.trim() || blocked.trim() || oneChange.trim()) {
+      reflectError = await study.saveReflection(lookedBackAt, { well, blocked, change: oneChange });
+      if (reflectError) return;
+    }
+    step = 2;
+  }
+
   function finish(): void {
     markLookaheadDone();
+    study.lookaheadDone();
     onClose();
   }
 </script>
@@ -197,9 +214,22 @@
         </div>
       {/each}
     </div>
+    <div class="reflect">
+      <label>What went well?<input type="text" bind:value={well} maxlength={MAX_REFLECTION_LENGTH} /></label>
+      <label>What got in the way?<input type="text" bind:value={blocked} maxlength={MAX_REFLECTION_LENGTH} /></label>
+      <label>
+        One thing to change this week
+        <input type="text" bind:value={oneChange} maxlength={MAX_REFLECTION_LENGTH} aria-describedby="change-hint" />
+        <span class="sub" id="change-hint">This one line shows on your This week card all week.</span>
+      </label>
+      {#if reflectError}<p class="error" role="alert">{reflectError}</p>{/if}
+    </div>
     <div class="foot">
-      <button type="button" class="link" onclick={() => (step = 2)}>Skip</button>
-      <button type="button" class="primary" onclick={() => (step = 2)}>Next: the week ahead</button>
+      <span class="sub">All three are optional. A few words are enough.</span>
+      <span class="foot-right">
+        <button type="button" class="link" onclick={() => (step = 2)}>Skip</button>
+        <button type="button" class="primary" onclick={nextFromLastWeek}>Next: the week ahead</button>
+      </span>
     </div>
   {:else if step === 2}
     <h2 id="flow-title">The week ahead</h2>
@@ -412,6 +442,42 @@
     margin: 0;
     font-size: 13.5px;
     color: var(--hs-ink-muted);
+  }
+
+  .reflect {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reflect label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .reflect label .sub {
+    font-weight: 400;
+  }
+
+  .reflect input {
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid var(--hs-field-line);
+    border-radius: 12px;
+    background: var(--hs-surface);
+    font: inherit;
+    font-weight: 600;
+    color: var(--hs-ink);
+  }
+
+  .reflect .error {
+    margin: 0;
+    font-weight: 700;
+    color: var(--hs-danger-strong);
   }
 
   .mascot-row {

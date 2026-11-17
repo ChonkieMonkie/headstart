@@ -33,7 +33,9 @@
     InsightIcon,
   } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
+  import { page } from "$app/state";
   import LazyMascot from "$lib/components/LazyMascot.svelte";
+  import PlaqueWall from "$lib/components/PlaqueWall.svelte";
   import Select from "$lib/components/Select.svelte";
   import { useApp } from "$lib/context.ts";
 
@@ -43,6 +45,7 @@
     ["wardrobe", "Wardrobe"],
     ["items", "All items"],
     ["sets", "Sets"],
+    ["plaques", "Plaques"],
   ] as const;
   type Tab = (typeof TABS)[number][0];
 
@@ -59,7 +62,9 @@
   const craftCost = (item: Item) => (item.rarity === "exotic" ? 0 : study.context.crates.craftCost[item.rarity]);
   const TRY_MOODS: Mood[] = ["idle", "focus", "celebrate", "sleepy", "welcome"];
 
-  let tab = $state<Tab>("wardrobe");
+  // "See your wall" links here with ?tab=plaques.
+  const asked = page.url.searchParams.get("tab");
+  let tab = $state<Tab>(TABS.some(([id]) => id === asked) ? (asked as Tab) : "wardrobe");
   let mood = $state<Mood>("idle");
   let slotFilter = $state<Slot | "all">("all");
   let found = $state<"all" | "found" | "missing">("all");
@@ -326,7 +331,7 @@
       </aside>
     </div>
   </div>
-{:else}
+{:else if tab === "sets"}
   <div class="sets" role="tabpanel" id="panel-sets" aria-labelledby="tab-sets">
     {#each study.sets as progress (progress.set.id)}
       {@const members = sorted.filter((i) => i.set === progress.set.id)}
@@ -360,6 +365,8 @@
       </article>
     {/each}
   </div>
+{:else}
+  <PlaqueWall {study} />
 {/if}
 
 <style>

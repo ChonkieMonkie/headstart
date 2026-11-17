@@ -28,6 +28,7 @@ import {
   WORK_MODES,
   type WorkMode,
 } from "./events.ts";
+import { plaquesToEarn } from "./plaques.ts";
 import { checkSettings, type Settings } from "./settings.ts";
 import {
   type CoreContext,
@@ -37,6 +38,7 @@ import {
   type ProgressState,
   type Todo,
 } from "./state.ts";
+import { weekOf, weekStanding, welcomeGiftDue } from "./weeks.ts";
 
 export type CommandResult<E extends StudyEvent = StudyEvent> =
   | { ok: true; event: E }
@@ -901,6 +903,114 @@ export function assignTodo(
 }
 
 // Settings
+
+export const MAX_THOUGHT_LENGTH = 200;
+/** Parked thoughts waiting at once. More than this is a list to tidy, not a quick note. */
+export const MAX_OPEN_THOUGHTS = 50;
+
+/** Parks a thought: one line, about anything, to deal with after the session. */
+export function parkThought(
+  state: ProgressState,
+  input: { thoughtId: string; text: string; sessionId?: string },
+): CommandResult<EventOf<"thought.parked">> {
+  if (state.thoughts.has(input.thoughtId)) return reject("That thought is already parked");
+  const text = cleanText(input.text, "The thought", MAX_THOUGHT_LENGTH);
+  if ("reason" in text) return reject(text.reason);
+  if (state.thoughts.size >= MAX_OPEN_THOUGHTS) {
+    return reject("Clear a few parked thoughts first");
+  }
+  return accept({
+    type: "thought.parked",
+    thoughtId: input.thoughtId,
+    text: text.text,
+    ...(input.sessionId ? { sessionId: input.sessionId } : {}),
+  });
+}
+
+/** Clears a parked thought: it is done, or it became the to-do given. */
+export function clearThought(
+  state: ProgressState,
+  thoughtId: string,
+  todoId?: string,
+): CommandResult<EventOf<"thought.cleared">> {
+  if (!state.thoughts.has(thoughtId)) return reject("That thought is already cleared");
+  return accept({ type: "thought.cleared", thoughtId, ...(todoId ? { todoId } : {}) });
+}
+
+/** Uses a freeze on each of the missed weeks the user was asked about. */
+export function useFreezes(
+  state: ProgressState,
+  ctx: CoreContext,
+  now: number,
+): CommandResult<EventOf<"freeze.used">> {
+  const { pending } = weekStanding(state, now, ctx);
+  if (pending.length === 0) return reject("There is no week a freeze can cover");
+  return accept({ type: "freeze.used", weeks: pending });
+}
+
+/** Keeps the freezes: the run of weeks ends at the missed weeks. */
+export function declineFreezes(
+  state: ProgressState,
+  ctx: CoreContext,
+  now: number,
+): CommandResult<EventOf<"freeze.declined">> {
+  const { pending } = weekStanding(state, now, ctx);
+  if (pending.length === 0) return reject("There is no week a freeze can cover");
+  return accept({ type: "freeze.declined", weeks: pending });
+}
+
+/** The crate for coming back after time away, at most once in a while. */
+export function claimWelcomeGift(
+  state: ProgressState,
+  ctx: CoreContext,
+  input: { giftId: string; now: number },
+): CommandResult<EventOf<"gift.granted">> {
+  if (!welcomeGiftDue(state, input.now, ctx)) return reject("No gift is waiting");
+  return accept({
+    type: "gift.granted",
+    giftId: input.giftId,
+    crateType: "study",
+    reason: "welcome-back",
+  });
+}
+
+export const MAX_REFLECTION_LENGTH = 200;
+
+/** Saves the look back at a week. Any answer may be empty, but not all three. */
+export function saveReflection(
+  _state: ProgressState,
+  input: { week: string; well: string; blocked: string; change: string },
+): CommandResult<EventOf<"reflection.saved">> {
+  if (!isDateKey(input.week) || weekOf(input.week) !== input.week) return reject("Unknown week");
+  const clean = (text: string) => text.trim().replace(/\s+/g, " ");
+  const [well, blocked, change] = [clean(input.well), clean(input.blocked), clean(input.change)];
+  if (!well && !blocked && !change) return reject("Write a few words in at least one of them");
+  if ([well, blocked, change].some((text) => text.length > MAX_REFLECTION_LENGTH)) {
+    return reject(`Each answer can be at most ${MAX_REFLECTION_LENGTH} characters`);
+  }
+  return accept({ type: "reflection.saved", week: input.week, well, blocked, change });
+}
+
+/** Notes that the look-ahead was finished for a week. Once per week. */
+export function completeLookahead(
+  state: ProgressState,
+  week: string,
+): CommandResult<EventOf<"lookahead.completed">> {
+  if (!isDateKey(week) || weekOf(week) !== week) return reject("Unknown week");
+  if (state.lookaheadWeeks.has(week)) return reject("Already noted");
+  return accept({ type: "lookahead.completed", week });
+}
+
+/** Records a plaque tier that has been reached. */
+export function earnPlaque(
+  state: ProgressState,
+  ctx: CoreContext,
+  input: { plaqueId: string; tier: number; now: number },
+): CommandResult<EventOf<"plaque.earned">> {
+  const due = plaquesToEarn(state, input.now, ctx).find((p) => p.plaqueId === input.plaqueId);
+  if (!due || due.tier < input.tier) return reject("That plaque is not earned yet");
+  return accept({ type: "plaque.earned", plaqueId: input.plaqueId, tier: input.tier });
+}
 
 export function changeSettings(
   state: ProgressState,

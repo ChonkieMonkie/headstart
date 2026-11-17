@@ -20,7 +20,15 @@
 // panel, the mascot and its collection. Rules live in `@headstart/core`; this
 // class only wires them up.
 
-import { items as catalog, type Item, type MascotId, type Slot, sets } from "@headstart/content";
+import {
+  items as catalog,
+  type Item,
+  type MascotId,
+  type Rank,
+  ranks,
+  type Slot,
+  sets,
+} from "@headstart/content";
 import {
   type ActiveSession,
   abandonSession,
@@ -35,7 +43,10 @@ import {
   changeSettings,
   chooseMascot,
   claimGrant,
+  claimWelcomeGift,
+  clearThought,
   collectionCount,
+  completeLookahead,
   completeReview,
   completeSession,
   completeTask,
@@ -48,13 +59,16 @@ import {
   DEFAULT_SETTINGS,
   type DeveloperToken,
   type DueReview,
+  declineFreezes,
   defaultContext,
   deleteTodo,
   type EarnedCrate,
   type EventStore,
+  earnPlaque,
   equipItem,
   extendSession,
   focusedMs,
+  insightForLevels,
   isOnTime,
   isTimeUp,
   type LevelInfo,
@@ -70,12 +84,18 @@ import {
   type PityState,
   type Plan,
   type PlanView,
+  type PlaqueStanding,
   type ProgressState,
+  parkThought,
   pauseSession,
   planForTask,
   plansOn,
   planToStartNow,
+  plaqueStandings,
+  plaquesToEarn,
   presetFor,
+  type Reflection,
+  rankFor,
   rateSession,
   readDeveloperToken,
   readGrant,
@@ -90,12 +110,14 @@ import {
   StudyEngine,
   type StudyEvent,
   type StudyStats,
+  saveReflection,
   sessionInBlock,
   setProgress,
   setSessionMode,
   simulateStudy,
   startSession,
   type Task,
+  type Thought,
   TIMER_PRESETS,
   type TimerPreset,
   type Todo,
@@ -106,7 +128,12 @@ import {
   upcomingPlan,
   upcomingReminders,
   updateTodo,
+  useFreezes,
+  type WeekStanding,
   type WorkMode,
+  weekOf,
+  weekStanding,
+  welcomeGiftDue,
   writeRecall,
 } from "@headstart/core";
 import { lookFor, MASCOT_NAMES, type MascotLook, type Mood } from "@headstart/ui";
@@ -118,12 +145,15 @@ import {
   savedProfile,
   saveProfile,
 } from "./debug-clock.ts";
+import { dndWasLeftOn, FocusTools, markDnd } from "./focusTools.svelte.ts";
 import { clockTime } from "./format.ts";
 import { nextLookahead } from "./lookahead.ts";
 import { mascotLine, mascotMood } from "./mascot.ts";
 import { courseLabel } from "./options.ts";
 import {
+  dnd,
   type FocusLayout,
+  guard,
   listenToShell,
   type PanelSnapshot,
   publishPanel,
@@ -197,6 +227,21 @@ export interface Completion {
 }
 
 /** A crate that was just opened, for the reveal screen. */
+/** A new level to celebrate: several at once show as one. */
+export interface LevelUp {
+  from: number;
+  to: number;
+  insight: number;
+  /** The new rank, when the level brought one. */
+  rank: Rank | null;
+}
+
+/** A plaque tier earned since the user last looked. */
+export interface NewPlaque {
+  plaqueId: string;
+  tier: number;
+}
+
 export interface OpenedCrate {
   crateId: string;
   drops: (CrateDrop & { item: Item | null })[];
@@ -256,6 +301,25 @@ export class Study {
   /** A short message for the Today screen, such as a discarded session. */
   notice = $state<string | null>(null);
   distractions = $state(0);
+  /** A level reached since the last celebration, waiting to be shown. */
+  levelUp = $state<LevelUp | null>(null);
+  /** Plaque tiers earned and not looked at yet, oldest first. */
+  newPlaques = $state<NewPlaque[]>([]);
+  /** The level the user has seen, so only new ones are celebrated. */
+  #seenLevel = 0;
+  #settling = false;
+  #weeksCache: { key: string; value: WeekStanding } | null = null;
+  #plaquesCache: { key: string; value: PlaqueStanding[] } | null = null;
+  /** The distraction guard's apps and the Do Not Disturb choice, kept on this computer. */
+  readonly tools = new FocusTools();
+  /** Do Not Disturb is on because of the running session. */
+  dndActive = $state(false);
+  /** Why Do Not Disturb could not be switched, if it could not. */
+  dndError = $state<string | null>(null);
+  /** What the guard was last told to watch, so the shell is only told on a change. */
+  #guardKey = "";
+  /** The session in which turning Do Not Disturb on failed. */
+  #dndFailedIn: string | null = null;
   layout = $state<FocusLayout>("normal");
   /** Ticks every second while a timer runs and every 30 seconds otherwise. */
   now = $state(Date.now());
@@ -572,6 +636,168 @@ export class Study {
     return result.ok ? null : result.reason;
   }
 
+  // The week, levels and plaques
+
+  /** Where the week stands: study days against the goal, the run of weeks and the freezes. */
+  get weeks(): WeekStanding | null {
+    const state = this.state;
+    if (!state) return null;
+    const key = `${this.version}:${localDayKey(this.now)}`;
+    if (this.#weeksCache?.key !== key) {
+      this.#weeksCache = { key, value: weekStanding(state, this.now, this.context) };
+    }
+    return this.#weeksCache.value;
+  }
+
+  /** Answers the question about missed weeks: use the freezes, or let the run end. */
+  async answerFreeze(use: boolean): Promise<void> {
+    const now = Date.now();
+    if (use) await this.run((s, c) => useFreezes(s, c, now));
+    else await this.run((s, c) => declineFreezes(s, c, now));
+  }
+
+  reflection(week: string): Reflection | null {
+    const found = this.state?.reflections.get(week);
+    return found ? copy(found) : null;
+  }
+
+  async saveReflection(
+    week: string,
+    answers: { well: string; blocked: string; change: string },
+  ): Promise<string | null> {
+    const result = await this.run((s) => saveReflection(s, { week, ...answers }));
+    return result.ok ? null : result.reason;
+  }
+
+  /** Notes that this week's look-ahead was finished (it counts for a plaque). */
+  async lookaheadDone(): Promise<void> {
+    const week = weekOf(localDayKey(Date.now()));
+    await this.run((s) => completeLookahead(s, week));
+  }
+
+  /** The rank that goes with the level, for the sidebar. */
+  get rank(): Rank | null {
+    return this.summary ? rankFor(this.summary.level.level, ranks) : null;
+  }
+
+  /** Every plaque with its count and tier, in the order they are listed. */
+  get plaques(): PlaqueStanding[] {
+    const state = this.state;
+    if (!state) return [];
+    const key = `${this.version}:${localDayKey(this.now)}`;
+    if (this.#plaquesCache?.key !== key) {
+      this.#plaquesCache = { key, value: plaqueStandings(state, this.now, this.context) };
+    }
+    return this.#plaquesCache.value;
+  }
+
+  /** The tier held of a plaque made per course or per set (0 or 1). */
+  plaqueTier(plaqueId: string): number {
+    return this.state?.plaques.get(plaqueId)?.tier ?? 0;
+  }
+
+  dismissPlaques(): void {
+    this.newPlaques = [];
+  }
+
+  dismissLevelUp(): void {
+    this.levelUp = null;
+  }
+
+  /**
+   * After every change: records plaque tiers that were just reached, gives the
+   * welcome-back crate when one is due, and notices a new level. Nothing is
+   * shown during a session; it waits for Session complete or Today.
+   */
+  async #settle(): Promise<void> {
+    const engine = this.engine;
+    if (!engine || this.#settling) return;
+    this.#settling = true;
+    try {
+      const now = Date.now();
+      if (!engine.state.active && welcomeGiftDue(engine.state, now, engine.context)) {
+        await engine.run((s, c) => claimWelcomeGift(s, c, { giftId: this.#newId(), now }));
+      }
+      for (const plaque of plaquesToEarn(engine.state, now, engine.context)) {
+        const result = await engine.run((s, c) => earnPlaque(s, c, { ...plaque, now }));
+        if (result.ok) this.newPlaques = [...this.newPlaques, plaque];
+      }
+    } finally {
+      this.#settling = false;
+    }
+    this.#checkLevel();
+  }
+
+  /** Celebrates a new level once the session and its last screen are out of the way. */
+  #checkLevel(): void {
+    const engine = this.engine;
+    if (!engine || this.active || this.completion || this.levelUp) return;
+    const level = levelInfo(engine.state.xp, engine.context.rewards).level;
+    if (level <= this.#seenLevel) return;
+    const before = rankFor(this.#seenLevel, ranks);
+    const rank = rankFor(level, ranks);
+    this.levelUp = {
+      from: this.#seenLevel,
+      to: level,
+      insight: insightForLevels(this.#seenLevel, level, engine.context.rewards),
+      rank: rank && rank.id !== before?.id ? rank : null,
+    };
+    this.#seenLevel = level;
+  }
+
+  /** Parked thoughts that wait to be dealt with, oldest first. */
+  get thoughts(): Thought[] {
+    this.version;
+    return this.engine ? [...this.engine.state.thoughts.values()].map(copy) : [];
+  }
+
+  /** Parks a thought, tied to the running session if there is one. */
+  async parkThought(text: string): Promise<string | null> {
+    const sessionId = this.engine?.state.active?.sessionId;
+    const result = await this.run((s) =>
+      parkThought(s, { thoughtId: this.#newId(), text, ...(sessionId ? { sessionId } : {}) }),
+    );
+    return result.ok ? null : result.reason;
+  }
+
+  async clearThought(thoughtId: string): Promise<void> {
+    await this.run((s) => clearThought(s, thoughtId));
+  }
+
+  /** The course (and task) of the session a thought was parked in, if it still fits. */
+  thoughtHome(thought: Thought): { course: Course; taskId: string | null } | null {
+    const state = this.engine?.state;
+    if (!state || !thought.sessionId) return null;
+    const from =
+      state.sessions.get(thought.sessionId) ??
+      (state.active?.sessionId === thought.sessionId ? state.active : null);
+    const course = from?.courseId ? state.courses.get(from.courseId) : undefined;
+    if (!course || course.archived) return null;
+    const task = from?.taskId ? state.tasks.get(from.taskId) : undefined;
+    return { course: copy(course), taskId: task && !task.done ? task.id : null };
+  }
+
+  /** Turns a thought into a to-do under a course (and task), and clears it. */
+  async thoughtToTodo(
+    thoughtId: string,
+    target: { courseId: string; taskId: string | null },
+  ): Promise<string | null> {
+    const thought = this.engine?.state.thoughts.get(thoughtId);
+    if (!thought) return null;
+    const todoId = this.#newId();
+    const made = await this.run((s) =>
+      createTodo(s, {
+        todoId,
+        courseId: target.courseId,
+        ...(target.taskId ? { taskId: target.taskId } : {}),
+        text: thought.text,
+      }),
+    );
+    if (!made.ok) return made.reason;
+    await this.run((s) => clearThought(s, thoughtId, todoId));
+    return null;
+  }
+
   async editTodo(todoId: string, text: string): Promise<string | null> {
     const result = await this.run((s) => updateTodo(s, todoId, text));
     return result.ok || result.reason === "Nothing changed" ? null : result.reason;
@@ -773,10 +999,21 @@ export class Study {
         },
         onCheckUpdates: () => this.onCheckUpdates(),
         onPanelReady: () => publishPanel(this.#panelSnapshot()),
+        onGuardNudge: () => this.logDistraction(),
+        onGuardAllowed: () => {
+          this.distractions = Math.max(0, this.distractions - 1);
+        },
       });
       // A session left running when the app quit carries on, or finishes now.
       const running = this.engine.state.active;
       if (running) this.#preset = presetFor(running.plannedMs / MINUTE);
+      // A Focus left on by a session that never got to end it (the app crashed).
+      if (!running && dndWasLeftOn()) {
+        markDnd(false);
+        dnd.set(false, true).catch(() => {});
+      }
+      // Levels reached before this start are not news.
+      this.#seenLevel = levelInfo(this.engine.state.xp, ctx.rewards).level;
       this.#refresh();
       this.ready = true;
       if (await takeLaunchStart()) await this.start({ auto: true });
@@ -1177,14 +1414,20 @@ export class Study {
       if (reason) return reason;
     }
     if (task && input.taskDone) await this.run((s) => completeTask(s, task.id));
-    this.completion = null;
-    this.#startPendingBreak();
+    this.#closeCompletion();
     return null;
   }
 
   dismissCompletion(): void {
+    this.#closeCompletion();
+  }
+
+  /** Session complete is done with: its plaques were seen, and a new level can show. */
+  #closeCompletion(): void {
     this.completion = null;
+    this.newPlaques = [];
     this.#startPendingBreak();
+    this.#checkLevel();
   }
 
   /** Starts the break that waited for the reflection, counting from now. */
@@ -1267,6 +1510,10 @@ export class Study {
   }
 
   #onTrayAction(action: TrayAction): void {
+    if (action.startsWith("park:")) {
+      this.parkThought(action.slice("park:".length));
+      return;
+    }
     if (action.startsWith("toggle-todo:")) {
       const todo = this.engine?.state.todos.get(action.slice("toggle-todo:".length));
       if (todo) this.toggleTodo(todo);
@@ -1350,6 +1597,7 @@ export class Study {
     this.version += 1;
     this.#syncReminders();
     this.#sync();
+    this.#settle();
   }
 
   /** Pushes the running timer to the tray and panel, and keeps the screen ticking. */
@@ -1368,6 +1616,51 @@ export class Study {
     }
     setTimer(this.#timerSnapshot());
     publishPanel(this.#panelSnapshot());
+    this.#syncTools();
+  }
+
+  /** Call after changing the focus tools in Settings, so a running session follows. */
+  toolsChanged(): void {
+    this.#syncTools();
+  }
+
+  /**
+   * Keeps the distraction guard and Do Not Disturb in step with the session:
+   * the guard watches while a session runs (not while it is paused), and Do
+   * Not Disturb stays on from the start of a session to its end.
+   */
+  #syncTools(): void {
+    const session = this.active;
+    const tools = this.tools;
+    const watch = tools.guardOn && tools.apps.length > 0 && session?.pausedAt === null;
+    const key = watch ? `${session.sessionId}|${JSON.stringify(tools.apps)}` : "";
+    if (key !== this.#guardKey) {
+      this.#guardKey = key;
+      const told = watch
+        ? guard.start(session.sessionId, $state.snapshot(tools.apps))
+        : guard.stop();
+      told.catch(() => {});
+    }
+    // After a failure, the same session does not try again: once is enough to tell.
+    const quiet = tools.dndOn && session !== null && session.sessionId !== this.#dndFailedIn;
+    if (quiet !== this.dndActive) {
+      this.dndActive = quiet;
+      markDnd(quiet);
+      const sessionId = session?.sessionId ?? null;
+      dnd.set(quiet).then(
+        () => {
+          this.dndError = null;
+        },
+        (error) => {
+          this.dndError = String(error);
+          if (quiet) {
+            this.#dndFailedIn = sessionId;
+            this.dndActive = false;
+            markDnd(false);
+          }
+        },
+      );
+    }
   }
 
   #tick(): void {
@@ -1490,6 +1783,8 @@ export class Study {
     return {
       timer: this.#timerSnapshot(),
       heading: running ? (runningTask?.title ?? runningCourse?.name ?? "Focus session") : null,
+      course: runningCourse?.name ?? null,
+      thoughts: state?.thoughts.size ?? 0,
       nextStep: (running ? runningTask : nextTask)?.nextStep ?? null,
       todos:
         state && running

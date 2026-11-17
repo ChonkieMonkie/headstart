@@ -17,7 +17,7 @@
 // XP and levels. Rewards favour the behaviours that make studying work:
 // starting on time, finishing the session, and recalling what you learned.
 
-import type { RewardRules } from "@headstart/content";
+import type { Rank, RewardRules } from "@headstart/content";
 
 const MINUTE = 60_000;
 
@@ -46,6 +46,25 @@ export function levelInfo(totalXp: number, rules: RewardRules): LevelInfo {
     needed = xpToNextLevel(level, rules);
   }
   return { level, xpIntoLevel: remaining, xpForNextLevel: needed, totalXp: Math.max(0, totalXp) };
+}
+
+/** Insight given for reaching `level`: a small bonus that grows a little with the level. */
+export function insightForLevel(level: number, rules: RewardRules): number {
+  return rules.levelInsight.base + rules.levelInsight.perLevel * level;
+}
+
+/** Insight for every level from `from` (not counted) up to `to`. */
+export function insightForLevels(from: number, to: number, rules: RewardRules): number {
+  let total = 0;
+  for (let level = from + 1; level <= to; level++) total += insightForLevel(level, rules);
+  return total;
+}
+
+/** The rank a level has: the highest one that starts at or below it. */
+export function rankFor(level: number, ranks: readonly Rank[]): Rank | null {
+  let found: Rank | null = null;
+  for (const rank of ranks) if (rank.level <= level) found = rank;
+  return found;
 }
 
 /** Total XP needed to reach `level` from zero. */

@@ -46,14 +46,24 @@ tauri-plugin-global-shortcut = "2"
 reqwest = { version = "0.13", default-features = false, features = ["rustls-no-provider"] }
 rustls = { version = "0.23", default-features = false, features = ["ring"] }
 
-# The menu bar title uses a font with digits of equal width (see tray.rs).
+# The menu bar title uses a font with digits of equal width (see tray.rs). The
+# distraction guard asks which app is in front (see guard/macos.rs), and the
+# compact timer hides the title bar (see focus.rs).
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"
-objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSButton", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSStatusBarButton", "NSStatusItem", "NSView"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "libc", "NSButton", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSRunningApplication", "NSStatusBarButton", "NSStatusItem", "NSView", "NSWindow", "NSWorkspace"] }
 # Two-way sync with Apple Calendar (EventKit), only when the user turns it on.
 objc2-event-kit = { version = "0.3", default-features = false, features = ["std", "block2", "EKCalendar", "EKCalendarItem", "EKEvent", "EKEventStore", "EKObject", "EKSource", "EKTypes"] }
-objc2-foundation = { version = "0.3", default-features = false, features = ["std", "block2", "NSArray", "NSDate", "NSError", "NSNotification", "NSObject", "NSOperation", "NSPredicate", "NSString"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "block2", "NSArray", "NSBundle", "NSDate", "NSError", "NSFileManager", "NSNotification", "NSObject", "NSOperation", "NSPredicate", "NSString"] }
 block2 = "0.6"
+
+# The distraction guard asks which window is in front (see guard/windows.rs).
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging"] }
+
+# The same on Linux with X11 (see guard/linux.rs).
+[target.'cfg(not(any(target_os = "macos", target_os = "windows")))'.dependencies]
+x11rb = { version = "0.13", default-features = false }
 
 # Size-focused release profile, see https://tauri.app/concept/size/
 [profile.release]

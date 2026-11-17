@@ -1,0 +1,279 @@
+[
+  {
+    "id": "session-stacker",
+    "name": "Session Stacker",
+    "group": "start",
+    "icon": "stack",
+    "metric": "sessions",
+    "what": "{n} sessions",
+    "tiers": [10, 50, 100, 250, 500]
+  },
+  {
+    "id": "deep-hours",
+    "name": "Deep Hours",
+    "group": "start",
+    "icon": "clock",
+    "metric": "focusHours",
+    "what": "{n} hours of focus",
+    "tiers": [10, 50, 100, 250, 500]
+  },
+  {
+    "id": "head-start",
+    "name": "Head Start",
+    "group": "focus",
+    "icon": "flag",
+    "metric": "onTimeStreak",
+    "what": "{n} on-time starts in a row",
+    "tiers": [4, 8, 15, 25, 40]
+  },
+  {
+    "id": "deep-diver",
+    "name": "Deep Diver",
+    "group": "focus",
+    "icon": "wave",
+    "metric": "deepDays",
+    "what": "{n} days with 4 distraction-free sessions",
+    "tiers": [1, 5, 15, 40, 100],
+    "whatOne": "1 day with 4 distraction-free sessions"
+  },
+  {
+    "id": "long-haul",
+    "name": "Long Haul",
+    "group": "focus",
+    "icon": "road",
+    "metric": "longSessions",
+    "what": "{n} sessions of 50 minutes or more",
+    "tiers": [5, 20, 50, 100, 250]
+  },
+  {
+    "id": "early-bird",
+    "name": "Early Bird",
+    "group": "focus",
+    "icon": "sun",
+    "metric": "earlySessions",
+    "what": "{n} sessions started before 10:00",
+    "tiers": [10, 30, 75, 150, 300]
+  },
+  {
+    "id": "memory-keeper",
+    "name": "Memory Keeper",
+    "group": "memory",
+    "icon": "pen",
+    "metric": "recalls",
+    "what": "{n} recall notes",
+    "tiers": [10, 50, 150, 300, 600]
+  },
+  {
+    "id": "good-question",
+    "name": "Good Question",
+    "group": "memory",
+    "icon": "question",
+    "metric": "questions",
+    "what": "{n} questions for future you",
+    "tiers": [5, 20, 60, 150, 300]
+  },
+  {
+    "id": "review-master",
+    "name": "Review Master",
+    "group": "memory",
+    "icon": "repeat",
+    "metric": "dueReviews",
+    "what": "{n} reviews done on the right day",
+    "tiers": [20, 75, 200, 500, 1000]
+  },
+  {
+    "id": "long-memory",
+    "name": "Long Memory",
+    "group": "memory",
+    "icon": "leaf",
+    "metric": "learnedNotes",
+    "what": "{n} notes through all 5 reviews",
+    "tiers": [1, 10, 25, 75, 150],
+    "whatOne": "1 note through all 5 reviews"
+  },
+  {
+    "id": "mixed-bag",
+    "name": "Mixed Bag",
+    "group": "memory",
+    "icon": "mix",
+    "metric": "mixedSessions",
+    "what": "{n} mixed-practice sessions",
+    "tiers": [10, 30, 75, 150, 300]
+  },
+  {
+    "id": "self-tester",
+    "name": "Self Tester",
+    "group": "memory",
+    "icon": "check",
+    "metric": "testSessions",
+    "what": "{n} test-myself sessions",
+    "tiers": [10, 30, 75, 150, 300]
+  },
+  {
+    "id": "explainer",
+    "name": "Explainer",
+    "group": "memory",
+    "icon": "speech",
+    "metric": "explainSessions",
+    "what": "{n} explain sessions",
+    "tiers": [5, 20, 50, 100, 200]
+  },
+  {
+    "id": "week-keeper",
+    "name": "Week Keeper",
+    "group": "weeks",
+    "icon": "calendar",
+    "metric": "weekRun",
+    "what": "{n} weeks in a row with the goal met",
+    "tiers": [1, 4, 12, 26, 52],
+    "whatOne": "1 week with the goal met"
+  },
+  {
+    "id": "well-rested",
+    "name": "Well Rested",
+    "group": "weeks",
+    "icon": "moon",
+    "metric": "restedWeeks",
+    "what": "{n} weeks with the rest day kept",
+    "tiers": [4, 10, 20, 35, 52]
+  },
+  {
+    "id": "looking-back",
+    "name": "Looking Back",
+    "group": "weeks",
+    "icon": "mirror",
+    "metric": "reflections",
+    "what": "{n} weekly reflections",
+    "tiers": [2, 8, 20, 40, 80]
+  },
+  {
+    "id": "planner",
+    "name": "Planner",
+    "group": "planning",
+    "icon": "map",
+    "metric": "plannedWeeks",
+    "what": "{n} weeks planned in the look-ahead",
+    "tiers": [2, 8, 20, 40, 80]
+  },
+  {
+    "id": "task-finisher",
+    "name": "Task Finisher",
+    "group": "planning",
+    "icon": "tick",
+    "metric": "tasksDone",
+    "what": "{n} tasks finished",
+    "tiers": [10, 25, 75, 150, 300]
+  },
+  {
+    "id": "parked-it",
+    "name": "Parked It",
+    "group": "planning",
+    "icon": "note",
+    "metric": "thoughtsParked",
+    "what": "{n} thoughts parked",
+    "tiers": [10, 40, 100, 250, 500]
+  },
+  {
+    "id": "collector",
+    "name": "Collector",
+    "group": "collection",
+    "icon": "box",
+    "metric": "itemsOwned",
+    "what": "{n} items owned",
+    "tiers": [10, 25, 50, 100, 200]
+  },
+  {
+    "id": "crafter",
+    "name": "Crafter",
+    "group": "collection",
+    "icon": "hammer",
+    "metric": "itemsCrafted",
+    "what": "{n} items crafted",
+    "tiers": [1, 5, 15, 30, 60],
+    "whatOne": "1 item crafted"
+  },
+  {
+    "id": "rank",
+    "name": "Rank",
+    "group": "collection",
+    "icon": "crown",
+    "metric": "level",
+    "what": "Level {n}",
+    "tiers": [3, 8, 14, 20, 30]
+  },
+  {
+    "id": "first-dip",
+    "name": "First Dip",
+    "group": "start",
+    "icon": "drop",
+    "metric": "sessions",
+    "what": "Your first focus session",
+    "tiers": [1]
+  },
+  {
+    "id": "first-note",
+    "name": "First Note",
+    "group": "memory",
+    "icon": "pen",
+    "metric": "recalls",
+    "what": "Your first recall note",
+    "tiers": [1]
+  },
+  {
+    "id": "first-plan",
+    "name": "First Plan",
+    "group": "planning",
+    "icon": "flag",
+    "metric": "onTimeStarts",
+    "what": "Start a planned session on time",
+    "tiers": [1]
+  },
+  {
+    "id": "habit-formed",
+    "name": "Habit Formed",
+    "group": "weeks",
+    "icon": "leaf",
+    "metric": "habitFormed",
+    "what": "66 days since your first session, with most weeks met",
+    "tiers": [1]
+  },
+  {
+    "id": "comeback",
+    "name": "Comeback",
+    "group": "weeks",
+    "icon": "back",
+    "metric": "comebacks",
+    "what": "Back after 7 days away, with 3 sessions that week",
+    "tiers": [1]
+  },
+  {
+    "id": "full-house",
+    "name": "Full House",
+    "group": "secret",
+    "icon": "mix",
+    "metric": "fullHouseWeeks",
+    "what": "All four work modes in one week",
+    "tiers": [1],
+    "secret": true
+  },
+  {
+    "id": "big-day",
+    "name": "Big Day",
+    "group": "secret",
+    "icon": "sun",
+    "metric": "bigDays",
+    "what": "Six sessions in one day",
+    "tiers": [1],
+    "secret": true
+  },
+  {
+    "id": "perfect-week",
+    "name": "Perfect Week",
+    "group": "secret",
+    "icon": "calendar",
+    "metric": "perfectWeeks",
+    "what": "A week met with every planned session started on time",
+    "tiers": [1],
+    "secret": true
+  }
+]

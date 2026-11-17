@@ -38,6 +38,8 @@ export interface ReviewEntry {
   remembered: boolean;
   /** A review of a learned note in the week before the exam. */
   exam: boolean;
+  /** It was due when it was done, so it earned its XP. */
+  due: boolean;
 }
 
 /** The review schedule of one session's recall note. */
@@ -120,7 +122,7 @@ export function applyReview(
   const course = record.courseId ? state.courses.get(record.courseId) : undefined;
   if (stepOn(record, day) >= LEARNED_STEP) {
     const due = examReviewDue(record, course, day);
-    record.reviews.push({ at, day, remembered, exam: true });
+    record.reviews.push({ at, day, remembered, exam: true, due });
     if (due) state.xp += ctx.rewards.reviewXp;
     if (!remembered) {
       // Forgot just before the exam: back to the last step, tomorrow.
@@ -133,7 +135,7 @@ export function applyReview(
     return;
   }
   const wasDue = record.dueDay !== null && record.dueDay <= day;
-  record.reviews.push({ at, day, remembered, exam: false });
+  record.reviews.push({ at, day, remembered, exam: false, due: wasDue });
   if (wasDue) state.xp += ctx.rewards.reviewXp;
   if (remembered) {
     record.step += 1;

@@ -16,11 +16,12 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Settings: session length, breaks, reminders, calendars, the weekly look-ahead, theme, motion, your study buddy and app updates. Every change saves at once. -->
+<!-- Settings: session length, breaks, focus tools, reminders, calendars, the weekly look-ahead, theme, motion, your study buddy and app updates. Every change saves at once. -->
 <script lang="ts">
   import { MASCOTS } from "@headstart/content";
   import { addCalendar, FOCUS_LENGTHS, REMIND_BEFORE, removeCalendar, type Settings, type Theme } from "@headstart/core";
   import { lookFor, Mascot, MASCOT_NAMES, MASCOT_TINTS } from "@headstart/ui";
+  import FocusToolsCard from "$lib/components/FocusToolsCard.svelte";
   import Select from "$lib/components/Select.svelte";
   import { useApp } from "$lib/context.ts";
   import { testNotification } from "$lib/shell.ts";
@@ -254,6 +255,8 @@
     </div>
   </div>
 </section>
+
+<FocusToolsCard {study} />
 
 <section class="card" aria-labelledby="remind-h">
   <h2 id="remind-h">Reminders</h2>

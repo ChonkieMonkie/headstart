@@ -77,11 +77,12 @@
   </ul>
 
   {#if level}
-    <div class="level" aria-label="Level {level.level}, {level.xpIntoLevel} of {level.xpForNextLevel} XP">
+    <div class="level" aria-label="Level {level.level}{study.rank ? `, rank ${study.rank.name}` : ""}, {level.xpIntoLevel} of {level.xpForNextLevel} XP">
       <div class="level-row">
         <span class="level-name">Level {level.level}</span>
         <span class="level-xp">{level.xpIntoLevel} / {level.xpForNextLevel} XP</span>
       </div>
+      {#if study.rank}<p class="rank">{study.rank.name}</p>{/if}
       <div class="bar" aria-hidden="true">
         <div class="bar-fill" style:width="{(level.xpIntoLevel / level.xpForNextLevel) * 100}%"></div>
       </div>
@@ -246,6 +247,13 @@
   .level-name {
     font-family: var(--hs-font-display);
     font-weight: 600;
+  }
+
+  .rank {
+    margin: 0;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--hs-accent-strong);
   }
 
   .level-xp,

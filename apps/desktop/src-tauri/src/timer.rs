@@ -185,11 +185,21 @@ pub fn set_timer(app: AppHandle, state: State<'_, TimerState>, timer: Option<Tim
     crate::tray::refresh(&app, timer.as_ref());
 }
 
-/// Starts the once-a-second tick that updates the tray and fires `timer://done`.
+/// How often the ticker looks while a countdown runs: often enough that the
+/// tray clock changes on the second.
+const TICK: Duration = Duration::from_millis(250);
+/// With no countdown running (idle, or paused) only reminders can come due,
+/// and they are set to the minute. Waking less often then saves power on a
+/// computer where Headstart sits in the tray all day.
+const IDLE_TICK: Duration = Duration::from_secs(1);
+
+/// Starts the tick that updates the tray and fires `timer://done`.
 pub fn start_ticker(app: AppHandle) {
     thread::spawn(move || {
+        let mut wait = IDLE_TICK;
         loop {
-            thread::sleep(Duration::from_millis(250));
+            thread::sleep(wait);
+            wait = IDLE_TICK;
             let now = now_ms();
             for reminder in due_reminders(&app, now) {
                 notify(&app, &reminder.title, &reminder.body, false);
@@ -202,6 +212,9 @@ pub fn start_ticker(app: AppHandle) {
                 let Some(snapshot) = inner.snapshot.clone() else {
                     continue;
                 };
+                if !snapshot.paused() {
+                    wait = TICK;
+                }
                 let finished =
                     !inner.done && !snapshot.paused() && snapshot.remaining_ms(now) <= 0.0;
                 if finished {

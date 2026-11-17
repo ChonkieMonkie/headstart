@@ -520,10 +520,3 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-
-/* Set while the compact timer shows: the window is transparent there and the
-   timer draws its own rounded card. Every other layout keeps a solid page. */
-html.hs-see-through,
-html.hs-see-through body {
-  background: transparent;
-}

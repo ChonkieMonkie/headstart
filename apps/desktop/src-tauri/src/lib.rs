@@ -19,7 +19,9 @@
 
 mod apple_calendar;
 mod calendar;
+mod dnd;
 mod focus;
+mod guard;
 mod panel;
 mod ring;
 mod timer;
@@ -80,6 +82,7 @@ pub fn run() {
         .manage(panel::PanelState::default())
         .manage(tray::TrayState::default())
         .manage(focus::LayoutState::default())
+        .manage(guard::GuardState::default())
         .manage(LaunchStart(AtomicBool::new(launch_start)))
         .invoke_handler(tauri::generate_handler![
             calendar::fetch_calendar,
@@ -95,6 +98,15 @@ pub fn run() {
             timer::set_reminders,
             timer::test_notification,
             focus::set_focus_layout,
+            guard::guard_support,
+            guard::guard_apps,
+            guard::guard_start,
+            guard::guard_stop,
+            guard::guard_allow,
+            guard::guard_back,
+            dnd::dnd_status,
+            dnd::dnd_set,
+            dnd::dnd_open_setup,
             take_launch_start,
             read_developer_token,
             open_main_window,
@@ -120,8 +132,14 @@ pub fn run() {
             }
             _ => {}
         })
-        .run(tauri::generate_context!())
-        .expect("error while running Headstart");
+        .build(tauri::generate_context!())
+        .expect("error while running Headstart")
+        .run(|_app, event| {
+            // Quitting in the middle of a session must not leave the Focus on.
+            if let tauri::RunEvent::Exit = event {
+                dnd::off_on_exit();
+            }
+        });
 }
 
 /// A shortcut taken by another app must not stop Headstart from starting.

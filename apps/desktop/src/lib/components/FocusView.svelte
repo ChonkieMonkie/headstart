@@ -29,6 +29,7 @@
   import DragHandle from "./DragHandle.svelte";
   import Select from "./Select.svelte";
   import HoldButton from "./HoldButton.svelte";
+  import ParkField from "./ParkField.svelte";
 
   let { study }: { study: Study } = $props();
 
@@ -201,6 +202,14 @@
       </div>
     </div>
     </div>
+    {#if study.dndActive}
+      <p class="quiet">
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M11.5 10.2A5 5 0 0 1 5.8 4.5a5 5 0 1 0 5.7 5.7z" /></svg>
+        Do Not Disturb is on
+      </p>
+    {:else if study.dndError}
+      <p class="quiet failed" role="status">Do Not Disturb did not turn on. Check it in Settings.</p>
+    {/if}
 
     {#if todos.length > 0 || course}
       <section class="next-step" aria-label="To-dos for this session">
@@ -259,6 +268,8 @@
         {/if}
       </section>
     {/if}
+
+    <ParkField {study} />
 
     {#if confirmingEnd}
       <div class="confirm" role="group" aria-label="End the session">
@@ -568,6 +579,28 @@
   }
 
   .label {
+    font-weight: 700;
+    color: var(--hs-focus-text-muted);
+  }
+
+  .quiet {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: -12px 0 0;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--hs-focus-surface);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--hs-focus-text);
+  }
+
+  .quiet svg {
+    fill: currentColor;
+  }
+
+  .quiet.failed {
     font-weight: 700;
     color: var(--hs-focus-text-muted);
   }

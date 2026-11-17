@@ -33,6 +33,10 @@
   import { courseColor, Mascot, MASCOT_TINTS } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import CourseName from "$lib/components/CourseName.svelte";
+  import ParkedThoughts from "$lib/components/ParkedThoughts.svelte";
+  import PlaqueNews from "$lib/components/PlaqueNews.svelte";
+  import WeekCard from "$lib/components/WeekCard.svelte";
+  import WelcomeBack from "$lib/components/WelcomeBack.svelte";
   import PlanForm from "$lib/components/PlanForm.svelte";
   import ReviewsCard from "$lib/components/ReviewsCard.svelte";
   import Select from "$lib/components/Select.svelte";
@@ -179,6 +183,8 @@
   </section>
 {/if}
 
+<ParkedThoughts {study} />
+
 {#if study.ready && !study.mascot}
   <BuddyPicker {study} />
 {/if}
@@ -190,6 +196,20 @@
   </a>
 {/if}
 
+{#if study.newPlaques.length > 0}
+  <section class="card plaques" aria-labelledby="np-h">
+    <h2 id="np-h">New on your plaque wall</h2>
+    <PlaqueNews {study} limit={4} />
+    <div class="actions">
+      <a class="secondary as-link" href="/collection?tab=plaques" onclick={() => study.dismissPlaques()}>See your wall</a>
+      <button type="button" class="link" onclick={() => study.dismissPlaques()}>Got it</button>
+    </div>
+  </section>
+{/if}
+
+<WelcomeBack {study} />
+
+{#if !study.weeks?.welcomeBack}
 <section class="card up-next" aria-labelledby="next-h">
   <div class="up-next-row">
   {#if study.look && study.mascot}
@@ -279,6 +299,9 @@
   </div>
   </div>
 </section>
+{/if}
+
+<WeekCard {study} />
 
 {#if stats}
   <section class="tiles" aria-label="Today at a glance">
@@ -629,6 +652,19 @@
     stroke-width: 2.2;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  .plaques h2 {
+    margin: 0;
+    font-family: var(--hs-font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
+
+  .as-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
   }
 
   .actions {

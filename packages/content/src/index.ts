@@ -16,11 +16,15 @@
 
 import cratesJson from "../data/crates.json" with { type: "json" };
 import itemsJson from "../data/items.json" with { type: "json" };
+import plaquesJson from "../data/plaques.json" with { type: "json" };
+import ranksJson from "../data/ranks.json" with { type: "json" };
 import rewardsJson from "../data/rewards.json" with { type: "json" };
 import setsJson from "../data/sets.json" with { type: "json" };
 import {
   validateCrateRules,
   validateItems,
+  validatePlaques,
+  validateRanks,
   validateRewardRules,
   validateSets,
 } from "./validate.ts";
@@ -28,8 +32,11 @@ import {
 export * from "./types.ts";
 export {
   ContentError,
+  PLAQUE_TIERS,
   validateCrateRules,
   validateItems,
+  validatePlaques,
+  validateRanks,
   validateRewardRules,
   validateSets,
 } from "./validate.ts";
@@ -45,3 +52,9 @@ export const crateRules = validateCrateRules(cratesJson);
 
 /** XP, bonus and level rules. */
 export const rewardRules = validateRewardRules(rewardsJson);
+
+/** The names that go with bands of levels. */
+export const ranks = validateRanks(ranksJson);
+
+/** The plaques: what each one counts and what its tiers need. */
+export const plaques = validatePlaques(plaquesJson);

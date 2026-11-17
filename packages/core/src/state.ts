@@ -24,6 +24,7 @@ import {
   type Item,
   MASCOTS,
   type MascotId,
+  type PlaqueDef,
   type RewardRules,
   type Slot,
 } from "@headstart/content";
@@ -39,6 +40,7 @@ import type {
 } from "./events.ts";
 import { applyReview, type ReviewRecord, scheduleNote } from "./reviews.ts";
 import {
+  insightForLevels,
   type LevelInfo,
   levelInfo,
   recallEarnsBonus,
@@ -55,6 +57,8 @@ export interface CoreContext {
   rewards: RewardRules;
   crates: CrateRules;
   catalog: readonly Item[];
+  /** The plaques that can be earned. Without it there are none. */
+  plaques?: readonly PlaqueDef[];
   /** Calendar day of a moment, for daily limits. Defaults to the local day. */
   dayKey?: (epochMs: number) => string;
   /** The debug profile: developer events apply. Never set for the real profile. */
@@ -131,6 +135,39 @@ export interface Todo {
   order: number;
 }
 
+/** The weekly goal as it was set at a moment: study days, and the rest day if any. */
+export interface GoalChange {
+  at: number;
+  studyDays: number;
+  restDay: number | null;
+}
+
+/** The look back at one week. */
+export interface Reflection {
+  /** The week's Monday, "YYYY-MM-DD". */
+  week: string;
+  well: string;
+  blocked: string;
+  change: string;
+  savedAt: number;
+}
+
+export interface EarnedPlaque {
+  /** The highest tier reached (1 for a one-time plaque). */
+  tier: number;
+  /** When that tier was reached. */
+  at: number;
+}
+
+/** A parked thought that has not been dealt with yet. */
+export interface Thought {
+  id: string;
+  text: string;
+  parkedAt: number;
+  /** The session it was parked in, if any. Only used to suggest a course for a to-do. */
+  sessionId: string | null;
+}
+
 /** The id of the to-do made from a task's first next step. */
 export const firstTodoId = (taskId: string) => `${taskId}:first`;
 
@@ -195,6 +232,28 @@ export interface ProgressState {
   todos: Map<string, Todo>;
   /** The `order` the next new to-do gets: always after every other to-do. */
   nextTodoOrder: number;
+  /** Parked thoughts still waiting, oldest first. Dealt-with ones are removed. */
+  thoughts: Map<string, Thought>;
+  /** Thoughts parked in all, dealt with or not. */
+  thoughtsParked: number;
+  /** Items made by crafting, in all. */
+  itemsCrafted: number;
+  /** Every time the study days or the rest day were set, oldest first. */
+  goalHistory: GoalChange[];
+  /** Missed weeks (by their Monday) that a freeze covers. */
+  frozenWeeks: Set<string>;
+  /** Missed weeks the user chose not to cover. */
+  declinedWeeks: Set<string>;
+  /** Week (by its Monday) → the look back at it. */
+  reflections: Map<string, Reflection>;
+  /** Weeks whose look-ahead was finished. */
+  lookaheadWeeks: Set<string>;
+  /** Plaque id → the tier reached. */
+  plaques: Map<string, EarnedPlaque>;
+  /** When the last welcome-back crate was given, or null. */
+  lastWelcomeGiftAt: number | null;
+  /** The highest level whose Insight has been paid out. */
+  levelPaid: number;
   plans: Map<string, Plan>;
   /** Session id → the review schedule of its recall note. */
   reviews: Map<string, ReviewRecord>;
@@ -238,6 +297,17 @@ export function createInitialState(ctx: CoreContext): ProgressState {
     tasks: new Map(),
     todos: new Map(),
     nextTodoOrder: 1,
+    thoughts: new Map(),
+    thoughtsParked: 0,
+    itemsCrafted: 0,
+    goalHistory: [],
+    frozenWeeks: new Set(),
+    declinedWeeks: new Set(),
+    reflections: new Map(),
+    lookaheadWeeks: new Set(),
+    plaques: new Map(),
+    lastWelcomeGiftAt: null,
+    levelPaid: 1,
     plans: new Map(),
     reviews: new Map(),
     calendars: new Map(),
@@ -252,6 +322,24 @@ export function createInitialState(ctx: CoreContext): ProgressState {
  * or merged log can never crash the app.
  */
 export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: CoreContext): void {
+  const xp = state.xp;
+  applyOne(state, envelope, ctx);
+  if (state.xp !== xp) payNewLevels(state, ctx);
+}
+
+/**
+ * Every new level gives a little Insight. It is worked out from the XP here,
+ * with no event of its own, so a log from before levels gave anything pays
+ * out the same way when it is read again.
+ */
+function payNewLevels(state: ProgressState, ctx: CoreContext): void {
+  const level = levelInfo(state.xp, ctx.rewards).level;
+  if (level <= state.levelPaid) return;
+  state.stardust += insightForLevels(state.levelPaid, level, ctx.rewards);
+  state.levelPaid = level;
+}
+
+function applyOne(state: ProgressState, envelope: EventEnvelope, ctx: CoreContext): void {
   const at = Date.parse(envelope.occurredAt);
   const event = envelope.event;
   state.lastEventAt = at;
@@ -495,6 +583,11 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
     }
     case "settings.changed": {
       state.settings = mergeSettings(state.settings, event.changes);
+      // The weekly goal is judged by what it was that week, so its changes are kept.
+      if (event.changes.studyDays !== undefined || event.changes.restDay !== undefined) {
+        const { studyDays, restDay } = state.settings;
+        state.goalHistory.push({ at, studyDays, restDay });
+      }
       return;
     }
     case "todo.created": {
@@ -600,6 +693,7 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
       return;
     }
     case "item.crafted": {
+      state.itemsCrafted += 1;
       state.stardust -= event.cost;
       state.inventory.set(event.itemId, (state.inventory.get(event.itemId) ?? 0) + 1);
       return;
@@ -628,6 +722,62 @@ export function applyEvent(state: ProgressState, envelope: EventEnvelope, ctx: C
     }
     case "mascot.chosen": {
       state.mascot = event.mascot;
+      return;
+    }
+    case "thought.parked": {
+      if (state.thoughts.has(event.thoughtId) || event.text.trim() === "") return;
+      state.thoughts.set(event.thoughtId, {
+        id: event.thoughtId,
+        text: event.text,
+        parkedAt: at,
+        sessionId: event.sessionId ?? null,
+      });
+      state.thoughtsParked += 1;
+      return;
+    }
+    case "thought.cleared": {
+      state.thoughts.delete(event.thoughtId);
+      return;
+    }
+    case "freeze.used": {
+      for (const week of event.weeks) {
+        state.frozenWeeks.add(week);
+        state.declinedWeeks.delete(week);
+      }
+      return;
+    }
+    case "freeze.declined": {
+      for (const week of event.weeks)
+        if (!state.frozenWeeks.has(week)) state.declinedWeeks.add(week);
+      return;
+    }
+    case "gift.granted": {
+      const id = `gift:${event.giftId}`;
+      if (state.crates.some((c) => c.id === id)) return;
+      state.crates.push({
+        id,
+        type: event.crateType,
+        seed: envelope.id,
+        earnedAt: at,
+        openedAt: null,
+        drops: [],
+      });
+      if (event.reason === "welcome-back") state.lastWelcomeGiftAt = at;
+      return;
+    }
+    case "reflection.saved": {
+      const { week, well, blocked, change } = event;
+      state.reflections.set(week, { week, well, blocked, change, savedAt: at });
+      return;
+    }
+    case "lookahead.completed": {
+      state.lookaheadWeeks.add(event.week);
+      return;
+    }
+    case "plaque.earned": {
+      const have = state.plaques.get(event.plaqueId);
+      if (!have || event.tier > have.tier)
+        state.plaques.set(event.plaqueId, { tier: event.tier, at });
       return;
     }
   }

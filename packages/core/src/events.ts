@@ -193,6 +193,29 @@ export type StudyEvent =
   /** Give the to-do to a planned session or the running session. */
   | { type: "todo.assigned"; todoId: string; planId?: string; sessionId?: string }
   | { type: "todo.unassigned"; todoId: string }
+  /**
+   * A thought written down to get it out of the way, often during a session
+   * and often not about studying at all ("buy milk"). It belongs to no course.
+   */
+  | { type: "thought.parked"; thoughtId: string; text: string; sessionId?: string }
+  /** A parked thought was dealt with. `todoId` when it became a to-do. */
+  | { type: "thought.cleared"; thoughtId: string; todoId?: string }
+  /**
+   * Freezes put on missed weeks, one each, so the run of weeks goes on. Weeks
+   * are named by their Monday, "YYYY-MM-DD". Only ever recorded when the user
+   * said yes.
+   */
+  | { type: "freeze.used"; weeks: string[] }
+  /** The user chose not to use freezes on these missed weeks: the run ends there. */
+  | { type: "freeze.declined"; weeks: string[] }
+  /** A crate given for something other than sessions, such as coming back after time away. */
+  | { type: "gift.granted"; giftId: string; crateType: CrateType; reason: "welcome-back" }
+  /** The short look back at a week: three answers, any of them may be empty. */
+  | { type: "reflection.saved"; week: string; well: string; blocked: string; change: string }
+  /** The weekly look-ahead was finished for this week. */
+  | { type: "lookahead.completed"; week: string }
+  /** A plaque reached a tier (1 for a one-time plaque). Kept even if its rule changes later. */
+  | { type: "plaque.earned"; plaqueId: string; tier: number }
   | { type: "crate.opened"; crateId: string; crateType: CrateType; drops: CrateDrop[] }
   | { type: "item.crafted"; itemId: string; cost: number }
   /** A grant-only (Exotic) item, given with a signed grant. Ignored unless the signature checks out. */

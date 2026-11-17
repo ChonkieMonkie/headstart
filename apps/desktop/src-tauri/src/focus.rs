@@ -79,6 +79,9 @@ pub async fn set_focus_layout(
         leave(&window, previous).map_err(|e| e.to_string())?;
         if previous == Layout::Compact {
             wait_for_title_bar(&window);
+            // The size and place saved for the normal window are only right
+            // once the title bar is back.
+            settle();
         }
         let saved = state.0.lock().map_err(|e| e.to_string())?.saved.take();
         // Never straight from full screen to the compact timer or back: macOS
@@ -118,12 +121,8 @@ fn leave(window: &WebviewWindow, layout: Layout) -> tauri::Result<()> {
         Layout::Compact => {
             window.set_always_on_top(false)?;
             window.set_visible_on_all_workspaces(false)?;
-            // Resizable first: on macOS the decorations change is applied
-            // later and is built from the resizable flag of this moment, so
-            // the other order brings the title bar back without resizing (a
-            // greyed zoom button and a window that cannot be moved).
             window.set_resizable(true)?;
-            window.set_decorations(true)?;
+            show_frame(window, true)?;
         }
     }
     Ok(())
@@ -158,9 +157,8 @@ fn enter(window: &WebviewWindow, layout: Layout, saved: Option<&Geometry>) -> ta
         }
         Layout::Compact => {
             window.set_min_size(None::<Size>)?;
-            // Same order rule as in `leave`.
             window.set_resizable(false)?;
-            window.set_decorations(false)?;
+            show_frame(window, false)?;
             window.set_size(COMPACT)?;
             if let Some(monitor) = window.current_monitor()? {
                 let area = monitor.work_area();
@@ -179,9 +177,70 @@ fn enter(window: &WebviewWindow, layout: Layout, saved: Option<&Geometry>) -> ta
     Ok(())
 }
 
-/// Waits until macOS has really put the title bar back after the compact
-/// timer. The change is applied later on the main thread, and sizing the
-/// window before that leaves a see-through strip where the title bar goes.
+/// Shows or hides the window frame (title bar and border) for the compact timer.
+///
+/// On macOS the window keeps its real title bar the whole time. Taking it away
+/// and putting it back while the app runs makes macOS build a new one, and that
+/// has come back see-through or without its buttons working. So the title bar
+/// is only made invisible: no title, no buttons, and the page drawn under it.
+#[cfg(target_os = "macos")]
+fn show_frame(window: &WebviewWindow, shown: bool) -> tauri::Result<()> {
+    use objc2_app_kit::{NSWindow, NSWindowButton, NSWindowStyleMask, NSWindowTitleVisibility};
+
+    let target = window.clone();
+    let (done, finished) = std::sync::mpsc::channel();
+    window.run_on_main_thread(move || {
+        if let Ok(pointer) = target.ns_window() {
+            // SAFETY: this is the window's own NSWindow, kept alive by `target`,
+            // and it is only used here on the main thread.
+            let ns: &NSWindow = unsafe { &*pointer.cast() };
+            // Changing the style can move the keyboard focus off the page.
+            let focused = ns.firstResponder();
+            let mut mask = ns.styleMask()
+                | NSWindowStyleMask::Titled
+                | NSWindowStyleMask::Closable
+                | NSWindowStyleMask::Miniaturizable;
+            if shown {
+                mask &= !NSWindowStyleMask::FullSizeContentView;
+            } else {
+                mask |= NSWindowStyleMask::FullSizeContentView;
+            }
+            if mask != ns.styleMask() {
+                ns.setStyleMask(mask);
+                ns.makeFirstResponder(focused.as_deref());
+            }
+            ns.setTitlebarAppearsTransparent(!shown);
+            ns.setTitleVisibility(if shown {
+                NSWindowTitleVisibility::Visible
+            } else {
+                NSWindowTitleVisibility::Hidden
+            });
+            for button in [
+                NSWindowButton::CloseButton,
+                NSWindowButton::MiniaturizeButton,
+                NSWindowButton::ZoomButton,
+            ] {
+                if let Some(button) = ns.standardWindowButton(button) {
+                    button.setHidden(!shown);
+                }
+            }
+        }
+        let _ = done.send(());
+    })?;
+    // Sizing the window comes next, so wait until the frame has changed. The
+    // time limit is only for the case that this already is the main thread's
+    // own queue, which then runs the change right after.
+    let _ = finished.recv_timeout(Duration::from_millis(500));
+    Ok(())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn show_frame(window: &WebviewWindow, shown: bool) -> tauri::Result<()> {
+    window.set_decorations(shown)
+}
+
+/// Waits until macOS reports the title bar as part of the window again after
+/// the compact timer, so the saved size is applied to the right frame.
 fn wait_for_title_bar(window: &WebviewWindow) {
     if !cfg!(target_os = "macos") {
         return;
@@ -216,8 +275,7 @@ pub fn repair_normal(window: &WebviewWindow, state: &LayoutState) {
     };
     if cfg!(target_os = "macos") && (!titled || !window.is_resizable().unwrap_or(true)) {
         let _ = window.set_resizable(true);
-        let _ = window.set_decorations(false);
-        let _ = window.set_decorations(true);
+        let _ = show_frame(window, true);
         let _ = window.set_always_on_top(false);
     }
 }

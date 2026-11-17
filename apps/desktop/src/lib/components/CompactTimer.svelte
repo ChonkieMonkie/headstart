@@ -18,20 +18,35 @@
 
 <!-- The small floating timer. The whole window is a drag handle except its buttons. -->
 <script lang="ts">
-  import { formatDuration } from "@headstart/core";
+  import { formatDuration, MAX_THOUGHT_LENGTH } from "@headstart/core";
   import { Mascot } from "@headstart/ui";
-  import { onMount } from "svelte";
+  import { tick } from "svelte";
   import type { Study } from "$lib/study.svelte.ts";
 
   let { study }: { study: Study } = $props();
 
-  // Only macOS has a transparent main window (tauri.macos.conf.json). Elsewhere
-  // the corners stay square rather than showing the page behind them.
-  onMount(() => {
-    if (!/Mac/.test(navigator.userAgent)) return;
-    document.documentElement.classList.add("hs-see-through");
-    return () => document.documentElement.classList.remove("hs-see-through");
-  });
+  // Park a thought: the bottom line turns into a one-line field.
+  let parking = $state(false);
+  let thought = $state("");
+  let parkError = $state<string | null>(null);
+  let field = $state<HTMLInputElement>();
+  const parkedCount = $derived(study.thoughts.length);
+
+  async function openPark(): Promise<void> {
+    parking = true;
+    parkError = null;
+    await tick();
+    field?.focus();
+  }
+
+  async function park(): Promise<void> {
+    if (thought.trim()) {
+      parkError = await study.parkThought(thought);
+      if (parkError) return;
+    }
+    thought = "";
+    parking = false;
+  }
 
   const label = $derived(
     study.breakTimer ? "Break" : study.paused ? "Paused" : "until your break",
@@ -73,7 +88,46 @@
       </button>
     </div>
   </div>
-  <p class="hint" data-tauri-drag-region>Stays on top. Drag it anywhere.</p>
+  {#if parking}
+    <form
+      class="park"
+      onsubmit={(e) => {
+        e.preventDefault();
+        park();
+      }}
+    >
+      <input
+        type="text"
+        bind:this={field}
+        bind:value={thought}
+        maxlength={MAX_THOUGHT_LENGTH}
+        placeholder="Park a thought, then Enter"
+        aria-label="Park a thought"
+        aria-invalid={parkError !== null}
+        title={parkError ?? ""}
+        autocomplete="off"
+        onkeydown={(e) => {
+          if (e.key === "Escape") {
+            thought = "";
+            parking = false;
+          }
+        }}
+      />
+      <button type="submit" class="small">Park</button>
+    </form>
+  {:else}
+    <div class="foot" data-tauri-drag-region>
+      <p class="hint" data-tauri-drag-region>
+        {parkedCount > 0 ? `${parkedCount} parked · drag me anywhere` : "Stays on top. Drag it anywhere."}
+      </p>
+      {#if study.active}
+        <button type="button" class="small ghost" onclick={openPark}>
+          <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" /></svg>
+          Park a thought
+        </button>
+      {/if}
+    </div>
+  {/if}
 </section>
 
 <style>
@@ -84,18 +138,12 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: 6px;
+    padding: 10px 16px;
     background: var(--hs-focus-ground);
     color: var(--hs-focus-text);
     cursor: grab;
     user-select: none;
-  }
-
-  /* macOS: the window is transparent, so the timer is a card with rounded corners. */
-  :global(html.hs-see-through) .compact {
-    border: 1px solid rgb(255 255 255 / 0.08);
-    border-radius: 14px;
   }
 
   .buddy {
@@ -159,6 +207,80 @@
   .buttons {
     display: flex;
     gap: 6px;
+  }
+
+  .foot,
+  .park {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+  }
+
+  .park input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid #3a4070;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hs-focus-text);
+    cursor: text;
+    user-select: text;
+  }
+
+  .park input::placeholder {
+    color: var(--hs-focus-text-muted);
+  }
+
+  .park input:focus-visible {
+    border-color: var(--hs-focus-accent);
+    outline: 2px solid var(--hs-focus-accent);
+    outline-offset: 0;
+  }
+
+  .park input[aria-invalid="true"] {
+    border-color: #ffb4a8;
+  }
+
+  button.small {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 28px;
+    min-width: 0;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--hs-focus-accent);
+    color: var(--hs-focus-ground);
+    font-size: 12px;
+  }
+
+  button.small.ghost {
+    border: 1px solid #3a4070;
+    background: transparent;
+    color: var(--hs-focus-text);
+  }
+
+  button.small.ghost:not(:disabled):hover {
+    border-color: #5a6094;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .small path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   button {

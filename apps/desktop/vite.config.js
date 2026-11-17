@@ -21,9 +21,29 @@ import { defineConfig } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
+/**
+ * KaTeX lists every font three times: woff2, woff and ttf. All the web views
+ * Tauri uses read woff2, so the other two are never fetched. Leaving them out
+ * makes the app about 0.8 MB smaller.
+ * @type {import("vite").Plugin}
+ */
+const katexWoff2Only = {
+  name: "katex-woff2-only",
+  enforce: "pre",
+  transform(code, id) {
+    const file = id.split("?")[0] ?? "";
+    if (!file.includes("katex") || !file.endsWith(".css")) return null;
+    const slim = code.replace(
+      /,\s*url\([^)]*\.(?:woff|ttf)\)\s*format\(["'](?:woff|truetype)["']\)/g,
+      "",
+    );
+    return { code: slim, map: null };
+  },
+};
+
 // https://vite.dev/config/
 export default defineConfig(() => ({
-  plugins: [sveltekit()],
+  plugins: [katexWoff2Only, sveltekit()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

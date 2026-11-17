@@ -27,6 +27,7 @@
   import type { Study } from "$lib/study.svelte.ts";
   import { MODE_LABELS } from "$lib/modes.ts";
   import MathField from "./MathField.svelte";
+  import PlaqueNews from "./PlaqueNews.svelte";
   import MathText from "./MathText.svelte";
 
   let { study }: { study: Study } = $props();
@@ -98,6 +99,8 @@
           <p class="lead">{headline}</p>
         </div>
       </header>
+
+      <PlaqueNews {study} />
 
       <section class="card" aria-label="What you earned">
         <ul class="earned">

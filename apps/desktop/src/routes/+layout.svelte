@@ -18,8 +18,8 @@
 
 <!--
   The main window: one Study for every screen, plus the focus views that take
-  over the window during a session. The tray panel (/panel) is a separate
-  window and gets none of this.
+  over the window during a session. The tray panel (/panel) and the nudge card
+  (/nudge) are separate windows and get none of this.
 -->
 <script lang="ts">
   import "@headstart/ui/styles.css";
@@ -30,6 +30,8 @@
   import StartPicker from "$lib/components/StartPicker.svelte";
   import DevMenu from "$lib/components/DevMenu.svelte";
   import FocusView from "$lib/components/FocusView.svelte";
+  import FreezeDialog from "$lib/components/FreezeDialog.svelte";
+  import LevelUp from "$lib/components/LevelUp.svelte";
   import Lookahead from "$lib/components/Lookahead.svelte";
   import ReviewDialog from "$lib/components/ReviewDialog.svelte";
   import Onboarding from "$lib/components/Onboarding.svelte";
@@ -45,7 +47,8 @@
 
   let { children }: { children: Snippet } = $props();
 
-  const isPanel = page.url.pathname.startsWith("/panel");
+  // The tray panel and the nudge card are small windows of their own, without the study engine.
+  const isPanel = page.url.pathname.startsWith("/panel") || page.url.pathname.startsWith("/nudge");
   const study = isPanel ? null : new Study();
   const updater = isPanel ? null : new Updater();
   const calendars = study ? new Calendars(study) : null;
@@ -169,6 +172,14 @@
 {/if}
 {#if study && study.layout !== "compact" && !study.completion}
   <ReviewDialog {study} />
+{/if}
+<!-- Asked or shown between sessions only, and never over the first-run welcome. -->
+{#if study && study.layout !== "compact" && !study.active && !study.completion && !onboarding}
+  {#if study.weeks && study.weeks.pending.length > 0}
+    <FreezeDialog {study} />
+  {:else}
+    <LevelUp {study} />
+  {/if}
 {/if}
 
 <style>

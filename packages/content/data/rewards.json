@@ -4,10 +4,28 @@
   "recallBonusXp": 5,
   "reviewXp": 2,
   "distractionFreeBonusXp": 3,
-  "onTimeWindowMinutes": { "early": 10, "late": 5 },
+  "onTimeWindowMinutes": {
+    "early": 10,
+    "late": 5
+  },
   "minRecallChars": 20,
   "minMinutesForCrate": 10,
   "studyCrateEvery": 3,
   "maxCrateSessionsPerDay": 9,
-  "level": { "base": 100, "exponent": 1.4 }
+  "level": {
+    "base": 100,
+    "exponent": 1.4
+  },
+  "levelInsight": {
+    "base": 20,
+    "perLevel": 5
+  },
+  "freeze": {
+    "everyWeeks": 4,
+    "max": 2
+  },
+  "welcomeBack": {
+    "daysAway": 7,
+    "giftEveryDays": 30
+  }
 }

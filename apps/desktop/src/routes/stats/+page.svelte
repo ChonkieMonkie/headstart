@@ -16,11 +16,12 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- Basic stats: focus time, on-time starts, and focus per course. -->
+<!-- Basic stats: focus time, on-time starts, focus per course, and the weeks with their goal. -->
 <script lang="ts">
   import { courseLabel } from "$lib/options.ts";
   import { formatMinutes } from "@headstart/core";
   import { courseColor } from "@headstart/ui";
+  import YourWeeks from "$lib/components/YourWeeks.svelte";
   import { useApp } from "$lib/context.ts";
   import { plural, shortDate, weekdayOf } from "$lib/format.ts";
 
@@ -158,6 +159,7 @@
     {/if}
   </section>
 
+  <YourWeeks {study} />
 {/if}
 
 <style>
