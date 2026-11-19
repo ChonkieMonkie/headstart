@@ -25,6 +25,7 @@ import {
   localDayKey,
   type Plan,
   type ProgressState,
+  type SessionRecord,
   type Task,
   type Todo,
 } from "./state.ts";
@@ -390,6 +391,57 @@ export interface BlockView {
   views: PlanView[];
   start: number;
   end: number;
+}
+
+/**
+ * Sessions done without a plan, for the calendar: they show where they really
+ * happened once they have ended. Sessions back to back for the same course and
+ * task (a break apart at most) form one block, like a planned block does.
+ */
+export interface LoggedBlock {
+  /** The first session's id. */
+  key: string;
+  sessions: SessionRecord[];
+  start: number;
+  end: number;
+  course: Course | null;
+  task: Task | null;
+  focusMinutes: number;
+}
+
+/** The longest gap between two sessions that still keeps them in one block. */
+export const LOGGED_GAP_MINUTES = 35;
+
+export function loggedBlocks(state: ProgressState, from: number, to: number): LoggedBlock[] {
+  const sessions = [...state.sessions.values()]
+    .filter((r) => r.planId === null && r.endedAt > from && r.startedAt < to)
+    .sort((a, b) => a.startedAt - b.startedAt);
+  const blocks: LoggedBlock[] = [];
+  for (const record of sessions) {
+    const last = blocks[blocks.length - 1];
+    const joins =
+      last &&
+      record.startedAt - last.end <= LOGGED_GAP_MINUTES * MINUTE &&
+      record.courseId === (last.course?.id ?? null) &&
+      record.taskId === (last.task?.id ?? null) &&
+      new Date(record.startedAt).toDateString() === new Date(last.start).toDateString();
+    if (last && joins) {
+      last.sessions.push(record);
+      last.end = Math.max(last.end, record.endedAt);
+      last.focusMinutes += record.score.focusMinutes;
+      continue;
+    }
+    blocks.push({
+      key: record.sessionId,
+      sessions: [record],
+      start: record.startedAt,
+      end: record.endedAt,
+      course: record.courseId ? (state.courses.get(record.courseId) ?? null) : null,
+      task: record.taskId ? (state.tasks.get(record.taskId) ?? null) : null,
+      focusMinutes: record.score.focusMinutes,
+    });
+  }
+  return blocks;
 }
 
 /** Groups a day's plans into blocks (a plan on its own is a block of one). */

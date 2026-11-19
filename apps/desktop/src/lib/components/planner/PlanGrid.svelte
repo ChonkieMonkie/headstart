@@ -32,7 +32,7 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { type BlockView, groupBlocks, type PlanStatus, type PlanView } from "@headstart/core";
+  import { type BlockView, groupBlocks, type LoggedBlock, type PlanStatus, type PlanView } from "@headstart/core";
   import { courseColor } from "@headstart/ui";
   import type { BusyEvent } from "$lib/calendars.svelte.ts";
   import { clockTime, fromInputs } from "$lib/format.ts";
@@ -45,6 +45,7 @@
   let {
     days,
     plans,
+    logged = [],
     busy,
     now,
     today,
@@ -60,6 +61,8 @@
     /** "YYYY-MM-DD" keys, in order. */
     days: string[];
     plans: PlanView[];
+    /** Sessions done without a plan, drawn where they happened. */
+    logged?: LoggedBlock[];
     busy: BusyEvent[];
     now: number;
     today: string;
@@ -68,7 +71,7 @@
     hourPx?: number;
     /** A session being planned (from the editor or a dragged task), drawn dashed. */
     ghost?: { day: string; start: number; end: number; label: string } | null;
-    /** Whether a block (by its key) is also in Apple Calendar. */
+    /** Whether a block (by its key) is also in Apple Calendar, a planned one or a logged one. */
     synced?: (key: string) => boolean;
     onCreate: (slot: GridSlot) => void;
     onMove: (planId: string, startAt: number) => void;
@@ -129,7 +132,28 @@
   }
 
   // Sessions planned together show as one block, with their breaks marked inside.
-  type Cell = { kind: "block"; block: BlockView } | { kind: "busy"; event: BusyEvent };
+  type Cell =
+    | { kind: "block"; block: BlockView }
+    | { kind: "logged"; block: LoggedBlock }
+    | { kind: "busy"; event: BusyEvent };
+
+  /** The green pieces of a logged block: one per session, the breaks as gaps. */
+  function loggedRail(block: LoggedBlock): { id: string; top: number; height: number }[] {
+    return block.sessions.map((r) => {
+      const top = ((r.startedAt - block.start) / MINUTE / 60) * hourPx;
+      const height = ((r.endedAt - r.startedAt) / MINUTE / 60) * hourPx;
+      return { id: r.sessionId, top: top + 3, height: Math.max(3, height - 8) };
+    });
+  }
+
+  function loggedLabel(block: LoggedBlock): string {
+    const n = block.sessions.length;
+    const what = n > 1 ? `${n} sessions, ${block.focusMinutes} min` : `${block.focusMinutes} min`;
+    return `${clockTime(block.start)} to ${clockTime(block.end)} · ${what}`;
+  }
+
+  const cellKey = (cell: Cell) =>
+    cell.kind === "busy" ? cell.event.id : cell.kind === "logged" ? `logged:${cell.block.key}` : cell.block.key;
 
   /** One status for a block: running wins, then up next, then done when all are. */
   function statusOf(block: BlockView): PlanStatus {
@@ -181,6 +205,10 @@
       for (const block of groupBlocks(plans)) {
         if (block.start < from || block.start >= to) continue;
         items.push({ item: { kind: "block", block }, start: block.start, end: block.end });
+      }
+      for (const block of logged) {
+        if (block.start < from || block.start >= to) continue;
+        items.push({ item: { kind: "logged", block }, start: block.start, end: block.end });
       }
       const allDay = busy.filter((e) => e.allDay && e.start < to && e.end > from);
       return { day, cells: layout(items, day), allDay };
@@ -343,7 +371,7 @@
             onpointerup={pointerUp}
             onpointercancel={cancel}
           >
-            {#each col.cells as cell (cell.item.kind === "block" ? cell.item.block.key : cell.item.event.id)}
+            {#each col.cells as cell (cellKey(cell.item))}
               {@const style = `top: ${cell.top}px; height: ${cell.height - 2}px; left: calc(${(cell.lane / cell.lanes) * 100}% + 2px); width: calc(${100 / cell.lanes}% - 4px)`}
               {#if cell.item.kind === "busy"}
                 {@const e = cell.item.event}
@@ -351,6 +379,30 @@
                   <span class="title">{#if e.kind === "link"}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.6 9.4l2.8-2.8M7.2 4.6l1.1-1.1a2.6 2.6 0 0 1 3.7 3.7l-1.1 1.1M8.8 11.4l-1.1 1.1a2.6 2.6 0 0 1-3.7-3.7l1.1-1.1" /></svg>{/if}{e.title || "Busy"}</span>
                   {#if cell.height > 34}<span class="sub">{e.location || e.sourceName}</span>{/if}
                   {#if cell.height > 54}<span class="sub">{clockTime(e.start)} to {clockTime(e.end)}</span>{/if}
+                </div>
+              {:else if cell.item.kind === "logged"}
+                {@const lb = cell.item.block}
+                {@const short = cell.height < 36}
+                <div
+                  class="block done logged"
+                  {style}
+                  style:--c={courseColor(lb.course?.color, "var(--hs-accent)")}
+                  role="img"
+                  aria-label="Done: {lb.course?.name ?? 'Free session'}{lb.task ? `, ${lb.task.title}` : ''}, {loggedLabel(lb)}"
+                  title="Done in Headstart{lb.task ? ` · ${lb.task.title}` : ''}"
+                >
+                  {#each loggedRail(lb) as piece (piece.id)}
+                    <span class="piece done" style:top="{piece.top}px" style:height="{piece.height}px" aria-hidden="true"></span>
+                  {/each}
+                  <span class="title">
+                    <svg class="check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.4" /></svg>
+                    <span class="name">{lb.course?.name ?? "Free session"}{#if short}<span class="inline"> · {clockTime(lb.start)}</span>{/if}</span>
+                    {#if synced(`logged:${lb.key}`)}<svg class="cal" viewBox="0 0 16 16" aria-label="In Apple Calendar" role="img"><rect x="1.8" y="2.8" width="12.4" height="11.4" rx="2.4" /><path d="M1.8 6.2h12.4M5.2 1.6v2.4M10.8 1.6v2.4" /></svg>{/if}
+                  </span>
+                  {#if !short}
+                    <span class="sub">{loggedLabel(lb)}</span>
+                    {#if lb.task && cell.height > 52}<span class="sub">{lb.task.title}</span>{/if}
+                  {/if}
                 </div>
               {:else}
                 {@const blk = cell.item.block}
@@ -605,6 +657,11 @@
   .block.done {
     --tint: var(--hs-raised);
     color: var(--hs-ink-subtle);
+  }
+
+  /* Done without a plan: drawn like a done block, but it cannot be opened or moved. */
+  .block.logged {
+    cursor: default;
   }
 
   .block.missed {

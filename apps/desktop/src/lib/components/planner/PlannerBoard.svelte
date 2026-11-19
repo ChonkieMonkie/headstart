@@ -27,6 +27,7 @@
     blockPlans,
     blockSlots,
     localDayKey,
+    loggedBlocks,
     movePlan,
     presetFor,
     type TaskToPlan,
@@ -136,8 +137,18 @@
   };
   const today = $derived(localDayKey(study.now));
   const plans = $derived(days.flatMap((day) => study.plansOn(day)));
+  // Sessions done without a plan show where they happened, once they have ended.
+  const logged = $derived.by(() => {
+    const state = study.state;
+    const first = days[0];
+    const last = days[days.length - 1];
+    if (!state || !first || !last) return [];
+    return loggedBlocks(state, dayStart(first), dayStart(addDays(last, 1)));
+  });
   // The grid starts at 06:00, or earlier when a session is planned before that.
-  const startHour = $derived(Math.min(6, ...plans.map((v) => new Date(v.plan.startAt).getHours())));
+  const startHour = $derived(
+    Math.min(6, ...plans.map((v) => new Date(v.plan.startAt).getHours()), ...logged.map((b) => new Date(b.start).getHours())),
+  );
   const busy = $derived(calendars.between(dayStart(days[0] ?? today), dayStart(addDays(days[days.length - 1] ?? today, 1))));
 
   let request = $state<EditorRequest | null>(null);
@@ -251,6 +262,7 @@
       bind:this={grid}
       {days}
       {plans}
+      {logged}
       {busy}
       now={study.now}
       {today}
@@ -268,6 +280,7 @@
     {#if !compact}
       <div class="legend">
         <span><span class="key session"></span>Study session (colour of its course)</span>
+        <span><span class="key done"></span>Done, also without a plan</span>
         <span><span class="key link"></span>From a calendar link</span>
         <span><span class="key busy"></span>Busy in another calendar</span>
       </div>
@@ -477,6 +490,11 @@
   .key.session {
     background: color-mix(in srgb, var(--hs-accent) 16%, var(--hs-surface));
     border-left: 3px solid var(--hs-accent);
+  }
+
+  .key.done {
+    background: var(--hs-raised);
+    border-left: 3px solid var(--hs-success);
   }
 
   .key.link {

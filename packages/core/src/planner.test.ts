@@ -36,6 +36,7 @@ import { StudyEngine } from "./engine.ts";
 import { defaultContext } from "./index.ts";
 import {
   daysUntil,
+  loggedBlocks,
   openTasks,
   plansOn,
   planToStartNow,
@@ -272,3 +273,69 @@ describe("stats", () => {
     ]);
   });
 });
+
+describe("logged blocks", () => {
+  it("shows sessions done without a plan, joining back-to-back ones", async () => {
+    const { engine, run, later, now } = await loggedSetup();
+    const start = now();
+    for (const id of ["a", "b"]) {
+      await run((s) => startSession(s, { sessionId: id, plannedMinutes: 25, taskId: "t1" }));
+      later(25);
+      await run((s) => completeSession(s, { distractions: 0 }));
+      later(5);
+    }
+    // Two hours later, a session for another course stands on its own.
+    later(120);
+    await run((s) => startSession(s, { sessionId: "c", plannedMinutes: 25 }));
+    later(25);
+    await run((s) => completeSession(s, { distractions: 0 }));
+    const blocks = loggedBlocks(engine.state, start - 1, now() + 1);
+    expect(blocks.map((b) => b.sessions.map((r) => r.sessionId))).toEqual([["a", "b"], ["c"]]);
+    expect(blocks[0]).toMatchObject({
+      key: "a",
+      focusMinutes: 50,
+      start,
+      end: start + 55 * 60_000,
+    });
+    expect(blocks[0]?.task?.id).toBe("t1");
+    expect(blocks[1]?.course).toBeNull();
+  });
+
+  it("leaves out sessions that carried out a plan", async () => {
+    const { engine, run, later, now } = await loggedSetup();
+    const start = now();
+    await run((s) =>
+      planSession(s, { planId: "p", startAt: new Date(start), minutes: 25, taskId: "t1" }),
+    );
+    await run((s) => startSession(s, { sessionId: "a", plannedMinutes: 25, planId: "p" }));
+    later(25);
+    await run((s) => completeSession(s, { distractions: 0 }));
+    expect(loggedBlocks(engine.state, start - 1, now() + 1)).toEqual([]);
+  });
+});
+
+async function loggedSetup() {
+  let now = new Date(2026, 10, 18, 9, 0).getTime();
+  const engine = await StudyEngine.open(
+    new MemoryEventStore(),
+    { deviceId: "test", now: () => new Date(now) },
+    defaultContext,
+  );
+  const run = async (command: Parameters<StudyEngine["run"]>[0]) => {
+    const result = await engine.run(command);
+    if (!result.ok) throw new Error(result.reason);
+    return result;
+  };
+  await run((s) => createCourse(s, { courseId: "la", name: "Linear Algebra", color: "#255EBC" }));
+  await run((s) =>
+    createTask(s, { taskId: "t1", courseId: "la", title: "Chapter 3", nextStep: "Read 3.1" }),
+  );
+  return {
+    engine,
+    run,
+    later: (minutes: number) => {
+      now += minutes * 60_000;
+    },
+    now: () => now,
+  };
+}

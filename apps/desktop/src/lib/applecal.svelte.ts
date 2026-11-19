@@ -20,12 +20,18 @@
 // Calendar moves or cancels the session here. Other chosen calendars show as
 // busy time. Which session belongs to which event is stored on this device
 // only, never in the event log.
+//
+// Sessions done without a plan always show in Headstart's own calendar. They
+// are only added to Apple Calendar when the user turns that on, and only one
+// way: Headstart writes them, and deleting one in Calendar is left alone.
 
 import {
   blockKey,
   blockSlots,
   cancelPlan,
   fitSessions,
+  type LoggedBlock,
+  loggedBlocks,
   movePlan,
   type Plan,
   planSession,
@@ -66,6 +72,15 @@ interface Saved {
   links: Record<string, Link>;
   /** Syncs in a row that a linked event could not be found, per plan. */
   missing: Record<string, number>;
+  /** Add sessions done without a plan to Calendar too, once they have ended. */
+  logDone: boolean;
+  /** When `logDone` was turned on: only sessions that ended after it are added. */
+  logSince: number | null;
+  /**
+   * Logged block (by its first session) → its event. Null once the event was
+   * deleted in Calendar, so it is not made again.
+   */
+  logged: Record<string, Link | null>;
 }
 
 const EMPTY: Saved = {
@@ -75,6 +90,9 @@ const EMPTY: Saved = {
   busyIds: [],
   links: {},
   missing: {},
+  logDone: false,
+  logSince: null,
+  logged: {},
 };
 
 function load(): Saved {
@@ -122,9 +140,17 @@ export class AppleSync {
     return this.on ? `Adds to Calendar: ${this.calendarName}` : null;
   }
 
-  /** Whether a block (by its key) is in Apple Calendar. */
+  /** Whether a block is in Apple Calendar: a planned one by its key, a logged one as "logged:<key>". */
   synced(key: string): boolean {
-    return this.on && key in this.saved.links;
+    if (!this.on) return false;
+    if (key.startsWith("logged:")) return Boolean(this.saved.logged[key.slice("logged:".length)]);
+    return key in this.saved.links;
+  }
+
+  /** Turns adding sessions done without a plan on or off. Events already added stay. */
+  setLogDone(on: boolean): void {
+    this.#save({ logDone: on, logSince: on ? Date.now() : null });
+    if (on) this.schedule();
   }
 
   async start(): Promise<void> {
@@ -186,7 +212,7 @@ export class AppleSync {
 
   /** Stops syncing. Events already in Calendar stay there. */
   disconnect(): void {
-    this.#save({ enabled: false, links: {}, missing: {} });
+    this.#save({ enabled: false, links: {}, missing: {}, logged: {} });
     this.#busy = [];
     this.calendarsStore.setAppleSource((from, to) => this.#busyBetween(from, to));
   }
@@ -202,6 +228,7 @@ export class AppleSync {
         calendarId,
         links: {},
         missing: {},
+        logged: {},
         busyIds: this.saved.busyIds.filter((b) => b !== calendarId),
       });
       await this.sync();
@@ -286,6 +313,7 @@ export class AppleSync {
       moved: 0,
       cancelled: 0,
       relinked: 0,
+      logged: 0,
     };
     // One event per block (a session on its own is a block of one), from its
     // first session to the end of its last. Only sessions still to come count.
@@ -296,7 +324,11 @@ export class AppleSync {
       groups.set(blockKey(p), [...(groups.get(blockKey(p)) ?? []), p]);
     }
     for (const list of groups.values()) list.sort((x, y) => x.startAt - y.startAt);
-    const linked = new Set(Object.values(links).map((l) => l.eventId));
+    // Events of sessions done without a plan are never taken for planned ones.
+    const linked = new Set([
+      ...Object.values(links).map((l) => l.eventId),
+      ...Object.values(this.saved.logged).flatMap((l) => (l ? [l.eventId] : [])),
+    ]);
 
     for (const [key, group] of groups) {
       const want = this.#desired(group);
@@ -378,12 +410,77 @@ export class AppleSync {
         await appleCalendar.delete(link.eventId).catch(() => {});
       delete links[key];
     }
+    const logged = await this.#syncLogged(calendarId, events, linked, now, log);
+
     // Save only real changes, so a quiet sync writes nothing.
     const changed =
       JSON.stringify(links) !== JSON.stringify(this.saved.links) ||
-      JSON.stringify(missing) !== JSON.stringify(this.saved.missing);
-    if (changed) this.#save({ links, missing });
+      JSON.stringify(missing) !== JSON.stringify(this.saved.missing) ||
+      JSON.stringify(logged) !== JSON.stringify(this.saved.logged);
+    if (changed) this.#save({ links, missing, logged });
     this.#log({ ...log, hiccup });
+  }
+
+  /**
+   * Sessions done without a plan, when the user asked for them in Calendar:
+   * one event per block, made once it has ended and updated if a session is
+   * added to it. One way only: an event deleted in Calendar is not made again.
+   */
+  async #syncLogged(
+    calendarId: string,
+    events: Map<string, AppleEvent>,
+    linked: Set<string>,
+    now: number,
+    log: Record<string, number>,
+  ): Promise<Record<string, Link | null>> {
+    const logged = { ...this.saved.logged };
+    const since = this.saved.logSince;
+    const state = this.study.state;
+    if (!this.saved.logDone || since === null || !state) return logged;
+    // Only blocks whose last session ended after the setting was turned on.
+    const blocks = loggedBlocks(state, since, now).filter((b) => b.end >= since && b.end <= now);
+    for (const block of blocks) {
+      const want = this.#desiredLogged(block);
+      const link = logged[block.key];
+      if (link === null) continue;
+      if (!link) {
+        const id = await appleCalendar.save({ id: null, calendarId, ...want });
+        logged[block.key] = { ...want, eventId: id };
+        linked.add(id);
+        log.logged = (log.logged ?? 0) + 1;
+        continue;
+      }
+      linked.add(link.eventId);
+      if (want.end === link.end && want.title === link.title && want.notes === link.notes) continue;
+      // The block grew: update its event, unless the user deleted it.
+      const event =
+        events.get(link.eventId) ?? (await appleCalendar.get(link.eventId).catch(() => null));
+      if (!event) {
+        logged[block.key] = null;
+        continue;
+      }
+      const id = await appleCalendar.save({ id: event.id, calendarId, ...want });
+      logged[block.key] = { ...want, eventId: id };
+    }
+    return logged;
+  }
+
+  /** The event for a block of sessions done without a plan. */
+  #desiredLogged(block: LoggedBlock): Omit<Link, "eventId"> {
+    const course = block.course;
+    const task = block.task;
+    const title =
+      course && task
+        ? `${course.name} · ${task.title}`
+        : (course?.name ?? task?.title ?? "Study session");
+    const n = block.sessions.length;
+    const notes = [
+      n > 1
+        ? `${n} sessions, ${block.focusMinutes} minutes of focus.`
+        : `${block.focusMinutes} minutes of focus.`,
+      "Studied in Headstart.",
+    ].join("\n\n");
+    return { title, notes, start: second(block.start), end: second(block.end) };
   }
 
   /** A short record of recent syncs on this device, to find out what went wrong. */

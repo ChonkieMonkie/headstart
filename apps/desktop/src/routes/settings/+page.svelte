@@ -354,6 +354,24 @@
           </button>
         </div>
       </div>
+      <div class="row">
+        <div class="text">
+          <span class="name" id="logdone-label">Add sessions done without a plan</span>
+          <span class="hint">They always show in Headstart's week plan. With this on, they are also added to Calendar once they end, from now on. Deleting one in Calendar leaves it deleted.</span>
+        </div>
+        <div class="control">
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            aria-checked={apple.saved.logDone}
+            aria-labelledby="logdone-label"
+            onclick={() => apple.setLogDone(!apple.saved.logDone)}
+          >
+            <span class="knob" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
       <div class="row busy-row">
         <div class="text">
           <span class="name">Show as busy</span>
