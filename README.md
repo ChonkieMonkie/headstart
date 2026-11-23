@@ -191,7 +191,7 @@ There are **154 items** to find in five themed sets, from simple commons to anim
   </picture>
 </p>
 
-Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is well under way: the week planner and dark mode came in [v0.3.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.3.0), and spaced reviews, focus tools, weekly goals and plaques in v0.4.0. A bigger collection and deeper stats come next. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
+Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is well under way: the week planner and dark mode came in [v0.3.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.3.0), and spaced reviews, focus tools, weekly goals and plaques in [v0.4.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.4.0). A bigger collection and deeper stats come next. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
 
 ## Built to run all day
 
