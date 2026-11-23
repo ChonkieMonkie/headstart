@@ -64,6 +64,8 @@ export class EventLog {
   readonly #newId: (now: number) => string;
   readonly #listeners = new Set<EventListener>();
   #seq: number;
+  /** The event being saved now, so the next one waits and gets the next number. */
+  #writing: Promise<unknown> = Promise.resolve();
 
   private constructor(store: EventStore, events: EventEnvelope[], options: EventLogOptions) {
     this.#store = store;
@@ -84,7 +86,18 @@ export class EventLog {
     return this.#events;
   }
 
-  async record<E extends StudyEvent>(event: E): Promise<EventEnvelope<E>> {
+  /**
+   * Saves an event and gives it the next number of this device. Events are
+   * saved one at a time: two at once would otherwise get the same number,
+   * which the database refuses.
+   */
+  record<E extends StudyEvent>(event: E): Promise<EventEnvelope<E>> {
+    const next = this.#writing.then(() => this.#recordNow(event));
+    this.#writing = next.catch(() => {});
+    return next;
+  }
+
+  async #recordNow<E extends StudyEvent>(event: E): Promise<EventEnvelope<E>> {
     const now = this.#now();
     const envelope: EventEnvelope<E> = {
       id: this.#newId(now.getTime()),

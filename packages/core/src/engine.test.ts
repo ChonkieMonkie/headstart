@@ -20,10 +20,12 @@ import {
   chooseMascot,
   completeSession,
   craftItem,
+  earnPlaque,
   equipItem,
   extendSession,
   openCrate,
   pauseSession,
+  rateSession,
   resumeSession,
   type StartSessionInput,
   startSession,
@@ -31,7 +33,9 @@ import {
 } from "./commands.ts";
 import { NO_PITY, nextPity } from "./crates.ts";
 import { StudyEngine } from "./engine.ts";
+import type { EventEnvelope } from "./events.ts";
 import { defaultContext } from "./index.ts";
+import { plaquesToEarn } from "./plaques.ts";
 import { type CoreContext, createInitialState, project, unopenedCrates } from "./state.ts";
 import { EventLog, MemoryEventStore } from "./store.ts";
 
@@ -263,6 +267,67 @@ describe("event log", () => {
     const reopened = await EventLog.open(store, { deviceId: "test" });
     const next = await reopened.record({ type: "mascot.chosen", mascot: "axo" });
     expect(next.seq).toBe(lastSeq + 1);
+  });
+
+  it("saves commands asked for at once one after the other, each with its own number", async () => {
+    // Like the SQLite table: a number used twice by one device is refused,
+    // and saving takes a moment, so two saves can overlap.
+    class StrictStore extends MemoryEventStore {
+      #used = new Set<string>();
+      override async append(envelope: EventEnvelope): Promise<void> {
+        for (let i = 0; i < 3; i++) await Promise.resolve();
+        const key = `${envelope.deviceId}:${envelope.seq}`;
+        if (this.#used.has(key)) throw new Error(`seq ${envelope.seq} is used already`);
+        this.#used.add(key);
+        await super.append(envelope);
+      }
+    }
+    let now = Date.UTC(2026, 10, 23, 9, 0);
+    const store = new StrictStore();
+    const engine = await StudyEngine.open(
+      store,
+      { deviceId: "test", now: () => new Date(now) },
+      ctx,
+    );
+    await engine.run((s) => startSession(s, { sessionId: "s1", plannedMinutes: 25 }));
+    now += 26 * 60_000;
+    await engine.run((s) => completeSession(s, { distractions: 0 }));
+    await engine.run((s) => writeRecall(s, "s1", "Eigenvectors keep their direction."));
+    // Session complete goes on saving (the rating) while the plaques the note
+    // earned are recorded: before the fix both got the same number.
+    const due = plaquesToEarn(engine.state, now, ctx);
+    expect(due.length).toBeGreaterThan(0);
+    const results = await Promise.all([
+      engine.run((s) => rateSession(s, "s1", 4)),
+      ...due.map((p) => engine.run((s, c) => earnPlaque(s, c, { ...p, now }))),
+      // Asked twice at once: the second is checked after the first and refused.
+      ...due.map((p) => engine.run((s, c) => earnPlaque(s, c, { ...p, now }))),
+    ]);
+    expect(results.slice(0, 1 + due.length).every((r) => r.ok)).toBe(true);
+    expect(results.slice(1 + due.length).every((r) => !r.ok)).toBe(true);
+    const seqs = engine.events.map((e) => e.seq);
+    expect(new Set(seqs).size).toBe(seqs.length);
+    expect((await store.load()).length).toBe(engine.events.length);
+  });
+
+  it("carries on after a command whose save failed", async () => {
+    class FlakyStore extends MemoryEventStore {
+      fail = true;
+      override async append(envelope: EventEnvelope): Promise<void> {
+        if (this.fail) {
+          this.fail = false;
+          throw new Error("disk full");
+        }
+        await super.append(envelope);
+      }
+    }
+    const engine = await StudyEngine.open(new FlakyStore(), { deviceId: "test" }, ctx);
+    const first = engine.run((s) => startSession(s, { sessionId: "a", plannedMinutes: 25 }));
+    const second = engine.run((s) => startSession(s, { sessionId: "b", plannedMinutes: 25 }));
+    await expect(first).rejects.toThrow("disk full");
+    expect((await second).ok).toBe(true);
+    expect(engine.state.active?.sessionId).toBe("b");
+    expect(engine.events.map((e) => e.seq)).toEqual([1]);
   });
 
   it("ignores events that do not fit, so a damaged log never crashes the app", () => {

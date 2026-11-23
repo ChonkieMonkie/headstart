@@ -30,6 +30,8 @@ export class StudyEngine {
   readonly #ctx: CoreContext;
   readonly #state: ProgressState;
   readonly #listeners = new Set<StateListener>();
+  /** The command running now, so the next one waits for it. */
+  #queue: Promise<unknown> = Promise.resolve();
 
   private constructor(log: EventLog, ctx: CoreContext) {
     this.#log = log;
@@ -60,8 +62,20 @@ export class StudyEngine {
   /**
    * Builds a command against the current state and records its event when it
    * is allowed. Example: `engine.run((s) => startSession(s, input))`.
+   *
+   * Commands run one at a time, in the order they were asked for: each one is
+   * checked against the state after the one before it, and saved after it. A
+   * command that fails does not stop the ones after it.
    */
-  async run<E extends StudyEvent>(
+  run<E extends StudyEvent>(
+    command: (state: ProgressState, ctx: CoreContext) => CommandResult<E>,
+  ): Promise<CommandResult<E>> {
+    const next = this.#queue.then(() => this.#runNow(command));
+    this.#queue = next.catch(() => {});
+    return next;
+  }
+
+  async #runNow<E extends StudyEvent>(
     command: (state: ProgressState, ctx: CoreContext) => CommandResult<E>,
   ): Promise<CommandResult<E>> {
     const result = command(this.#state, this.#ctx);

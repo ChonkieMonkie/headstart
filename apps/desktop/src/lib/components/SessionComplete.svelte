@@ -78,9 +78,17 @@
   }
 
   async function save(thenOpenCrate = false): Promise<void> {
+    if (saving) return;
     saving = true;
-    error = await study.saveCompletion({ recall, question, mode, rating, done: ticked, nextTodo, taskDone });
-    saving = false;
+    try {
+      error = await study.saveCompletion({ recall, question, mode, rating, done: ticked, nextTodo, taskDone });
+    } catch (failure) {
+      // Never leave the buttons switched off: say what went wrong, so saving
+      // can be tried again (or the notes skipped).
+      error = `Could not save everything: ${failure instanceof Error ? failure.message : String(failure)}. Try again, or skip the notes.`;
+    } finally {
+      saving = false;
+    }
     if (!error && thenOpenCrate) await goto("/crates");
   }
 </script>
