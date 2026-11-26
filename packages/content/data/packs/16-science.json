@@ -1,0 +1,476 @@
+{
+  "shapes": {
+    "head": {
+      "thinking-cap": 2,
+      "lab-hair-net": 2,
+      "hard-hat": 2,
+      "atom-headband": 2,
+      "static-hair": 2
+    },
+    "face": {
+      "chalk-smudge": 1,
+      "forehead-goggles": 2
+    },
+    "outfit": {
+      "lab-coat": 2,
+      "magnet-pin": 2,
+      "pocket-protector": 2
+    },
+    "held": {
+      "abacus": 2,
+      "microscope": 2,
+      "dna-model": 2,
+      "beaker-fizz": 2,
+      "test-tube-rack": 2,
+      "bunsen-burner": 2,
+      "robot-toy": 2,
+      "lightning-jar": 2
+    },
+    "aura": {
+      "orbiting-electrons": 2,
+      "magnetic-field": 2,
+      "floating-formulas": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.blue-thinking-cap",
+      "name": "Blue Thinking Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Every good idea starts with a gear turning.",
+      "art": {
+        "shape": "thinking-cap",
+        "colors": ["#5FA8D3", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.pink-thinking-cap",
+      "name": "Pink Thinking Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Copper gears for very busy thoughts.",
+      "art": {
+        "shape": "thinking-cap",
+        "colors": ["#E9579A", "#C98A4B"]
+      }
+    },
+    {
+      "id": "head.green-thinking-cap",
+      "name": "Green Thinking Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Silver gears, slow and steady thinking.",
+      "art": {
+        "shape": "thinking-cap",
+        "colors": ["#3E7A3A", "#9AA3B5"]
+      }
+    },
+    {
+      "id": "head.mint-hair-net",
+      "name": "Mint Hair Net",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Keeps your hair out of the beakers.",
+      "art": {
+        "shape": "lab-hair-net",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "head.lilac-hair-net",
+      "name": "Lilac Hair Net",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Purple mesh, practical and a little glamorous.",
+      "art": {
+        "shape": "lab-hair-net",
+        "colors": ["#B9A6E8", "#6D5BB5"]
+      }
+    },
+    {
+      "id": "head.peach-hair-net",
+      "name": "Peach Hair Net",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Peachy mesh for long lab afternoons.",
+      "art": {
+        "shape": "lab-hair-net",
+        "colors": ["#F9B27C", "#C8573A"]
+      }
+    },
+    {
+      "id": "face.blue-chalk-smudge",
+      "name": "Blue Chalk Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A bit of board chalk on one cheek.",
+      "art": {
+        "shape": "chalk-smudge",
+        "colors": ["#5FA8D3"]
+      }
+    },
+    {
+      "id": "face.pink-chalk-smudge",
+      "name": "Pink Chalk Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Pink chalk from the study group whiteboard.",
+      "art": {
+        "shape": "chalk-smudge",
+        "colors": ["#E9579A"]
+      }
+    },
+    {
+      "id": "face.yellow-chalk-smudge",
+      "name": "Yellow Chalk Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "The quickest proof that you worked the problem.",
+      "art": {
+        "shape": "chalk-smudge",
+        "colors": ["#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.mint-lab-coat",
+      "name": "Mint Lab Coat",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mint coat with a pen in the pocket.",
+      "art": {
+        "shape": "lab-coat",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "outfit.lilac-lab-coat",
+      "name": "Lilac Lab Coat",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Lilac coat for early chemistry mornings.",
+      "art": {
+        "shape": "lab-coat",
+        "colors": ["#B9A6E8", "#6D5BB5"]
+      }
+    },
+    {
+      "id": "outfit.peach-lab-coat",
+      "name": "Peach Lab Coat",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Peach coat, a little warmer than the lab.",
+      "art": {
+        "shape": "lab-coat",
+        "colors": ["#F9B27C", "#C8573A"]
+      }
+    },
+    {
+      "id": "outfit.red-magnet-pin",
+      "name": "Red Magnet Pin",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Holds the important facts in place.",
+      "art": {
+        "shape": "magnet-pin",
+        "colors": ["#E5533D", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.blue-magnet-pin",
+      "name": "Blue Magnet Pin",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pulls the right facts toward you.",
+      "art": {
+        "shape": "magnet-pin",
+        "colors": ["#4A7FC1", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.green-magnet-pin",
+      "name": "Green Magnet Pin",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Attracts deadlines, unfortunately.",
+      "art": {
+        "shape": "magnet-pin",
+        "colors": ["#3FBF8F", "#E9579A"]
+      }
+    },
+    {
+      "id": "held.wooden-abacus",
+      "name": "Wooden Abacus",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Count your study hours one bead at a time.",
+      "art": {
+        "shape": "abacus",
+        "colors": ["#E0A72E", "#C8573A"]
+      }
+    },
+    {
+      "id": "held.mint-abacus",
+      "name": "Mint Abacus",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Bright mint frame and very neat columns.",
+      "art": {
+        "shape": "abacus",
+        "colors": ["#7DD8C0", "#E9579A"]
+      }
+    },
+    {
+      "id": "held.blue-abacus",
+      "name": "Blue Abacus",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blue frame and yellow beads. Counting is fun.",
+      "art": {
+        "shape": "abacus",
+        "colors": ["#5B9FE0", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.blue-hard-hat",
+      "name": "Blue Hard Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Sturdy enough for the heaviest textbook.",
+      "art": {
+        "shape": "hard-hat",
+        "colors": ["#5FA8D3", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "head.yellow-hard-hat",
+      "name": "Yellow Hard Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Safety first, even when the exam is the hazard.",
+      "art": {
+        "shape": "hard-hat",
+        "colors": ["#F5C542", "#F28A3A"]
+      }
+    },
+    {
+      "id": "face.orange-forehead-goggles",
+      "name": "Orange Forehead Goggles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Pushed up for thinking, down for lab work.",
+      "art": {
+        "shape": "forehead-goggles",
+        "colors": ["#F28A3A", "#BFE8FF"]
+      }
+    },
+    {
+      "id": "face.purple-forehead-goggles",
+      "name": "Purple Forehead Goggles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Parked on the forehead, ready for the next task.",
+      "art": {
+        "shape": "forehead-goggles",
+        "colors": ["#7C5CD6", "#F7E04A"]
+      }
+    },
+    {
+      "id": "outfit.clear-pocket-protector",
+      "name": "Clear Pocket Protector",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Pens lined up in a clear plastic sleeve.",
+      "art": {
+        "shape": "pocket-protector",
+        "colors": ["#9FD8F0", "#E5533D"]
+      }
+    },
+    {
+      "id": "outfit.lilac-pocket-protector",
+      "name": "Lilac Pocket Protector",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Lilac sleeve with a gold pen, for the neat ones.",
+      "art": {
+        "shape": "pocket-protector",
+        "colors": ["#C9B8F0", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.mint-microscope",
+      "name": "Mint Microscope",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Peer into a tiny world of cells and questions.",
+      "art": {
+        "shape": "microscope",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "held.berry-microscope",
+      "name": "Berry Microscope",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Berry-coloured body, very serious about detail.",
+      "art": {
+        "shape": "microscope",
+        "colors": ["#E9579A", "#8A2D5B"]
+      }
+    },
+    {
+      "id": "held.blue-dna-model",
+      "name": "Blue DNA Model",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A twisty double helix for the biology chapter.",
+      "art": {
+        "shape": "dna-model",
+        "colors": ["#5B9FE0", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.pink-dna-model",
+      "name": "Pink DNA Model",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Two strands, one very good exam.",
+      "art": {
+        "shape": "dna-model",
+        "colors": ["#E9579A", "#3FBF8F"]
+      }
+    },
+    {
+      "id": "held.lime-fizz-beaker",
+      "name": "Lime Fizz Beaker",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Fizzing along nicely, for now.",
+      "art": {
+        "shape": "beaker-fizz",
+        "colors": ["#8FD65A", "#F7F2EA"]
+      }
+    },
+    {
+      "id": "held.berry-fizz-beaker",
+      "name": "Berry Fizz Beaker",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Please do not drink it.",
+      "art": {
+        "shape": "beaker-fizz",
+        "colors": ["#E9579A", "#FFE0C2"]
+      }
+    },
+    {
+      "id": "head.atom-headband",
+      "name": "Atom Headband",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A tiny atom orbiting just above your forehead.",
+      "art": {
+        "shape": "atom-headband",
+        "colors": ["#5B9FE0", "#E5533D"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.static-hair",
+      "name": "Static Hair",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "Your hair stands up when you finally get it.",
+      "art": {
+        "shape": "static-hair",
+        "colors": ["#8B7FD1", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.orbiting-electrons",
+      "name": "Orbiting Electrons",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Electrons circling you, as they should.",
+      "art": {
+        "shape": "orbiting-electrons",
+        "colors": ["#5B9FE0", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.magnetic-field",
+      "name": "Magnetic Field",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Field lines that pull good habits closer.",
+      "art": {
+        "shape": "magnetic-field",
+        "colors": ["#E5533D", "#5FA8D3"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.test-tube-rack",
+      "name": "Test Tube Rack",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Three bubbling experiments, all going well.",
+      "art": {
+        "shape": "test-tube-rack",
+        "colors": ["#E9579A", "#C98A4B"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.bunsen-burner",
+      "name": "Bunsen Burner",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A small flame for big experiments.",
+      "art": {
+        "shape": "bunsen-burner",
+        "colors": ["#5B6B82", "#F28A3A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.floating-formulas",
+      "name": "Floating Formulas",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Formulas drifting by, bobbing gently around you.",
+      "art": {
+        "shape": "floating-formulas",
+        "colors": ["#BFE8FF", "#5B4BD6"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.tin-robot",
+      "name": "Tin Robot",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Clanks along beside your notes, one wobble at a time.",
+      "art": {
+        "shape": "robot-toy",
+        "colors": ["#5B9FE0", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.lightning-jar",
+      "name": "Lightning Jar",
+      "slot": "held",
+      "rarity": "legendary",
+      "description": "Lightning in a jar, crackling while you focus.",
+      "art": {
+        "shape": "lightning-jar",
+        "colors": ["#E0A72E", "#5FA8FF"]
+      },
+      "animated": true
+    }
+  ]
+}

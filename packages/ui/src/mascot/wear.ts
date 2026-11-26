@@ -24,6 +24,7 @@
 
 import type { MascotId, WEAR_SHAPES } from "@headstart/content";
 import type { Geometry, MoodLook } from "./geometry.ts";
+import { PACK_DRAWINGS } from "./packs/index.ts";
 import { animate, el, flower, g, heart, OUTLINE, outlined, sparkle, star, tube } from "./svg.ts";
 
 export interface WearContext {
@@ -312,10 +313,10 @@ const HEAD: ShapeTable<"head"> = {
         el("circle", {
           cx: 0,
           cy: -4,
-          r: 19,
+          r: 17,
           fill: c(ctx, 0),
           opacity: 0.28,
-          style: animate("mc-pulse", 2),
+          style: `mix-blend-mode: screen; ${animate("mc-pulse", 2)}`,
         }),
         g(
           { fill: "none", stroke: c(ctx, 0), "stroke-width": 2.6, "stroke-linecap": "round" },
@@ -328,11 +329,20 @@ const HEAD: ShapeTable<"head"> = {
           { d: "M-9 4 C-16 -2 -14 -18 0 -18 C14 -18 16 -2 9 4 L8 10 L-8 10 Z", fill: c(ctx, 0) },
           2.6,
         ),
+        // Two support wires and a coiled filament between them.
         el("path", {
-          d: "M-4 5 L-4 -3 L0 1 L4 -3 L4 5",
+          d: "M-4 10 L-5 -1 M4 10 L5 -1",
           fill: "none",
           stroke: OUTLINE,
+          "stroke-width": 1.4,
+          "stroke-linecap": "round",
+        }),
+        el("path", {
+          d: "M-5 -1 C-6 -5 -2 -6 -2.6 -2 C-3 1 0.4 1 0 -2.4 C-0.4 -6 3.4 -6 2.8 -2 C2.4 1 5.6 0.6 5 -1",
+          fill: "none",
+          stroke: "#E08A1E",
           "stroke-width": 1.6,
+          "stroke-linecap": "round",
           "stroke-linejoin": "round",
         }),
         SHINE("M-8 -8 C-8 -12 -5 -14 -2 -15", 0.7),
@@ -1572,4 +1582,11 @@ function codeOrbit(ctx: WearContext): WearParts {
   };
 }
 
-export const WEAR_DRAWINGS = { head: HEAD, face: FACE, outfit: OUTFIT, held: HELD, aura: AURA };
+/** Every wearable drawing: the shapes above plus the content packs' shapes. */
+export const WEAR_DRAWINGS: { [S in keyof typeof PACK_DRAWINGS]: Record<string, Draw> } = {
+  head: { ...HEAD, ...PACK_DRAWINGS.head },
+  face: { ...FACE, ...PACK_DRAWINGS.face },
+  outfit: { ...OUTFIT, ...PACK_DRAWINGS.outfit },
+  held: { ...HELD, ...PACK_DRAWINGS.held },
+  aura: { ...AURA, ...PACK_DRAWINGS.aura },
+};

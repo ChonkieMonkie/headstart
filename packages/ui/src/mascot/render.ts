@@ -17,7 +17,15 @@
 // Draws a whole mascot as the inside of a 200 × 200 SVG: body and skin,
 // mood (face, pose, thought bubble) and everything it wears.
 
-import type { MascotId, SkinAnimation, SkinArt, WearArt, WearSlot } from "@headstart/content";
+import type {
+  BackgroundArt,
+  MascotId,
+  SkinAnimation,
+  SkinArt,
+  WearArt,
+  WearSlot,
+} from "@headstart/content";
+import { COVER_SCENES, coverBackground } from "../covers/index.ts";
 import {
   GEOMETRY,
   MASCOT_NAMES,
@@ -26,6 +34,7 @@ import {
   type Mood,
   type MoodLook,
 } from "./geometry.ts";
+import { SCENES } from "./packs/index.ts";
 import { animate, el, g, OUTLINE, outlined, sparkle, tube } from "./svg.ts";
 import { WEAR_DRAWINGS, type WearContext, type WearParts } from "./wear.ts";
 
@@ -33,6 +42,8 @@ export interface MascotLook {
   species: MascotId;
   skin: SkinArt;
   wear: Partial<Record<WearSlot, WearArt>>;
+  /** A scene behind the mascot, filling the whole 200 x 200 box. */
+  background?: BackgroundArt;
 }
 
 interface SkinAnims {
@@ -655,7 +666,7 @@ export function renderMascot(
   const key = JSON.stringify([look, mood, options.still === true, options.grey === true]);
   const cached = cache.get(key);
   if (cached !== undefined) return cached;
-  let svg = draw(look, mood);
+  let svg = (look.background ? renderBackground(look.background) : "") + draw(look, mood);
   if (options.still) svg = withoutAnimation(svg);
   if (options.grey) svg = inGrey(svg);
   if (cache.size >= CACHE_LIMIT) {
@@ -664,6 +675,14 @@ export function renderMascot(
   }
   cache.set(key, svg);
   return svg;
+}
+
+/** A background scene on its own: the inside of a 200 x 200 SVG. Unknown scenes draw nothing. */
+export function renderBackground(art: BackgroundArt): string {
+  // A set's background is its finished cover, cropped to a square.
+  const setId = COVER_SCENES[art.scene];
+  const cover = setId ? coverBackground(setId) : null;
+  return cover ?? SCENES[art.scene]?.(art.colors) ?? "";
 }
 
 /** Drops `animation: …` from inline styles (and styles left empty by that). */

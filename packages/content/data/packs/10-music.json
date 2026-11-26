@@ -1,0 +1,489 @@
+{
+  "shapes": {
+    "head": {
+      "rockstar-hair": 2,
+      "music-note-clip": 2,
+      "drum-hat": 2,
+      "boombox-hat": 2,
+      "spotlight-hat": 2
+    },
+    "face": {
+      "star-mic-sticker": 2,
+      "glitter-liner": 2
+    },
+    "outfit": {
+      "sequin-vest": 2,
+      "earbuds-necklace": 2,
+      "gig-tee": 2,
+      "studded-jacket": 1
+    },
+    "held": {
+      "maracas": 2,
+      "tambourine": 2,
+      "ukulele": 2,
+      "microphone": 2,
+      "guitar": 2,
+      "vinyl-record": 2,
+      "tuning-fork": 1,
+      "trumpet": 2
+    },
+    "aura": {
+      "sound-waves": 2,
+      "disco-ball": 2,
+      "floating-band": 3
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.pink-rockstar-hair",
+      "name": "Pink Rockstar Hair",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Big hair, bigger chords. Practises between lectures.",
+      "art": {
+        "shape": "rockstar-hair",
+        "colors": ["#F28AB0", "#FFE8A3"]
+      }
+    },
+    {
+      "id": "head.midnight-rockstar-hair",
+      "name": "Midnight Rockstar Hair",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Dark and dramatic, for late-night riffs at the desk.",
+      "art": {
+        "shape": "rockstar-hair",
+        "colors": ["#3B3F52", "#7FB8E6"]
+      }
+    },
+    {
+      "id": "head.golden-rockstar-hair",
+      "name": "Golden Rockstar Hair",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Shaggy and golden. Every exam is a stadium gig now.",
+      "art": {
+        "shape": "rockstar-hair",
+        "colors": ["#F5C56B", "#E4572E"]
+      }
+    },
+    {
+      "id": "face.star-mic-sticker",
+      "name": "Star Mic Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A tiny star microphone for the cheek. Speaks up in class.",
+      "art": {
+        "shape": "star-mic-sticker",
+        "colors": ["#FFD166", "#E4572E"]
+      }
+    },
+    {
+      "id": "face.mint-star-mic-sticker",
+      "name": "Mint Star Mic Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Mint and fresh. Ready for the open mic at the library.",
+      "art": {
+        "shape": "star-mic-sticker",
+        "colors": ["#8FE3D1", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "face.berry-star-mic-sticker",
+      "name": "Berry Star Mic Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Berry purple, with a mic that never runs out of ideas.",
+      "art": {
+        "shape": "star-mic-sticker",
+        "colors": ["#C9A7E8", "#7A4FB0"]
+      }
+    },
+    {
+      "id": "outfit.gold-sequin-vest",
+      "name": "Gold Sequin Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Sparkles every time the buddy nods over a textbook.",
+      "art": {
+        "shape": "sequin-vest",
+        "colors": ["#F5C56B", "#FFF3C4"]
+      }
+    },
+    {
+      "id": "outfit.rose-sequin-vest",
+      "name": "Rose Sequin Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Rose sequins, for studying as if the spotlight is on.",
+      "art": {
+        "shape": "sequin-vest",
+        "colors": ["#F28AB0", "#FFD1E3"]
+      }
+    },
+    {
+      "id": "outfit.teal-sequin-vest",
+      "name": "Teal Sequin Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Cool teal sequins. Stage ready, notes ready.",
+      "art": {
+        "shape": "sequin-vest",
+        "colors": ["#5FC4B4", "#BDEFE5"]
+      }
+    },
+    {
+      "id": "outfit.cream-earbud-necklace",
+      "name": "Cream Earbud Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Earbuds around the neck, between songs and chapters.",
+      "art": {
+        "shape": "earbuds-necklace",
+        "colors": ["#F6E7D8", "#7FB8E6"]
+      }
+    },
+    {
+      "id": "outfit.mint-earbud-necklace",
+      "name": "Mint Earbud Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Always ready for the next playlist, after the next chapter.",
+      "art": {
+        "shape": "earbuds-necklace",
+        "colors": ["#8FE3D1", "#FF8A7A"]
+      }
+    },
+    {
+      "id": "outfit.lilac-earbud-necklace",
+      "name": "Lilac Earbud Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A lilac cord for focus music that actually helps.",
+      "art": {
+        "shape": "earbuds-necklace",
+        "colors": ["#C9A7E8", "#F5C56B"]
+      }
+    },
+    {
+      "id": "held.sunny-maracas",
+      "name": "Sunny Maracas",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A shake for every finished page.",
+      "art": {
+        "shape": "maracas",
+        "colors": ["#F5C56B", "#E4572E"]
+      }
+    },
+    {
+      "id": "held.mint-maracas",
+      "name": "Mint Maracas",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Shake them when the flashcards are right.",
+      "art": {
+        "shape": "maracas",
+        "colors": ["#8FE3D1", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "held.berry-maracas",
+      "name": "Berry Maracas",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Shake for every streak. Rhythm helps memory, probably.",
+      "art": {
+        "shape": "maracas",
+        "colors": ["#F28AB0", "#7A4FB0"]
+      }
+    },
+    {
+      "id": "held.gold-tambourine",
+      "name": "Gold Tambourine",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Jingle when you finish a chapter. Small celebrations count.",
+      "art": {
+        "shape": "tambourine",
+        "colors": ["#F5C56B", "#FFF3C4"]
+      }
+    },
+    {
+      "id": "held.coral-tambourine",
+      "name": "Coral Tambourine",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A coral tambourine that keeps the study rhythm.",
+      "art": {
+        "shape": "tambourine",
+        "colors": ["#FF8A7A", "#FFE1DA"]
+      }
+    },
+    {
+      "id": "held.sky-tambourine",
+      "name": "Sky Tambourine",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Light and bouncy, for study breaks with a beat.",
+      "art": {
+        "shape": "tambourine",
+        "colors": ["#7FB8E6", "#DDEBFF"]
+      }
+    },
+    {
+      "id": "head.music-note-clip",
+      "name": "Music Note Clip",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A music note clip for the hair. Keeps the tune in place.",
+      "art": {
+        "shape": "music-note-clip",
+        "colors": ["#FF8A7A", "#FFD166"]
+      }
+    },
+    {
+      "id": "head.mint-music-note-clip",
+      "name": "Mint Music Note Clip",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Mint note with a purple sparkle. Hums along quietly.",
+      "art": {
+        "shape": "music-note-clip",
+        "colors": ["#8FE3D1", "#7A4FB0"]
+      }
+    },
+    {
+      "id": "head.marching-drum-hat",
+      "name": "Marching Drum Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A drum on the head, sticks crossed. Keeps a steady pace.",
+      "art": {
+        "shape": "drum-hat",
+        "colors": ["#E4572E", "#F5C56B"]
+      }
+    },
+    {
+      "id": "head.slate-marching-drum-hat",
+      "name": "Slate Marching Drum Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Slate blue drum with a coral top. Steady, steady.",
+      "art": {
+        "shape": "drum-hat",
+        "colors": ["#5B6B8C", "#FF8A7A"]
+      }
+    },
+    {
+      "id": "face.glitter-liner",
+      "name": "Glitter Liner",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Glitter at the eye corners. Bright eyes, bright notes.",
+      "art": {
+        "shape": "glitter-liner",
+        "colors": ["#7A4FB0", "#FFD166"]
+      }
+    },
+    {
+      "id": "face.mint-glitter-liner",
+      "name": "Mint Glitter Liner",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Mint liner with gold glitter, for the review before the exam.",
+      "art": {
+        "shape": "glitter-liner",
+        "colors": ["#2A9D8F", "#FFE8A3"]
+      }
+    },
+    {
+      "id": "outfit.lilac-gig-tee",
+      "name": "Lilac Gig Tee",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A soft lilac tee with a star. Lectures are a gig too.",
+      "art": {
+        "shape": "gig-tee",
+        "colors": ["#C9A7E8", "#FFF3C4"]
+      }
+    },
+    {
+      "id": "outfit.ocean-gig-tee",
+      "name": "Ocean Gig Tee",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Sky blue with a coral star. Tune up, then study.",
+      "art": {
+        "shape": "gig-tee",
+        "colors": ["#7FB8E6", "#FF8A7A"]
+      }
+    },
+    {
+      "id": "held.honey-ukulele",
+      "name": "Honey Ukulele",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A little honey ukulele for a cheerful strum between sessions.",
+      "art": {
+        "shape": "ukulele",
+        "colors": ["#F5C56B", "#A8572E"]
+      }
+    },
+    {
+      "id": "held.mint-ukulele",
+      "name": "Mint Ukulele",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Small and mint. Four strings, lots of study cheer.",
+      "art": {
+        "shape": "ukulele",
+        "colors": ["#8FE3D1", "#7A4FB0"]
+      }
+    },
+    {
+      "id": "held.coral-stage-microphone",
+      "name": "Coral Stage Microphone",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A coral mic for the stage. Read the summary out loud.",
+      "art": {
+        "shape": "microphone",
+        "colors": ["#FF8A7A", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "held.sky-stage-microphone",
+      "name": "Sky Stage Microphone",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A sky blue mic with a gold handle. You are heard.",
+      "art": {
+        "shape": "microphone",
+        "colors": ["#7FB8E6", "#F5C56B"]
+      }
+    },
+    {
+      "id": "head.boombox-hat",
+      "name": "Boombox Hat",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A boombox on the head. The equaliser bounces to the beat.",
+      "art": {
+        "shape": "boombox-hat",
+        "colors": ["#E4572E", "#FFD166"]
+      },
+      "animated": true
+    },
+    {
+      "id": "outfit.studded-jacket",
+      "name": "Studded Jacket",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Slate blue with silver studs and a zip pull that sways.",
+      "art": {
+        "shape": "studded-jacket",
+        "colors": ["#5B6B8C"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.sunset-guitar",
+      "name": "Sunset Guitar",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A sunset-red guitar, gently swaying. Scales first, then songs.",
+      "art": {
+        "shape": "guitar",
+        "colors": ["#E4572E", "#F5C56B"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.pink-label-record",
+      "name": "Pink Label Record",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A spinning record with a pink label. Play it on repeat.",
+      "art": {
+        "shape": "vinyl-record",
+        "colors": ["#3B3F52", "#F28AB0"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.sky-tuning-fork",
+      "name": "Sky Tuning Fork",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tuning fork that hums. Perfect pitch for focus.",
+      "art": {
+        "shape": "tuning-fork",
+        "colors": ["#7FB8E6"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.sound-waves",
+      "name": "Sound Waves",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Arcs of sound on both sides. The study playlist is loud.",
+      "art": {
+        "shape": "sound-waves",
+        "colors": ["#7FB8E6", "#FF8A7A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.spotlight-hat",
+      "name": "Spotlight Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A stage spotlight on the head, glowing over the textbook.",
+      "art": {
+        "shape": "spotlight-hat",
+        "colors": ["#5B6B8C", "#F5C56B"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.golden-trumpet",
+      "name": "Golden Trumpet",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A trumpet that puffs out notes, for loud little successes.",
+      "art": {
+        "shape": "trumpet",
+        "colors": ["#F5C56B", "#F28AB0"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.disco-ball",
+      "name": "Disco Ball",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "A spinning mirror ball that throws little sparkles around.",
+      "art": {
+        "shape": "disco-ball",
+        "colors": ["#B9C4E6", "#F5C56B"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.floating-band",
+      "name": "Floating Band",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A tiny band floats around the buddy and plays for every finished deck.",
+      "art": {
+        "shape": "floating-band",
+        "colors": ["#7FB8E6", "#F28AB0", "#F5C56B"]
+      },
+      "animated": true
+    }
+  ]
+}

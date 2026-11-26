@@ -1,0 +1,531 @@
+{
+  "shapes": {
+    "head": {
+      "sticky-band": 2,
+      "pencil-bun": 2,
+      "alarm-hat": 2,
+      "sticky-tower": 2
+    },
+    "face": {
+      "eye-patches": 1,
+      "forehead-note": 2
+    },
+    "outfit": {
+      "laundry-bag": 2,
+      "messenger-bag": 2,
+      "varsity-sweatshirt": 2,
+      "honours-gown": 2
+    },
+    "held": {
+      "pizza-slice": 3,
+      "juice-box": 2,
+      "pencil-case": 2,
+      "laptop": 2,
+      "canvas-tote": 2,
+      "stopwatch": 2,
+      "low-battery": 2,
+      "glow-jar": 2,
+      "group-trophy": 2
+    },
+    "aura": {
+      "deadline-clock": 1,
+      "flying-notes": 2,
+      "dorm-lights": 2,
+      "all-nighter": 2
+    }
+  },
+  "scenes": {
+    "dorm": 0
+  },
+  "items": [
+    {
+      "id": "head.sunny-sticky-band",
+      "name": "Sunny Sticky Band",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Notes for the things you keep forgetting.",
+      "art": {
+        "shape": "sticky-band",
+        "colors": ["#3B3F52", "#F5E27A"]
+      }
+    },
+    {
+      "id": "head.pink-sticky-band",
+      "name": "Pink Sticky Band",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Mint notes on a pink band, for the week you planned.",
+      "art": {
+        "shape": "sticky-band",
+        "colors": ["#F7A5C2", "#7FF0E0"]
+      }
+    },
+    {
+      "id": "head.blue-sticky-band",
+      "name": "Blue Sticky Band",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Peach notes on a blue band. Very organised.",
+      "art": {
+        "shape": "sticky-band",
+        "colors": ["#5B9FE0", "#FFB4A2"]
+      }
+    },
+    {
+      "id": "face.mint-eye-patches",
+      "name": "Mint Eye Patches",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Cool gel for tired eyes. Worth the twelve minutes.",
+      "art": {
+        "shape": "eye-patches",
+        "colors": ["#9FE3D1"]
+      }
+    },
+    {
+      "id": "face.pink-eye-patches",
+      "name": "Pink Eye Patches",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Rosy and cooling, for the night before the exam.",
+      "art": {
+        "shape": "eye-patches",
+        "colors": ["#F7A5C2"]
+      }
+    },
+    {
+      "id": "face.lavender-eye-patches",
+      "name": "Lavender Eye Patches",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Calming purple, for reading the same page four times.",
+      "art": {
+        "shape": "eye-patches",
+        "colors": ["#B9A6E8"]
+      }
+    },
+    {
+      "id": "outfit.blue-laundry-bag",
+      "name": "Blue Laundry Bag",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Clean socks, a snack and a textbook you swore you would open.",
+      "art": {
+        "shape": "laundry-bag",
+        "colors": ["#7DA7D9", "#3B5B8A"]
+      }
+    },
+    {
+      "id": "outfit.green-laundry-bag",
+      "name": "Green Laundry Bag",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Everything you wore this week, now going home.",
+      "art": {
+        "shape": "laundry-bag",
+        "colors": ["#7CC36A", "#4E9A45"]
+      }
+    },
+    {
+      "id": "outfit.orange-laundry-bag",
+      "name": "Orange Laundry Bag",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Bright enough to find in the laundry room.",
+      "art": {
+        "shape": "laundry-bag",
+        "colors": ["#F2A541", "#B5651D"]
+      }
+    },
+    {
+      "id": "held.pepperoni-slice",
+      "name": "Pepperoni Slice",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Study fuel that counts as a food group.",
+      "art": {
+        "shape": "pizza-slice",
+        "colors": ["#F5C542", "#E9A93A", "#D9483B"]
+      }
+    },
+    {
+      "id": "held.veggie-slice",
+      "name": "Veggie Slice",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Green bits on top, so it is basically a salad.",
+      "art": {
+        "shape": "pizza-slice",
+        "colors": ["#F6E3B4", "#B9733E", "#5E9F4A"]
+      }
+    },
+    {
+      "id": "held.pink-sauce-slice",
+      "name": "Pink Sauce Slice",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A pink base and mushrooms. Eaten at midnight.",
+      "art": {
+        "shape": "pizza-slice",
+        "colors": ["#F7A5C2", "#E9A93A", "#C98F7A"]
+      }
+    },
+    {
+      "id": "held.orange-juice-box",
+      "name": "Orange Juice Box",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Vitamin C, a straw and no regrets.",
+      "art": {
+        "shape": "juice-box",
+        "colors": ["#F28A3A", "#FFF3D6"]
+      }
+    },
+    {
+      "id": "held.apple-juice-box",
+      "name": "Apple Juice Box",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Tastes like the lunch you packed for a field trip.",
+      "art": {
+        "shape": "juice-box",
+        "colors": ["#7CC36A", "#DDF5C8"]
+      }
+    },
+    {
+      "id": "held.berry-juice-box",
+      "name": "Berry Juice Box",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Purple fingers guaranteed. Worth it.",
+      "art": {
+        "shape": "juice-box",
+        "colors": ["#B65FA6", "#FFD6E8"]
+      }
+    },
+    {
+      "id": "held.mint-pencil-case",
+      "name": "Mint Pencil Case",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Holds every pen you will lose by Thursday.",
+      "art": {
+        "shape": "pencil-case",
+        "colors": ["#7DD8C0", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.coral-pencil-case",
+      "name": "Coral Pencil Case",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Zipped up, with one spare eraser inside.",
+      "art": {
+        "shape": "pencil-case",
+        "colors": ["#F28A7A", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "held.lilac-pencil-case",
+      "name": "Lilac Pencil Case",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Soft purple with an orange pencil peeking out.",
+      "art": {
+        "shape": "pencil-case",
+        "colors": ["#B9A6E8", "#F28A3A"]
+      }
+    },
+    {
+      "id": "head.pencil-bun",
+      "name": "Pencil Bun",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Your idea is in there somewhere.",
+      "art": {
+        "shape": "pencil-bun",
+        "colors": ["#C98F7A", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.slate-pencil-bun",
+      "name": "Slate Pencil Bun",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Tied up, pencil in, ready for the library.",
+      "art": {
+        "shape": "pencil-bun",
+        "colors": ["#3B3F52", "#7DD8C0"]
+      }
+    },
+    {
+      "id": "face.yellow-sticky-note",
+      "name": "Yellow Sticky Note",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Remember to eat something green. Signed, you.",
+      "art": {
+        "shape": "forehead-note",
+        "colors": ["#F5E27A", "#3B6FB6"]
+      }
+    },
+    {
+      "id": "face.pink-sticky-note",
+      "name": "Pink Sticky Note",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Remember to sleep. It is on the list twice.",
+      "art": {
+        "shape": "forehead-note",
+        "colors": ["#F7A5C2", "#7B4FB0"]
+      }
+    },
+    {
+      "id": "outfit.tan-messenger-bag",
+      "name": "Tan Messenger Bag",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Stuffed with lecture notes and one snack.",
+      "art": {
+        "shape": "messenger-bag",
+        "colors": ["#C9975B", "#6B4226"]
+      },
+      "set": "student-life"
+    },
+    {
+      "id": "outfit.navy-messenger-bag",
+      "name": "Navy Messenger Bag",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Looks organised. Mostly is.",
+      "art": {
+        "shape": "messenger-bag",
+        "colors": ["#2E3A6B", "#F2C14E"]
+      },
+      "set": "student-life"
+    },
+    {
+      "id": "outfit.maroon-varsity-sweatshirt",
+      "name": "Maroon Varsity Sweatshirt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "The crew neck that says you go to school here.",
+      "art": {
+        "shape": "varsity-sweatshirt",
+        "colors": ["#8E2B3B", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.navy-varsity-sweatshirt",
+      "name": "Navy Varsity Sweatshirt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Cream trim for the lecture hall in the morning.",
+      "art": {
+        "shape": "varsity-sweatshirt",
+        "colors": ["#34507A", "#F6E3B4"]
+      }
+    },
+    {
+      "id": "held.silver-laptop",
+      "name": "Silver Laptop",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Closed, for now. The essay is still open.",
+      "art": {
+        "shape": "laptop",
+        "colors": ["#C9D3E6", "#F28AB0"]
+      },
+      "set": "student-life"
+    },
+    {
+      "id": "held.mint-laptop",
+      "name": "Mint Laptop",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Sticker on the lid, battery at a respectable level.",
+      "art": {
+        "shape": "laptop",
+        "colors": ["#7DD8C0", "#F5C542"]
+      },
+      "set": "student-life"
+    },
+    {
+      "id": "held.canvas-tote",
+      "name": "Canvas Tote",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Holds the laptop, a book and a snack. Usually all three.",
+      "art": {
+        "shape": "canvas-tote",
+        "colors": ["#F6E7D8", "#5B4BD6"]
+      }
+    },
+    {
+      "id": "held.mustard-tote",
+      "name": "Mustard Tote",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Bright yellow, so you can find it in the library bag pile.",
+      "art": {
+        "shape": "canvas-tote",
+        "colors": ["#F5C542", "#3B3F52"]
+      }
+    },
+    {
+      "id": "head.alarm-clock-hat",
+      "name": "Alarm Clock Hat",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "It goes off at seven. You snooze it every time.",
+      "art": {
+        "shape": "alarm-hat",
+        "colors": ["#F28A7A", "#F5C542"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "head.sticky-note-tower",
+      "name": "Sticky Note Tower",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "Everything you need to remember, in one wobbly stack.",
+      "art": {
+        "shape": "sticky-tower",
+        "colors": ["#F5E27A", "#F7A5C2"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "aura.deadline-clock",
+      "name": "Deadline Clock",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Ticking softly in the corner, as deadlines do.",
+      "art": {
+        "shape": "deadline-clock",
+        "colors": ["#F28A7A"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "aura.flying-sticky-notes",
+      "name": "Flying Sticky Notes",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Reminders that escaped from your desk.",
+      "art": {
+        "shape": "flying-notes",
+        "colors": ["#F5E27A", "#F7A5C2"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "held.stopwatch",
+      "name": "Stopwatch",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Timed the reading. Was it four minutes or four hours?",
+      "art": {
+        "shape": "stopwatch",
+        "colors": ["#7DD8C0", "#F28A7A"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "held.low-battery-phone",
+      "name": "Low Battery Phone",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Four percent, and the charger is in the other room.",
+      "art": {
+        "shape": "low-battery",
+        "colors": ["#3B3F52", "#E5533D"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "outfit.honours-gown",
+      "name": "Honours Gown",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Almost there. Keep the gown on for the last exam.",
+      "art": {
+        "shape": "honours-gown",
+        "colors": ["#2E3A6B", "#F5C542"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "held.jar-of-good-grades",
+      "name": "Jar of Good Grades",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Every star is a day you actually opened the book.",
+      "art": {
+        "shape": "glow-jar",
+        "colors": ["#8FD3F5", "#F5C542"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "held.group-project-trophy",
+      "name": "Group Project Trophy",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Awarded for making the slides at two in the morning.",
+      "art": {
+        "shape": "group-trophy",
+        "colors": ["#F5C542", "#2E3A6B"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "aura.dorm-lights",
+      "name": "Dorm Lights",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Strung along the wall of your dorm, a little crooked.",
+      "art": {
+        "shape": "dorm-lights",
+        "colors": ["#F7E04A", "#FFF3A0"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "aura.all-nighter",
+      "name": "All-Nighter",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "The moon goes out and the sun comes up. Still awake.",
+      "art": {
+        "shape": "all-nighter",
+        "colors": ["#B9A6E8", "#F5C542"]
+      },
+      "set": "student-life",
+      "animated": true
+    },
+    {
+      "id": "background.dorm-room",
+      "name": "Dorm Room",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "student-life",
+      "description": "A desk, a poster and a window for the all-nighters.",
+      "art": {
+        "scene": "dorm",
+        "colors": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,486 @@
+{
+  "shapes": {
+    "head": {
+      "pilot-cap": 3,
+      "pith-helmet": 2,
+      "tourist-hat": 2,
+      "conductor-cap": 3,
+      "flight-helmet": 3
+    },
+    "face": {
+      "travel-stickers": 3,
+      "arrival-stamp": 2
+    },
+    "outfit": {
+      "neck-pillow": 3,
+      "sticker-jacket": 3,
+      "travel-belt": 2,
+      "flight-jacket": 2,
+      "safari-vest": 2
+    },
+    "held": {
+      "suitcase": 3,
+      "folded-map": 3,
+      "compass": 2,
+      "postcard": 2,
+      "boarding-pass": 2,
+      "passport": 3,
+      "flash-camera": 2
+    },
+    "aura": {
+      "floating-postcards": 2,
+      "plane-trail": 2,
+      "orbit-globe": 3
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.navy-pilot-cap",
+      "name": "Navy Pilot Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Wings on the front, so you can study like you are already cruising.",
+      "art": {
+        "shape": "pilot-cap",
+        "colors": ["#2E3A6B", "#F2C14E", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.cream-pilot-cap",
+      "name": "Cream Pilot Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Soft cream with a sky-blue band. Ready for boarding.",
+      "art": {
+        "shape": "pilot-cap",
+        "colors": ["#F6E7D8", "#5FA8D3", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "head.rust-pilot-cap",
+      "name": "Rust Pilot Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Rust red and gold, for the long flights through exam season.",
+      "art": {
+        "shape": "pilot-cap",
+        "colors": ["#C8573A", "#F6E7D8", "#F2C14E"]
+      }
+    },
+    {
+      "id": "face.mint-travel-stickers",
+      "name": "Mint Travel Stickers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A globe and a pennant from every trip, stuck on one cheek.",
+      "art": {
+        "shape": "travel-stickers",
+        "colors": ["#7DD8C0", "#2A9D8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "face.coral-travel-stickers",
+      "name": "Coral Travel Stickers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Bright little souvenirs from a city you have not visited yet.",
+      "art": {
+        "shape": "travel-stickers",
+        "colors": ["#F28A7A", "#FFF7E3", "#5FA8D3"]
+      }
+    },
+    {
+      "id": "face.lilac-travel-stickers",
+      "name": "Lilac Travel Stickers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A sticker for every country on your wish list.",
+      "art": {
+        "shape": "travel-stickers",
+        "colors": ["#B9A4E8", "#6F5BB8", "#E9A93A"]
+      }
+    },
+    {
+      "id": "outfit.mint-neck-pillow",
+      "name": "Mint Neck Pillow",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "For the bus, the train and the 7 a.m. lecture alike.",
+      "art": {
+        "shape": "neck-pillow",
+        "colors": ["#7DD8C0", "#2A9D8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.coral-neck-pillow",
+      "name": "Coral Neck Pillow",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Surprisingly good for napping over the textbook.",
+      "art": {
+        "shape": "neck-pillow",
+        "colors": ["#F28A7A", "#FFF7E3", "#C8573A"]
+      }
+    },
+    {
+      "id": "outfit.lilac-neck-pillow",
+      "name": "Lilac Neck Pillow",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Soft enough to nap on between chapters.",
+      "art": {
+        "shape": "neck-pillow",
+        "colors": ["#B9A4E8", "#6F5BB8", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.denim-sticker-jacket",
+      "name": "Denim Sticker Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Covered in stickers from every trip you have taken.",
+      "art": {
+        "shape": "sticker-jacket",
+        "colors": ["#5B7DB1", "#F5C542", "#E5533D"]
+      }
+    },
+    {
+      "id": "outfit.olive-sticker-jacket",
+      "name": "Olive Sticker Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A jacket that tells the story of every train journey.",
+      "art": {
+        "shape": "sticker-jacket",
+        "colors": ["#5E7F4A", "#F6E7D8", "#E9579A"]
+      }
+    },
+    {
+      "id": "outfit.plum-sticker-jacket",
+      "name": "Plum Sticker Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Plum and proud, with a sticker for every city.",
+      "art": {
+        "shape": "sticker-jacket",
+        "colors": ["#7A4E8C", "#8FD3F5", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.red-suitcase",
+      "name": "Red Suitcase",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Packed for the trip, and the revision notes stuffed in the side.",
+      "art": {
+        "shape": "suitcase",
+        "colors": ["#E5533D", "#2E3A6B", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.mint-suitcase",
+      "name": "Mint Suitcase",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Small enough to carry, big enough for a week of lectures.",
+      "art": {
+        "shape": "suitcase",
+        "colors": ["#7DD8C0", "#2A9D8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.plum-suitcase",
+      "name": "Plum Suitcase",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Light, bright and full of good intentions.",
+      "art": {
+        "shape": "suitcase",
+        "colors": ["#8E6BB8", "#F6E7D8", "#E9579A"]
+      }
+    },
+    {
+      "id": "held.cream-folded-map",
+      "name": "Cream Folded Map",
+      "slot": "held",
+      "rarity": "common",
+      "description": "The route is marked in pencil, the rest is a guess.",
+      "art": {
+        "shape": "folded-map",
+        "colors": ["#F6E7D8", "#C8573A", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "held.mint-folded-map",
+      "name": "Mint Folded Map",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Folded the wrong way, but it still points somewhere.",
+      "art": {
+        "shape": "folded-map",
+        "colors": ["#CDEFE3", "#2A9D8F", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.lilac-folded-map",
+      "name": "Lilac Folded Map",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A dashed route and a pin. Study trips start here.",
+      "art": {
+        "shape": "folded-map",
+        "colors": ["#E4D9F5", "#7A4E8C", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.khaki-pith-helmet",
+      "name": "Khaki Pith Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A brave explorer hat for the library's deepest shelves.",
+      "art": {
+        "shape": "pith-helmet",
+        "colors": ["#D8B98A", "#5E7F4A"]
+      }
+    },
+    {
+      "id": "head.cream-pith-helmet",
+      "name": "Cream Pith Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Light cream with a red band, for sunny field trips.",
+      "art": {
+        "shape": "pith-helmet",
+        "colors": ["#F6E7D8", "#E5533D"]
+      }
+    },
+    {
+      "id": "head.sand-tourist-hat",
+      "name": "Sand Tourist Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Three pins from three cities, and one more to come.",
+      "art": {
+        "shape": "tourist-hat",
+        "colors": ["#E9D3A6", "#2E7D9A"]
+      }
+    },
+    {
+      "id": "head.sky-tourist-hat",
+      "name": "Sky Tourist Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Every pin is a place you want to see before the exams.",
+      "art": {
+        "shape": "tourist-hat",
+        "colors": ["#8FD3F5", "#E5533D"]
+      }
+    },
+    {
+      "id": "face.blue-arrival-stamp",
+      "name": "Blue Arrival Stamp",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "An ink stamp from the airport. Officially approved.",
+      "art": {
+        "shape": "arrival-stamp",
+        "colors": ["#2E5FA8", "#E5533D"]
+      }
+    },
+    {
+      "id": "face.green-arrival-stamp",
+      "name": "Green Arrival Stamp",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Stamped in green ink. Welcome to the study trip.",
+      "art": {
+        "shape": "arrival-stamp",
+        "colors": ["#3F7F5A", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.mustard-travel-belt",
+      "name": "Mustard Travel Belt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A pouch at the front for tickets, coins and one sweet.",
+      "art": {
+        "shape": "travel-belt",
+        "colors": ["#E9A93A", "#8E6136"]
+      }
+    },
+    {
+      "id": "outfit.teal-travel-belt",
+      "name": "Teal Travel Belt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Room for the boarding pass and a spare pen.",
+      "art": {
+        "shape": "travel-belt",
+        "colors": ["#2A9D8F", "#F28AB0"]
+      }
+    },
+    {
+      "id": "held.brass-compass",
+      "name": "Brass Compass",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "It always points north, even when the to-do list does not.",
+      "art": {
+        "shape": "compass",
+        "colors": ["#D4A24C", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.slate-compass",
+      "name": "Slate Compass",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A slate case and a yellow needle for finding the way.",
+      "art": {
+        "shape": "compass",
+        "colors": ["#5B7DB1", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.cream-postcard",
+      "name": "Cream Postcard",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Wish you were here. Actually, you are studying.",
+      "art": {
+        "shape": "postcard",
+        "colors": ["#FFF7E3", "#5FA8D3"]
+      }
+    },
+    {
+      "id": "held.pink-postcard",
+      "name": "Pink Postcard",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A little mountain, a red stamp and a note to yourself.",
+      "art": {
+        "shape": "postcard",
+        "colors": ["#F9C6D5", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "head.conductor-cap",
+      "name": "Conductor Cap",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A gold badge and a little flag that waves when the train leaves.",
+      "art": {
+        "shape": "conductor-cap",
+        "colors": ["#2E3A6B", "#F2C14E", "#E5533D"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.flight-helmet",
+      "name": "Flight Helmet",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A round helmet with a light that blinks when you get it right.",
+      "art": {
+        "shape": "flight-helmet",
+        "colors": ["#6F7F9E", "#F5C542", "#E5533D"]
+      },
+      "animated": true
+    },
+    {
+      "id": "outfit.flight-jacket",
+      "name": "Flight Jacket",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A bomber jacket with a ribbed collar. Very cool at the gate.",
+      "art": {
+        "shape": "flight-jacket",
+        "colors": ["#8C7A5B", "#E9A93A"]
+      }
+    },
+    {
+      "id": "outfit.safari-vest",
+      "name": "Safari Vest",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Four pockets for notes, pens, snacks and a compass.",
+      "art": {
+        "shape": "safari-vest",
+        "colors": ["#C9A66B", "#8E6136"]
+      }
+    },
+    {
+      "id": "held.boarding-pass",
+      "name": "Boarding Pass",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A ticket that flutters a little on the way to the gate.",
+      "art": {
+        "shape": "boarding-pass",
+        "colors": ["#FFF7E3", "#E5533D"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.passport",
+      "name": "Passport",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A navy booklet with a gold emblem and a fresh red stamp.",
+      "art": {
+        "shape": "passport",
+        "colors": ["#2E3A6B", "#F5C542", "#E5533D"]
+      }
+    },
+    {
+      "id": "aura.floating-postcards",
+      "name": "Floating Postcards",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Three postcards from friends, drifting around you.",
+      "art": {
+        "shape": "floating-postcards",
+        "colors": ["#F6E7D8", "#5FA8D3"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.plane-trail",
+      "name": "Plane Trail",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "A little plane with a dashed trail, looping around your desk.",
+      "art": {
+        "shape": "plane-trail",
+        "colors": ["#F28A3A", "#BFE8FF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.flash-camera",
+      "name": "Flash Camera",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Snap, flash, study. Every memory is worth a photo.",
+      "art": {
+        "shape": "flash-camera",
+        "colors": ["#E5533D", "#2E3A6B"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.orbiting-globe",
+      "name": "Orbiting Globe",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A tiny globe with a plane on a ring, circling the whole world.",
+      "art": {
+        "shape": "orbit-globe",
+        "colors": ["#5FA8D3", "#7DD8C0", "#F5C542"]
+      },
+      "animated": true
+    }
+  ]
+}

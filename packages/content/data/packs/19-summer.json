@@ -1,0 +1,476 @@
+{
+  "shapes": {
+    "head": {
+      "hibiscus-clip": 3,
+      "watermelon-hat": 2,
+      "sun-hat": 2,
+      "pineapple-hat": 3,
+      "palm-tree-hat": 3
+    },
+    "face": {
+      "zinc-stripe": 1,
+      "lemon-slice": 3,
+      "sun-sticker": 2
+    },
+    "outfit": {
+      "rash-guard": 2,
+      "hawaiian-shirt": 2,
+      "lifeguard-tank": 2
+    },
+    "held": {
+      "beach-ball": 2,
+      "sand-bucket": 3,
+      "sunscreen-bottle": 3,
+      "shaved-ice": 2,
+      "coconut-drink": 3,
+      "surfboard": 3,
+      "flamingo-ring": 3
+    },
+    "aura": {
+      "sunny-corners": 2,
+      "splashing-waves": 2,
+      "endless-summer": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.red-hibiscus-clip",
+      "name": "Red Hibiscus Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A big red hibiscus tucked above one ear.",
+      "art": {
+        "shape": "hibiscus-clip",
+        "colors": ["#E5533D", "#F5C542", "#3FA55A"]
+      }
+    },
+    {
+      "id": "head.pink-hibiscus-clip",
+      "name": "Pink Hibiscus Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Soft pink petals for lazy afternoons on the grass.",
+      "art": {
+        "shape": "hibiscus-clip",
+        "colors": ["#E9579A", "#FFF3A0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "head.lilac-hibiscus-clip",
+      "name": "Lilac Hibiscus Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Lilac petals for a summer study break.",
+      "art": {
+        "shape": "hibiscus-clip",
+        "colors": ["#B9A6F0", "#F5C542", "#7DD8C0"]
+      }
+    },
+    {
+      "id": "head.watermelon-hat",
+      "name": "Watermelon Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A slice of summer, seeds and all.",
+      "art": {
+        "shape": "watermelon-hat",
+        "colors": ["#3FA55A", "#F2725C"]
+      }
+    },
+    {
+      "id": "head.yellow-melon-hat",
+      "name": "Yellow Melon Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Sweet, sunny and only slightly sticky.",
+      "art": {
+        "shape": "watermelon-hat",
+        "colors": ["#8CC63F", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.sand-sun-hat",
+      "name": "Sand Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A floppy sun hat for reading in the shade.",
+      "art": {
+        "shape": "sun-hat",
+        "colors": ["#F6E7D8", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "head.coral-sun-hat",
+      "name": "Coral Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A bright coral brim for the study terrace.",
+      "art": {
+        "shape": "sun-hat",
+        "colors": ["#F2725C", "#FFF3A0"]
+      }
+    },
+    {
+      "id": "head.sky-sun-hat",
+      "name": "Sky Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Sky blue and sensible, like a good sunscreen habit.",
+      "art": {
+        "shape": "sun-hat",
+        "colors": ["#5B9FE0", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.pineapple-hat",
+      "name": "Pineapple Hat",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A pineapple on your head, leaves swaying as you think.",
+      "art": {
+        "shape": "pineapple-hat",
+        "colors": ["#F5B041", "#C98A4B", "#3FA55A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.palm-tree-hat",
+      "name": "Palm Tree Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A tiny palm tree with coconuts, swaying in the sea breeze.",
+      "art": {
+        "shape": "palm-tree-hat",
+        "colors": ["#C98A4B", "#4FB86B", "#8E6136"]
+      },
+      "animated": true
+    },
+    {
+      "id": "face.zinc-nose-stripe",
+      "name": "Zinc Nose Stripe",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A white sunscreen stripe. Yes, you can still study indoors.",
+      "art": {
+        "shape": "zinc-stripe",
+        "colors": ["#F6F1E6"]
+      }
+    },
+    {
+      "id": "face.sky-nose-stripe",
+      "name": "Sky Nose Stripe",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A sky-blue stripe for a fresh start on the beach.",
+      "art": {
+        "shape": "zinc-stripe",
+        "colors": ["#7FD6E8"]
+      }
+    },
+    {
+      "id": "face.aloe-nose-stripe",
+      "name": "Aloe Nose Stripe",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Aloe green, for a calm and cool afternoon.",
+      "art": {
+        "shape": "zinc-stripe",
+        "colors": ["#9BD770"]
+      }
+    },
+    {
+      "id": "face.lemon-slice-sticker",
+      "name": "Lemon Slice Sticker",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A lemon slice on one cheek. Sour, sunny and sticky.",
+      "art": {
+        "shape": "lemon-slice",
+        "colors": ["#F5C542", "#FFF3A0", "#7CC36A"]
+      }
+    },
+    {
+      "id": "face.lime-slice-sticker",
+      "name": "Lime Slice Sticker",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A lime slice on one cheek, for a cool head.",
+      "art": {
+        "shape": "lemon-slice",
+        "colors": ["#8CC63F", "#E3F5B0", "#3FA55A"]
+      }
+    },
+    {
+      "id": "face.sun-sticker",
+      "name": "Sun Sticker",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "A little sun on your cheek that twinkles all day.",
+      "art": {
+        "shape": "sun-sticker",
+        "colors": ["#F5C542", "#F28A3A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "outfit.ocean-rash-guard",
+      "name": "Ocean Rash Guard",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A long-sleeved swim top, for sun and studying.",
+      "art": {
+        "shape": "rash-guard",
+        "colors": ["#5B9FE0", "#FFFFFF"]
+      }
+    },
+    {
+      "id": "outfit.coral-rash-guard",
+      "name": "Coral Rash Guard",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Coral with yellow stripes, ready for the lido.",
+      "art": {
+        "shape": "rash-guard",
+        "colors": ["#F2725C", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.mint-rash-guard",
+      "name": "Mint Rash Guard",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mint with teal stripes, cool even in July.",
+      "art": {
+        "shape": "rash-guard",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "outfit.hawaiian-shirt",
+      "name": "Hawaiian Shirt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Flowers all over. Relaxed, even in exam week.",
+      "art": {
+        "shape": "hawaiian-shirt",
+        "colors": ["#2A9D8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.sunset-hawaiian-shirt",
+      "name": "Sunset Hawaiian Shirt",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Sunset colours and a print for the holidays.",
+      "art": {
+        "shape": "hawaiian-shirt",
+        "colors": ["#F28A3A", "#E9579A"]
+      }
+    },
+    {
+      "id": "outfit.lifeguard-tank",
+      "name": "Lifeguard Tank",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Red and white. Very responsible, very on duty.",
+      "art": {
+        "shape": "lifeguard-tank",
+        "colors": ["#E5533D", "#FFF6EC"]
+      }
+    },
+    {
+      "id": "outfit.navy-lifeguard-tank",
+      "name": "Navy Lifeguard Tank",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Navy with a yellow band. Calm waters only.",
+      "art": {
+        "shape": "lifeguard-tank",
+        "colors": ["#2E3A6B", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.beach-ball",
+      "name": "Beach Ball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Lovely in the sun. Keep it out of the library.",
+      "art": {
+        "shape": "beach-ball",
+        "colors": ["#F5C542", "#E9579A"]
+      }
+    },
+    {
+      "id": "held.sky-beach-ball",
+      "name": "Sky Beach Ball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Sky blue and cream, for a sunny lecture hall break.",
+      "art": {
+        "shape": "beach-ball",
+        "colors": ["#5B9FE0", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.mint-beach-ball",
+      "name": "Mint Beach Ball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Mint and orange, perfect for a summer picnic.",
+      "art": {
+        "shape": "beach-ball",
+        "colors": ["#7DD8C0", "#F28A3A"]
+      }
+    },
+    {
+      "id": "held.red-sand-bucket",
+      "name": "Red Sand Bucket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A red bucket for castles and to-do lists.",
+      "art": {
+        "shape": "sand-bucket",
+        "colors": ["#E5533D", "#FFF6EC", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.blue-sand-bucket",
+      "name": "Blue Sand Bucket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blue bucket, orange band, lots of castle plans.",
+      "art": {
+        "shape": "sand-bucket",
+        "colors": ["#5B9FE0", "#F28A3A", "#9AA3B5"]
+      }
+    },
+    {
+      "id": "held.lime-sand-bucket",
+      "name": "Lime Sand Bucket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Lime green, for castles built between lectures.",
+      "art": {
+        "shape": "sand-bucket",
+        "colors": ["#8CC63F", "#E9579A", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "held.orange-sunscreen",
+      "name": "Orange Sunscreen",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Applied generously, like studying for the exam.",
+      "art": {
+        "shape": "sunscreen-bottle",
+        "colors": ["#F28A3A", "#E5533D", "#FFF6EC"]
+      }
+    },
+    {
+      "id": "held.aloe-sunscreen",
+      "name": "Aloe Sunscreen",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Cool aloe in a mint bottle. Not a cure for exam week.",
+      "art": {
+        "shape": "sunscreen-bottle",
+        "colors": ["#7DD8C0", "#2A9D8F", "#FFF3A0"]
+      }
+    },
+    {
+      "id": "held.cherry-shaved-ice",
+      "name": "Cherry Shaved Ice",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Cherry syrup in a paper cup. Brain fuel, probably.",
+      "art": {
+        "shape": "shaved-ice",
+        "colors": ["#F5C542", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.blue-shaved-ice",
+      "name": "Blue Shaved Ice",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Blue syrup, cool fingers, no regrets.",
+      "art": {
+        "shape": "shaved-ice",
+        "colors": ["#7DD8C0", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "held.coconut-drink",
+      "name": "Coconut Drink",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A coconut cup with a pink straw. Hydrate, then study.",
+      "art": {
+        "shape": "coconut-drink",
+        "colors": ["#B07D52", "#E9579A", "#FFF6EC"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.surfboard",
+      "name": "Surfboard",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Ride the wave of good grades, with a bit of balance.",
+      "art": {
+        "shape": "surfboard",
+        "colors": ["#5FD0E8", "#F5C542", "#FFF6EC"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.flamingo-swim-ring",
+      "name": "Flamingo Swim Ring",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A blue ring with a flamingo head that bobs along.",
+      "art": {
+        "shape": "flamingo-ring",
+        "colors": ["#5B9FE0", "#FF8FB1", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.sunny-corners",
+      "name": "Sunny Corners",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Two little suns in the corners, twinkling for you.",
+      "art": {
+        "shape": "sunny-corners",
+        "colors": ["#F5C542", "#F28A3A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.splashing-waves",
+      "name": "Splashing Waves",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Little waves and splashes that keep the summer going.",
+      "art": {
+        "shape": "splashing-waves",
+        "colors": ["#5B9FE0", "#7FD6E8"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.endless-summer",
+      "name": "Endless Summer",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A sun that circles you slowly, all summer long.",
+      "art": {
+        "shape": "endless-summer",
+        "colors": ["#FFB84D", "#FFF3A0"]
+      },
+      "animated": true
+    }
+  ]
+}

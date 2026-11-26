@@ -18,6 +18,7 @@
 
 <!-- Today: what is up next, how the day is going and the day's plan. -->
 <script lang="ts">
+  import { CRATE_INFO } from "$lib/crateArt.ts";
   import MathText from "$lib/components/MathText.svelte";
   import {
     type BlockView,
@@ -191,7 +192,11 @@
 
 {#if study.waitingCrates.length > 0}
   <a class="crate-banner" href="/crates">
-    <strong>{study.waitingCrates.length === 1 ? "A Study Crate is" : `${study.waitingCrates.length} Study Crates are`} waiting</strong>
+    <strong>
+      {study.waitingCrates.length === 1
+        ? `A ${CRATE_INFO[study.waitingCrates[0]?.type ?? "study"].name} is waiting`
+        : `${study.waitingCrates.length} crates are waiting`}
+    </strong>
     <span>Open it</span>
   </a>
 {/if}

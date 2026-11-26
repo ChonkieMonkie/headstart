@@ -21,6 +21,7 @@
 // class only wires them up.
 
 import {
+  type CrateType,
   items as catalog,
   type Item,
   type MascotId,
@@ -42,6 +43,7 @@ import {
   type CrateDrop,
   changeSettings,
   chooseMascot,
+  claimGift,
   claimGrant,
   claimWelcomeGift,
   clearThought,
@@ -68,6 +70,7 @@ import {
   equipItem,
   extendSession,
   focusedMs,
+  giftsDue,
   insightForLevels,
   isOnTime,
   isTimeUp,
@@ -116,6 +119,7 @@ import {
   setSessionMode,
   simulateStudy,
   startSession,
+  streakFlames,
   type Task,
   type Thought,
   TIMER_PRESETS,
@@ -649,6 +653,21 @@ export class Study {
     return this.#weeksCache.value;
   }
 
+  /** Lit flames on the Streak Chest: weeks met in a row towards the next one (0 to 4). */
+  get streakFlames(): number {
+    return streakFlames(this.weeks?.run ?? 0);
+  }
+
+  /** The odds of a kind of crate, with Epic and Legendary pity counted from your history. */
+  oddsFor(type: CrateType): OddsRow[] {
+    const state = this.state;
+    return crateOdds(
+      this.context.crates.crates[type],
+      this.context.crates,
+      state?.pity ?? { sinceEpic: 0, sinceLegendary: 0 },
+    );
+  }
+
   /** Answers the question about missed weeks: use the freezes, or let the run end. */
   async answerFreeze(use: boolean): Promise<void> {
     const now = Date.now();
@@ -721,6 +740,10 @@ export class Study {
       for (const plaque of plaquesToEarn(engine.state, now, engine.context)) {
         const result = await engine.run((s, c) => earnPlaque(s, c, { ...plaque, now }));
         if (result.ok) this.newPlaques = [...this.newPlaques, plaque];
+      }
+      // Crates for habits: a met weekly goal, a run of weeks, a milestone plaque.
+      for (const gift of giftsDue(engine.state, now, engine.context)) {
+        await engine.run((s, c) => claimGift(s, c, { giftId: gift.giftId, now }));
       }
     } finally {
       this.#settling = false;

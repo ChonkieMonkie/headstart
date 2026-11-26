@@ -1,0 +1,369 @@
+{
+  "shapes": {
+    "head": {
+      "ranger-hat": 2,
+      "mosquito-net-hat": 2,
+      "acorn-hat": 2,
+      "camping-headlamp": 2,
+      "tiny-pine": 3
+    },
+    "face": {
+      "mud-smudge": 2,
+      "leaf-sticker": 2,
+      "dragonfly-friend": 2
+    },
+    "outfit": {
+      "flannel-shirt": 2,
+      "coiled-rope": 2,
+      "field-vest": 3,
+      "canteen": 3
+    },
+    "held": {
+      "hiking-stick": 2,
+      "pine-cone": 2,
+      "marshmallow-stick": 3,
+      "binoculars": 2,
+      "mushroom-basket": 2,
+      "trail-map": 2,
+      "tent-keyring": 3
+    },
+    "aura": {
+      "falling-pine-needles": 2,
+      "mountain-mist": 2,
+      "forest-spirit-deer": 3
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.olive-ranger-hat",
+      "name": "Olive Ranger Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A wide brim for long walks and longer reading sessions.",
+      "art": { "shape": "ranger-hat", "colors": ["#7C8B4A", "#D9C48F"] }
+    },
+    {
+      "id": "head.sand-ranger-hat",
+      "name": "Sand Ranger Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Sandy brim, sensible shade and a very calm trail manner.",
+      "art": { "shape": "ranger-hat", "colors": ["#D9B77E", "#7A4E2D"] }
+    },
+    {
+      "id": "head.brick-ranger-hat",
+      "name": "Brick Ranger Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A bold brick colour for a bold trip to the library.",
+      "art": { "shape": "ranger-hat", "colors": ["#B5553C", "#F2E3C6"] }
+    },
+    {
+      "id": "outfit.red-flannel-shirt",
+      "name": "Red Flannel Shirt",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Checks, a collar and enough warmth for an early lecture.",
+      "art": { "shape": "flannel-shirt", "colors": ["#D0604A", "#F6E3C4"] }
+    },
+    {
+      "id": "outfit.blue-flannel-shirt",
+      "name": "Blue Flannel Shirt",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Blue checks for cold mornings and study groups.",
+      "art": { "shape": "flannel-shirt", "colors": ["#5E8FC4", "#2E4A78"] }
+    },
+    {
+      "id": "outfit.green-flannel-shirt",
+      "name": "Green Flannel Shirt",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Forest green checks. It goes with everything outdoors.",
+      "art": { "shape": "flannel-shirt", "colors": ["#7FA35C", "#F2D26B"] }
+    },
+    {
+      "id": "held.oak-hiking-stick",
+      "name": "Oak Hiking Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A sturdy stick for the long walk to the lecture hall.",
+      "art": { "shape": "hiking-stick", "colors": ["#B57A43", "#F2C14E"] }
+    },
+    {
+      "id": "held.birch-hiking-stick",
+      "name": "Birch Hiking Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Pale birch with a blue band. Light on the legs.",
+      "art": { "shape": "hiking-stick", "colors": ["#F1E4CC", "#3B6E8F"] }
+    },
+    {
+      "id": "held.cherry-hiking-stick",
+      "name": "Cherry Hiking Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Dark cherry wood and a bright band. Easy to spot.",
+      "art": { "shape": "hiking-stick", "colors": ["#8E3B46", "#F2A65A"] }
+    },
+    {
+      "id": "face.mud-smudge",
+      "name": "Mud Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little trail souvenir on the cheek. Proof you went outside.",
+      "art": { "shape": "mud-smudge", "colors": ["#8B5E3C", "#5A3A24"] }
+    },
+    {
+      "id": "face.red-clay-smudge",
+      "name": "Red Clay Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Red clay from the riverbank. Worth the scrub later.",
+      "art": { "shape": "mud-smudge", "colors": ["#C8573A", "#8E3B2A"] }
+    },
+    {
+      "id": "face.swamp-smudge",
+      "name": "Swamp Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Swamp green, from a dare that went surprisingly well.",
+      "art": { "shape": "mud-smudge", "colors": ["#6E7F45", "#3E4A2A"] }
+    },
+    {
+      "id": "held.amber-pine-cone",
+      "name": "Amber Pine Cone",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A warm pine cone that keeps its shape under pressure.",
+      "art": { "shape": "pine-cone", "colors": ["#C9893F", "#6B4A2B"] }
+    },
+    {
+      "id": "held.frosted-pine-cone",
+      "name": "Frosted Pine Cone",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A frosted cone for cold study mornings.",
+      "art": { "shape": "pine-cone", "colors": ["#B9D7EA", "#6B8E4E"] }
+    },
+    {
+      "id": "held.plum-pine-cone",
+      "name": "Plum Pine Cone",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Plum-coloured and very dignified.",
+      "art": { "shape": "pine-cone", "colors": ["#8E5A9E", "#4E7F55"] }
+    },
+    {
+      "id": "held.toasted-marshmallow-stick",
+      "name": "Toasted Marshmallow Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Golden on the outside, soft in the middle. A study snack.",
+      "art": { "shape": "marshmallow-stick", "colors": ["#9C6B3E", "#FFF4E8", "#E9A24A"] }
+    },
+    {
+      "id": "held.pink-marshmallow-stick",
+      "name": "Pink Marshmallow Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A pink marshmallow for a short break from the books.",
+      "art": { "shape": "marshmallow-stick", "colors": ["#9C6B3E", "#F7C6D6", "#E36D8F"] }
+    },
+    {
+      "id": "held.mint-marshmallow-stick",
+      "name": "Mint Marshmallow Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A mint marshmallow. Fresh, fluffy and fully legal.",
+      "art": { "shape": "marshmallow-stick", "colors": ["#7C5A3A", "#CDEFE3", "#5FB9A0"] }
+    },
+    {
+      "id": "head.mosquito-net-hat",
+      "name": "Mosquito Net Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A safari hat with a net for bugs. Nothing gets in.",
+      "art": { "shape": "mosquito-net-hat", "colors": ["#C4A76B", "#8C6E3E"] }
+    },
+    {
+      "id": "head.sky-mosquito-net-hat",
+      "name": "Sky Mosquito Net Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Light blue and bug-proof, for evening walks.",
+      "art": { "shape": "mosquito-net-hat", "colors": ["#6FAEDB", "#2F5F8A"] }
+    },
+    {
+      "id": "head.acorn-hat",
+      "name": "Acorn Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A nut that is also a hat. Very studious.",
+      "art": { "shape": "acorn-hat", "colors": ["#B9793C", "#6B4A2B"] }
+    },
+    {
+      "id": "head.golden-acorn-hat",
+      "name": "Golden Acorn Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Golden and round. It keeps its head for exams.",
+      "art": { "shape": "acorn-hat", "colors": ["#F2C14E", "#A4572E"] }
+    },
+    {
+      "id": "outfit.hemp-coiled-rope",
+      "name": "Hemp Coiled Rope",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Neat coils of hemp. Good for knots and emergencies.",
+      "art": { "shape": "coiled-rope", "colors": ["#D8B47A", "#9A6A34"] }
+    },
+    {
+      "id": "outfit.red-coiled-rope",
+      "name": "Red Coiled Rope",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Red rope with yellow loops. Bright enough for any trail.",
+      "art": { "shape": "coiled-rope", "colors": ["#C8473A", "#F2C14E"] }
+    },
+    {
+      "id": "held.brass-binoculars",
+      "name": "Brass Binoculars",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Brass and glass, for spotting the bus before it leaves.",
+      "art": { "shape": "binoculars", "colors": ["#C49A3A", "#8FD3E6"] }
+    },
+    {
+      "id": "held.teal-binoculars",
+      "name": "Teal Binoculars",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Teal frame, amber lenses. Good for birdwatching.",
+      "art": { "shape": "binoculars", "colors": ["#2F7F7A", "#F2C14E"] }
+    },
+    {
+      "id": "held.mushroom-basket",
+      "name": "Mushroom Basket",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Fresh finds in a wicker basket. Look, do not taste.",
+      "art": { "shape": "mushroom-basket", "colors": ["#C9A36B", "#D9473A"] }
+    },
+    {
+      "id": "held.chanterelle-basket",
+      "name": "Chanterelle Basket",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Golden mushrooms in a green basket. A good find.",
+      "art": { "shape": "mushroom-basket", "colors": ["#7A9A5B", "#F2B33D"] }
+    },
+    {
+      "id": "held.forest-trail-map",
+      "name": "Forest Trail Map",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A folded map of the forest with one dashed way forward.",
+      "art": { "shape": "trail-map", "colors": ["#F4E6C2", "#4E8A4F"] }
+    },
+    {
+      "id": "held.lake-trail-map",
+      "name": "Lake Trail Map",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A lakeside route drawn in blue. Pack a snack.",
+      "art": { "shape": "trail-map", "colors": ["#CFE9F2", "#2F6DB0"] }
+    },
+    {
+      "id": "head.camping-headlamp",
+      "name": "Camping Headlamp",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A headlamp for reading after dark. The lens glows softly.",
+      "art": { "shape": "camping-headlamp", "colors": ["#3B3F52", "#F2C14E"] },
+      "animated": true
+    },
+    {
+      "id": "face.leaf-sticker",
+      "name": "Leaf Sticker",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "A fresh leaf on your cheek. It bobs a little when you smile.",
+      "art": { "shape": "leaf-sticker", "colors": ["#6FBF73", "#2E6B3A"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.field-vest",
+      "name": "Field Vest",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Four pockets for flashcards, snacks and a small badge.",
+      "art": { "shape": "field-vest", "colors": ["#8A7A4B", "#5B4A2F", "#F2C14E"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.canteen",
+      "name": "Canteen",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A water canteen on a strap. Hydrate between chapters.",
+      "art": { "shape": "canteen", "colors": ["#4E7D5B", "#8C5A2B", "#D9C27A"] },
+      "animated": true
+    },
+    {
+      "id": "held.tent-keyring",
+      "name": "Tent Keyring",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tiny tent on a keyring. Home is wherever you lock it.",
+      "art": { "shape": "tent-keyring", "colors": ["#E76F51", "#7A3E2A", "#F4E3C1"] },
+      "animated": true
+    },
+    {
+      "id": "aura.falling-pine-needles",
+      "name": "Falling Pine Needles",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Soft needles drift down around you. Very calming.",
+      "art": { "shape": "falling-pine-needles", "colors": ["#5E9E6A", "#3F6E4A"] },
+      "animated": true
+    },
+    {
+      "id": "head.tiny-pine-tree",
+      "name": "Tiny Pine Tree",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A small forest on your head. It sways when you think.",
+      "art": { "shape": "tiny-pine", "colors": ["#3E8E5E", "#7A4E2D", "#F2C14E"] },
+      "animated": true
+    },
+    {
+      "id": "face.dragonfly-friend",
+      "name": "Dragonfly Friend",
+      "slot": "face",
+      "rarity": "epic",
+      "description": "It landed on your cheek and decided to study with you.",
+      "art": { "shape": "dragonfly-friend", "colors": ["#2F9E8F", "#9FE0F0"] },
+      "animated": true
+    },
+    {
+      "id": "aura.mountain-mist",
+      "name": "Mountain Mist",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Cool mist drifts around the peaks, like a long study morning.",
+      "art": { "shape": "mountain-mist", "colors": ["#B8D8E8", "#8FA7B8"] },
+      "animated": true
+    },
+    {
+      "id": "aura.forest-spirit-deer",
+      "name": "Forest Spirit Deer",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A gentle forest spirit whose glowing trail leads to the library.",
+      "art": { "shape": "forest-spirit-deer", "colors": ["#C98B5E", "#9EF0C8", "#7A4E2D"] },
+      "animated": true
+    }
+  ]
+}

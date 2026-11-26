@@ -1,0 +1,517 @@
+{
+  "shapes": {
+    "head": {
+      "souwester": 2,
+      "polka-bonnet": 2,
+      "cloud-clip": 2,
+      "umbrella-hat": 3
+    },
+    "face": {
+      "raindrop-sticker": 2,
+      "fogged-goggles": 2
+    },
+    "outfit": {
+      "rain-poncho": 2,
+      "drop-jumper": 2,
+      "raindrop-pendant": 2
+    },
+    "held": {
+      "umbrella": 2,
+      "soup-bowl": 2,
+      "wellies": 2,
+      "paper-boat": 2,
+      "rain-gauge": 2,
+      "weather-vane": 2,
+      "snail-friend": 2,
+      "jar-of-rain": 2
+    },
+    "aura": {
+      "rainbow-arc": 3,
+      "puddle-ripples": 2,
+      "thunder-cloud": 2,
+      "soft-drizzle": 2,
+      "sun-rainbow": 3
+    }
+  },
+  "scenes": {
+    "rainy-window": 0
+  },
+  "items": [
+    {
+      "id": "head.souwester-yellow",
+      "name": "Yellow Sou'wester",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A long-brimmed rain hat that keeps the drizzle off your neck.",
+      "art": {
+        "shape": "souwester",
+        "colors": ["#F2C14E", "#E0A72E"]
+      }
+    },
+    {
+      "id": "head.souwester-teal",
+      "name": "Teal Sou'wester",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Teal and bright, for the walk to the library.",
+      "art": {
+        "shape": "souwester",
+        "colors": ["#3FA7A0", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.souwester-plum",
+      "name": "Plum Sou'wester",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Deep plum with a pink band. Dry and dramatic.",
+      "art": {
+        "shape": "souwester",
+        "colors": ["#7A4E8C", "#F2C6DE"]
+      }
+    },
+    {
+      "id": "head.polka-bonnet-pink",
+      "name": "Pink Polka Bonnet",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A shower cap with dots, for very wet mornings.",
+      "art": {
+        "shape": "polka-bonnet",
+        "colors": ["#F28AB0", "#FFFFFF"]
+      }
+    },
+    {
+      "id": "head.polka-bonnet-sky",
+      "name": "Sky Polka Bonnet",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Blue dots on a blue cap. Rain is someone else's problem.",
+      "art": {
+        "shape": "polka-bonnet",
+        "colors": ["#8FD3F5", "#3E6FB0"]
+      }
+    },
+    {
+      "id": "head.polka-bonnet-lime",
+      "name": "Lime Polka Bonnet",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Green and bouncy, like a tiny spring shower.",
+      "art": {
+        "shape": "polka-bonnet",
+        "colors": ["#B6D86B", "#5B8A2E"]
+      }
+    },
+    {
+      "id": "face.raindrop-sticker-sky",
+      "name": "Sky Raindrop Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little drop on your cheek. Very refreshing.",
+      "art": {
+        "shape": "raindrop-sticker",
+        "colors": ["#7FC8F8", "#3E7CB1"]
+      }
+    },
+    {
+      "id": "face.raindrop-sticker-rose",
+      "name": "Rose Raindrop Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Pink and cheerful, even in the grey weeks.",
+      "art": {
+        "shape": "raindrop-sticker",
+        "colors": ["#F28AB0", "#C2416B"]
+      }
+    },
+    {
+      "id": "face.raindrop-sticker-gold",
+      "name": "Gold Raindrop Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A golden drop for a good study streak.",
+      "art": {
+        "shape": "raindrop-sticker",
+        "colors": ["#F5C542", "#E0A72E"]
+      }
+    },
+    {
+      "id": "outfit.rain-poncho-mint",
+      "name": "Mint Rain Poncho",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Hooded and roomy, for a day of library rain.",
+      "art": {
+        "shape": "rain-poncho",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "outfit.rain-poncho-lilac",
+      "name": "Lilac Rain Poncho",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Soft lilac with a hood. Puddles are optional.",
+      "art": {
+        "shape": "rain-poncho",
+        "colors": ["#B8A4E6", "#6A4FB0"]
+      }
+    },
+    {
+      "id": "outfit.rain-poncho-coral",
+      "name": "Coral Rain Poncho",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Bright coral, easy to spot in a crowd.",
+      "art": {
+        "shape": "rain-poncho",
+        "colors": ["#F28A6B", "#B0452F"]
+      }
+    },
+    {
+      "id": "held.umbrella-sky",
+      "name": "Sky Umbrella",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Closed and ready for the bus stop.",
+      "art": {
+        "shape": "umbrella",
+        "colors": ["#5FA8D3", "#2E5F8A"]
+      }
+    },
+    {
+      "id": "held.umbrella-berry",
+      "name": "Berry Umbrella",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Pink and fancy, for dramatic exits.",
+      "art": {
+        "shape": "umbrella",
+        "colors": ["#C2416B", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.umbrella-lemon",
+      "name": "Lemon Umbrella",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Yellow and sunny, even when it is not.",
+      "art": {
+        "shape": "umbrella",
+        "colors": ["#F5C542", "#8E6136"]
+      }
+    },
+    {
+      "id": "held.soup-tomato",
+      "name": "Tomato Soup Bowl",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Hot, red and very good for exam weeks.",
+      "art": {
+        "shape": "soup-bowl",
+        "colors": ["#F6E7D8", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.soup-pea",
+      "name": "Pea Soup Bowl",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Green, warm and suspiciously healthy.",
+      "art": {
+        "shape": "soup-bowl",
+        "colors": ["#2E7F7A", "#9BCB5B"]
+      }
+    },
+    {
+      "id": "held.soup-pumpkin",
+      "name": "Pumpkin Soup Bowl",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Orange and sweet, served in a brown bowl.",
+      "art": {
+        "shape": "soup-bowl",
+        "colors": ["#8E6136", "#F5A623"]
+      }
+    },
+    {
+      "id": "head.cloud-clip-storm",
+      "name": "Storm Cloud Clip",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A tiny cloud for the side of your hair. Holds the rain back.",
+      "art": {
+        "shape": "cloud-clip",
+        "colors": ["#8FA3C4", "#3E5C8A"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "head.cloud-clip-blush",
+      "name": "Blush Cloud Clip",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A soft pink cloud with blue drops underneath.",
+      "art": {
+        "shape": "cloud-clip",
+        "colors": ["#F7C6D9", "#E9579A"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "face.fogged-goggles-navy",
+      "name": "Fogged Goggles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Misted up from the kettle. Still very studious.",
+      "art": {
+        "shape": "fogged-goggles",
+        "colors": ["#2E3A6B", "#E8F1FA"]
+      }
+    },
+    {
+      "id": "face.fogged-goggles-tangerine",
+      "name": "Tangerine Fog Goggles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Orange frames and blue lenses, fogged over.",
+      "art": {
+        "shape": "fogged-goggles",
+        "colors": ["#F28A3A", "#BFE8FF"]
+      }
+    },
+    {
+      "id": "outfit.drop-jumper-navy",
+      "name": "Navy Drop Jumper",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A raindrop print on a warm navy knit.",
+      "art": {
+        "shape": "drop-jumper",
+        "colors": ["#2E3A6B", "#7FC8F8"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "outfit.drop-jumper-sage",
+      "name": "Sage Drop Jumper",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Sage green with cream drops. Calm and cosy.",
+      "art": {
+        "shape": "drop-jumper",
+        "colors": ["#A8C69F", "#F6E7D8"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "held.wellies-red",
+      "name": "Red Wellies",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Pulled on for the puddle on the way in.",
+      "art": {
+        "shape": "wellies",
+        "colors": ["#E5533D", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.wellies-blue",
+      "name": "Blue Wellies",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Blue boots with yellow straps. Splash responsibly.",
+      "art": {
+        "shape": "wellies",
+        "colors": ["#3E7CB1", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.paper-boat-lined",
+      "name": "Lined Paper Boat",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Folded from old notes. It floats, probably.",
+      "art": {
+        "shape": "paper-boat",
+        "colors": ["#F6F1E6", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "held.paper-boat-tangerine",
+      "name": "Tangerine Paper Boat",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A bright orange sail on a cream hull.",
+      "art": {
+        "shape": "paper-boat",
+        "colors": ["#F28A3A", "#FFF3D6"]
+      }
+    },
+    {
+      "id": "held.rain-gauge-brass",
+      "name": "Brass Rain Gauge",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Counts every drop, for science and for fun.",
+      "art": {
+        "shape": "rain-gauge",
+        "colors": ["#E0A72E", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "held.rain-gauge-teal",
+      "name": "Teal Rain Gauge",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Tells you exactly how grey it is today.",
+      "art": {
+        "shape": "rain-gauge",
+        "colors": ["#3FA7A0", "#8FD3F5"]
+      }
+    },
+    {
+      "id": "head.umbrella-hat",
+      "name": "Umbrella Hat",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "An open umbrella that sways when the wind turns.",
+      "art": {
+        "shape": "umbrella-hat",
+        "colors": ["#5FA8D3", "#F6E7D8", "#2E5F8A"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.rainbow-arc",
+      "name": "Rainbow Arc",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "A small rainbow behind you that shimmers now and then.",
+      "art": {
+        "shape": "rainbow-arc",
+        "colors": ["#F28AB0", "#F5C542", "#7FC8F8"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.puddle-ripples",
+      "name": "Puddle Ripples",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Rings in a puddle at your feet, slowly pulsing.",
+      "art": {
+        "shape": "puddle-ripples",
+        "colors": ["#8FD3F5", "#3E7CB1"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "held.weather-vane",
+      "name": "Weather Vane",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tiny propeller that always knows which way it blows.",
+      "art": {
+        "shape": "weather-vane",
+        "colors": ["#F2C14E", "#2E5F8A"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "outfit.raindrop-pendant",
+      "name": "Raindrop Pendant",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A glass drop on a cord that swings when you nod.",
+      "art": {
+        "shape": "raindrop-pendant",
+        "colors": ["#5FA8D3", "#F5C542"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "held.snail-friend",
+      "name": "Snail Friend",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Slow and steady, with a shell full of study tips.",
+      "art": {
+        "shape": "snail-friend",
+        "colors": ["#E9A23B", "#A8C69F"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.thunder-cloud",
+      "name": "Tiny Thunder Cloud",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "A little storm cloud with a flicker of lightning.",
+      "art": {
+        "shape": "thunder-cloud",
+        "colors": ["#7A8BA8", "#F5C542"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.soft-drizzle",
+      "name": "Soft Drizzle",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Gentle drops falling all around you.",
+      "art": {
+        "shape": "soft-drizzle",
+        "colors": ["#5FA8D3", "#2E5F8A"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "held.jar-of-rain",
+      "name": "Jar of Rain",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Rain collected in a jar, with little drops rising inside.",
+      "art": {
+        "shape": "jar-of-rain",
+        "colors": ["#8FD3F5", "#C98A4B"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.sun-rainbow",
+      "name": "Sun Rainbow",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A rainbow with the sun peeking out, glowing on grey days.",
+      "art": {
+        "shape": "sun-rainbow",
+        "colors": ["#F5C542", "#F28AB0", "#7FC8F8"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "background.rainy-window",
+      "name": "Rainy Window",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "rainy-day",
+      "description": "A window full of rain and a sill to sit on. Finishes the Rainy Day set.",
+      "art": {
+        "scene": "rainy-window",
+        "colors": []
+      }
+    }
+  ]
+}

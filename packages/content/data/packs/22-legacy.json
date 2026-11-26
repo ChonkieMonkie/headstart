@@ -1,0 +1,209 @@
+{
+  "shapes": {
+    "head": {
+      "slouch-beanie": 2,
+      "fisherman-beanie": 2,
+      "sun-visor": 2,
+      "sailor-cap": 2
+    },
+    "face": {
+      "cat-eye-glasses": 1,
+      "aviators": 2
+    },
+    "outfit": {
+      "cowl": 2,
+      "cardigan": 3,
+      "sailor-shirt": 3
+    },
+    "held": {
+      "click-pen": 2,
+      "spiral-notebook": 2
+    },
+    "aura": {
+      "mint-swirl": 1,
+      "heart-beats": 1
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.beanie-lilac",
+      "name": "Lilac Slouch Beanie",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "description": "Flops over to one side, like it has been studying all night too.",
+      "art": { "shape": "slouch-beanie", "colors": ["#A88BE8", "#F1ECFD"] }
+    },
+    {
+      "id": "head.beanie-pink",
+      "name": "Pink Slouch Beanie",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "description": "Slouches sideways every time you lean over the books.",
+      "art": { "shape": "slouch-beanie", "colors": ["#F28AB0", "#FFF0F5"] }
+    },
+    {
+      "id": "head.beanie-sky",
+      "name": "Sky Slouch Beanie",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "description": "Too long for the hook by the door, so it lies down instead.",
+      "art": { "shape": "slouch-beanie", "colors": ["#5B9FE0", "#E8F2FC"] }
+    },
+    {
+      "id": "head.beanie-forest",
+      "name": "Forest Fisherman Beanie",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "set": "cosy",
+      "description": "Short and snug, with a thick cuff for long library evenings.",
+      "art": { "shape": "fisherman-beanie", "colors": ["#4E7A40", "#EAF1E2"] }
+    },
+    {
+      "id": "head.beanie-charcoal",
+      "name": "Charcoal Fisherman Beanie",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "description": "Sits high and snug, and looks good in every lecture hall.",
+      "art": { "shape": "fisherman-beanie", "colors": ["#4A4F63", "#E2E6EF"] }
+    },
+    {
+      "id": "head.cap-berry",
+      "name": "Berry Sun Visor",
+      "slot": "head",
+      "rarity": "common",
+      "rework": true,
+      "description": "Just a brim, so your ideas get a little air.",
+      "art": { "shape": "sun-visor", "colors": ["#C2417A", "#8E2C59"] }
+    },
+    {
+      "id": "head.beanie-ocean",
+      "name": "Sailor Cap",
+      "slot": "head",
+      "rarity": "uncommon",
+      "rework": true,
+      "set": "deep-sea",
+      "description": "A round white cap with ribbon tails, for steering through exam week.",
+      "art": { "shape": "sailor-cap", "colors": ["#2F7FD8", "#E3EEFA"] }
+    },
+    {
+      "id": "face.round-red",
+      "name": "Red Cat-Eye Glasses",
+      "slot": "face",
+      "rarity": "common",
+      "rework": true,
+      "description": "Upswept frames for a confident reading face.",
+      "art": { "shape": "cat-eye-glasses", "colors": ["#D9483B"] }
+    },
+    {
+      "id": "face.round-blue",
+      "name": "Blue Cat-Eye Glasses",
+      "slot": "face",
+      "rarity": "common",
+      "rework": true,
+      "description": "Upswept corners that make every page look sharper.",
+      "art": { "shape": "cat-eye-glasses", "colors": ["#2F7FD8"] }
+    },
+    {
+      "id": "face.rose-shades",
+      "name": "Rose Aviators",
+      "slot": "face",
+      "rarity": "uncommon",
+      "rework": true,
+      "description": "Teardrop shades for a rosy outlook on exam week.",
+      "art": { "shape": "aviators", "colors": ["#7A2E4E", "#FFB3CF"] }
+    },
+    {
+      "id": "outfit.scarf-green",
+      "name": "Green Cable Cowl",
+      "slot": "outfit",
+      "rarity": "common",
+      "rework": true,
+      "description": "A chunky neck warmer for draughty lecture halls.",
+      "art": { "shape": "cowl", "colors": ["#4E9F5B", "#E6F4E3"] }
+    },
+    {
+      "id": "outfit.scarf-lilac",
+      "name": "Lilac Cable Cowl",
+      "slot": "outfit",
+      "rarity": "common",
+      "rework": true,
+      "description": "Knitted round your neck, no loose ends to trip on.",
+      "art": { "shape": "cowl", "colors": ["#9B84E3", "#F1ECFD"] }
+    },
+    {
+      "id": "outfit.scarf-grey",
+      "name": "Grey Cable Cowl",
+      "slot": "outfit",
+      "rarity": "common",
+      "rework": true,
+      "description": "Quiet grey cables for the quiet corners of the library.",
+      "art": { "shape": "cowl", "colors": ["#7B8494", "#ECEEF2"] }
+    },
+    {
+      "id": "outfit.berry-hoodie",
+      "name": "Berry Cardigan",
+      "slot": "outfit",
+      "rarity": "rare",
+      "rework": true,
+      "set": "cosy",
+      "animated": true,
+      "description": "Open knit with pockets, and a mug that keeps you company.",
+      "art": { "shape": "cardigan", "colors": ["#B5476E", "#943A59", "#D0668B"] }
+    },
+    {
+      "id": "outfit.ocean-hoodie",
+      "name": "Sailor Shirt",
+      "slot": "outfit",
+      "rarity": "rare",
+      "rework": true,
+      "set": "deep-sea",
+      "animated": true,
+      "description": "Stripes, a square collar and a neckerchief that sways.",
+      "art": { "shape": "sailor-shirt", "colors": ["#3E7FC4", "#2F66A3", "#62A0DE"] }
+    },
+    {
+      "id": "held.pencil-purple",
+      "name": "Purple Click Pen",
+      "slot": "held",
+      "rarity": "common",
+      "rework": true,
+      "description": "One click, one idea, and no chewed lids.",
+      "art": { "shape": "click-pen", "colors": ["#9B84E3", "#F28AA0"] }
+    },
+    {
+      "id": "held.book-sunny",
+      "name": "Sunny Notebook",
+      "slot": "held",
+      "rarity": "common",
+      "rework": true,
+      "description": "Lined pages, a spiral, and room for every doodle.",
+      "art": { "shape": "spiral-notebook", "colors": ["#E9A93A", "#C2861F"] }
+    },
+    {
+      "id": "aura.mint-glow",
+      "name": "Mint Swirl",
+      "slot": "aura",
+      "rarity": "rare",
+      "rework": true,
+      "animated": true,
+      "description": "Fresh mint ribbons that twinkle while you think.",
+      "art": { "shape": "mint-swirl", "colors": ["#3FD9A6"] }
+    },
+    {
+      "id": "aura.rose-glow",
+      "name": "Heart Beats",
+      "slot": "aura",
+      "rarity": "rare",
+      "rework": true,
+      "animated": true,
+      "description": "A few little hearts that take turns to pulse.",
+      "art": { "shape": "heart-beats", "colors": ["#F27BAA"] }
+    }
+  ]
+}

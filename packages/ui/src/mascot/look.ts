@@ -16,10 +16,16 @@
 
 // Turns what a mascot has equipped (item ids) into what the renderer draws.
 
-import type { Item, MascotId, SkinArt, Slot, WearArt, WearSlot } from "@headstart/content";
+import {
+  type BackgroundArt,
+  type Item,
+  type MascotId,
+  type SkinArt,
+  type Slot,
+  WEAR_SLOTS,
+  type WearArt,
+} from "@headstart/content";
 import type { MascotLook } from "./render.ts";
-
-const WEAR_SLOTS: readonly WearSlot[] = ["head", "face", "outfit", "held", "aura"];
 
 function fits(item: Item, species: MascotId): boolean {
   return !item.fits || item.fits.includes(species);
@@ -54,16 +60,26 @@ export function lookFor(
     const item = byId(equipped[slot]);
     if (item && item.slot === slot) wear[slot] = item.art as WearArt;
   }
+  const background = byId(equipped.background);
   return {
     species,
     skin: skin?.slot === "skin" ? (skin.art as SkinArt) : starterSkin(species, catalog),
     wear,
+    ...(background?.slot === "background" ? { background: background.art as BackgroundArt } : {}),
   };
 }
 
 /** A look that shows off one item: the item on its own, or the skin with nothing else. */
 export function itemPreview(item: Item, species: MascotId, catalog: readonly Item[]): MascotLook {
   if (item.slot === "skin") return { species, skin: item.art as SkinArt, wear: {} };
+  if (item.slot === "background") {
+    return {
+      species,
+      skin: starterSkin(species, catalog),
+      wear: {},
+      background: item.art as BackgroundArt,
+    };
+  }
   return {
     species,
     skin: starterSkin(species, catalog),

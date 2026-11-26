@@ -46,6 +46,8 @@ export interface WeekResult {
   allModes: boolean;
   /** Met, with three or more planned sessions and every one started on time. */
   perfect: boolean;
+  /** Weeks met in a row once this week counted, or 0 when it did not count (yet). */
+  run: number;
 }
 
 export interface DayMark {
@@ -197,6 +199,7 @@ export function weekStanding(state: ProgressState, now: number, ctx: CoreContext
       rested,
       allModes: tally.modes.size >= 4,
       perfect: met && tally.planned >= 3 && tally.onTime === tally.planned,
+      run: 0,
     };
   };
 
@@ -216,6 +219,7 @@ export function weekStanding(state: ProgressState, now: number, ctx: CoreContext
     run += 1;
     best = Math.max(best, run);
     if (run % everyWeeks === 0) freezes = Math.min(max, freezes + 1);
+    result.run = run;
     return result;
   };
   const first = sessions[0] ? weekOf(dayKey(sessions[0].startedAt)) : thisWeek;

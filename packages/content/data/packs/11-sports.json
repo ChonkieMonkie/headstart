@@ -1,0 +1,502 @@
+{
+  "shapes": {
+    "head": {
+      "swim-cap": 2,
+      "referee-cap": 2,
+      "cycling-helmet": 2,
+      "laurel-wreath": 2
+    },
+    "face": {
+      "face-paint-stripes": 2,
+      "sweat-drop": 2
+    },
+    "outfit": {
+      "team-jersey": 2,
+      "sweat-towel": 2,
+      "winners-sash": 2,
+      "tracksuit-jacket": 2
+    },
+    "held": {
+      "water-bottle": 2,
+      "tennis-racket": 2,
+      "football": 2,
+      "basketball": 1,
+      "shuttlecock": 2,
+      "skateboard": 2,
+      "jump-rope": 2,
+      "whistle": 2,
+      "race-stopwatch": 2,
+      "trophy-cup": 2
+    },
+    "aura": {
+      "speed-lines": 2,
+      "confetti-burst": 3,
+      "champion-laurel": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.swim-cap-aqua",
+      "name": "Aqua Swim Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Laps of revision, with no splashing required.",
+      "art": {
+        "shape": "swim-cap",
+        "colors": ["#5CC8DD", "#2F8FB0"]
+      }
+    },
+    {
+      "id": "head.swim-cap-coral",
+      "name": "Coral Swim Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Keeps the hair dry while the ideas flow.",
+      "art": {
+        "shape": "swim-cap",
+        "colors": ["#FF8C7A", "#D85F4E"]
+      }
+    },
+    {
+      "id": "head.swim-cap-lime",
+      "name": "Lime Swim Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Bright, bouncy, and ready for a long study swim.",
+      "art": {
+        "shape": "swim-cap",
+        "colors": ["#B5E07A", "#6FA33A"]
+      }
+    },
+    {
+      "id": "head.referee-cap-charcoal",
+      "name": "Charcoal Referee Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Calls the fouls on your procrastination.",
+      "art": {
+        "shape": "referee-cap",
+        "colors": ["#3B3F52", "#22263A"]
+      }
+    },
+    {
+      "id": "head.referee-cap-plum",
+      "name": "Plum Referee Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Fair calls on tricky questions, every single time.",
+      "art": {
+        "shape": "referee-cap",
+        "colors": ["#8E5EA8", "#5E3A73"]
+      }
+    },
+    {
+      "id": "head.referee-cap-sunny",
+      "name": "Sunny Referee Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Blocks distractions. The whistle is optional.",
+      "art": {
+        "shape": "referee-cap",
+        "colors": ["#F2C14E", "#C9892B"]
+      }
+    },
+    {
+      "id": "head.cycling-helmet-mint",
+      "name": "Mint Cycling Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Safe rides to the library, and back again.",
+      "art": {
+        "shape": "cycling-helmet",
+        "colors": ["#8FE3C7", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "head.cycling-helmet-sunset",
+      "name": "Sunset Cycling Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Pedalling to class with time to spare.",
+      "art": {
+        "shape": "cycling-helmet",
+        "colors": ["#FF9F5A", "#C9522B"]
+      }
+    },
+    {
+      "id": "head.laurel-wreath",
+      "name": "Laurel Wreath",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "Champions wore these. Small wins deserve them too.",
+      "animated": true,
+      "art": {
+        "shape": "laurel-wreath",
+        "colors": ["#7BC47F", "#F28AB0"]
+      }
+    },
+    {
+      "id": "face.face-paint-team-spirit",
+      "name": "Team Spirit Face Paint",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Stripes for exam week. Go team.",
+      "art": {
+        "shape": "face-paint-stripes",
+        "colors": ["#FFD166", "#EF476F"]
+      }
+    },
+    {
+      "id": "face.face-paint-ocean",
+      "name": "Ocean Face Paint",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Cool blue stripes for calm, steady focus.",
+      "art": {
+        "shape": "face-paint-stripes",
+        "colors": ["#56CFE1", "#7B6CF6"]
+      }
+    },
+    {
+      "id": "face.sweat-drop-blue",
+      "name": "Blue Sweat Drop",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Proof that the last hour was real work.",
+      "art": {
+        "shape": "sweat-drop",
+        "colors": ["#7DC4F2", "#B9E4FA"]
+      }
+    },
+    {
+      "id": "face.sweat-drop-mint",
+      "name": "Mint Sweat Drop",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little sweat, a lot of effort. Well earned.",
+      "art": {
+        "shape": "sweat-drop",
+        "colors": ["#7FD8BE", "#B8F0DD"]
+      }
+    },
+    {
+      "id": "face.sweat-drop-blush",
+      "name": "Blush Sweat Drop",
+      "slot": "face",
+      "rarity": "common",
+      "description": "The sweat of a finished exam week. Be proud.",
+      "art": {
+        "shape": "sweat-drop",
+        "colors": ["#F4A3C4", "#FCD3E3"]
+      }
+    },
+    {
+      "id": "outfit.team-jersey-red",
+      "name": "Red Team Jersey",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Your study group needs a captain. Why not you.",
+      "art": {
+        "shape": "team-jersey",
+        "colors": ["#E8584A", "#FFD1C2"]
+      }
+    },
+    {
+      "id": "outfit.team-jersey-teal",
+      "name": "Teal Team Jersey",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Team study night, and no uniform needed beyond this.",
+      "art": {
+        "shape": "team-jersey",
+        "colors": ["#3FB8AF", "#D8F5EF"]
+      }
+    },
+    {
+      "id": "outfit.team-jersey-navy",
+      "name": "Navy Team Jersey",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Studying as a team, one flashcard at a time.",
+      "art": {
+        "shape": "team-jersey",
+        "colors": ["#2F4A7A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.sweat-towel-sky",
+      "name": "Sky Sweat Towel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mop the brow, then back to the chapter.",
+      "art": {
+        "shape": "sweat-towel",
+        "colors": ["#8FD3F4", "#2F7FD8"]
+      }
+    },
+    {
+      "id": "outfit.sweat-towel-sunny",
+      "name": "Sunny Sweat Towel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A quick break towel for long study sessions.",
+      "art": {
+        "shape": "sweat-towel",
+        "colors": ["#FFD97A", "#E0892B"]
+      }
+    },
+    {
+      "id": "outfit.sweat-towel-berry",
+      "name": "Berry Sweat Towel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Dry off between the sprints and the summaries.",
+      "art": {
+        "shape": "sweat-towel",
+        "colors": ["#F5A3C7", "#B0457A"]
+      }
+    },
+    {
+      "id": "outfit.winners-sash-gold",
+      "name": "Gold Winner's Sash",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "For finishing the course. Worth a small parade.",
+      "art": {
+        "shape": "winners-sash",
+        "colors": ["#F5C542", "#E8584A"]
+      }
+    },
+    {
+      "id": "outfit.winners-sash-royal",
+      "name": "Royal Winner's Sash",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Every finished assignment deserves a little ceremony.",
+      "art": {
+        "shape": "winners-sash",
+        "colors": ["#8B5CF6", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.tracksuit-navy",
+      "name": "Navy Tracksuit",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Comfortable enough for a long study marathon.",
+      "art": {
+        "shape": "tracksuit-jacket",
+        "colors": ["#34507F", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.tracksuit-coral",
+      "name": "Coral Tracksuit",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Warm up for the reading sprint, cool down with notes.",
+      "art": {
+        "shape": "tracksuit-jacket",
+        "colors": ["#FF8F7A", "#2F9E6E"]
+      }
+    },
+    {
+      "id": "held.water-bottle-aqua",
+      "name": "Aqua Water Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Hydrate between chapters. Your brain is thirsty too.",
+      "art": {
+        "shape": "water-bottle",
+        "colors": ["#6FD0E6", "#2F8FB0"]
+      }
+    },
+    {
+      "id": "held.water-bottle-coral",
+      "name": "Coral Water Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Keeps the water cold through the whole exam week.",
+      "art": {
+        "shape": "water-bottle",
+        "colors": ["#FF9E88", "#C4533F"]
+      }
+    },
+    {
+      "id": "held.water-bottle-lemon",
+      "name": "Lemon Water Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Sip, focus, repeat. Simple and effective.",
+      "art": {
+        "shape": "water-bottle",
+        "colors": ["#F7E07A", "#D9A92B"]
+      }
+    },
+    {
+      "id": "held.tennis-racket-lime",
+      "name": "Lime Tennis Racket",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Serve up the flashcards and return the questions.",
+      "art": {
+        "shape": "tennis-racket",
+        "colors": ["#C4E86B", "#7A4E9C"]
+      }
+    },
+    {
+      "id": "held.tennis-racket-pink",
+      "name": "Pink Tennis Racket",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Hit the revision volleys with a smile.",
+      "art": {
+        "shape": "tennis-racket",
+        "colors": ["#F28AB0", "#3C7A3A"]
+      }
+    },
+    {
+      "id": "held.football-classic",
+      "name": "Classic Football",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A goal is just a question you finally answered.",
+      "art": {
+        "shape": "football",
+        "colors": ["#FFFFFF", "#3B3F52"]
+      }
+    },
+    {
+      "id": "held.football-orange",
+      "name": "Orange Football",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Kick off the study session with a good dribble.",
+      "art": {
+        "shape": "football",
+        "colors": ["#FF9F5A", "#3B3F52"]
+      }
+    },
+    {
+      "id": "held.basketball",
+      "name": "Basketball",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Aim for the top grade. Air balls are allowed.",
+      "animated": true,
+      "art": {
+        "shape": "basketball",
+        "colors": ["#F5893D"]
+      }
+    },
+    {
+      "id": "held.shuttlecock",
+      "name": "Shuttlecock",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Rally the ideas back and forth all afternoon.",
+      "animated": true,
+      "art": {
+        "shape": "shuttlecock",
+        "colors": ["#A8E6CF", "#E8C49A"]
+      }
+    },
+    {
+      "id": "held.skateboard",
+      "name": "Skateboard",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Rolls straight to the library. Well, mostly.",
+      "animated": true,
+      "art": {
+        "shape": "skateboard",
+        "colors": ["#8B5CF6", "#FFD166"]
+      }
+    },
+    {
+      "id": "held.jump-rope",
+      "name": "Jump Rope",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Skip the procrastination, one jump at a time.",
+      "animated": true,
+      "art": {
+        "shape": "jump-rope",
+        "colors": ["#F2C14E", "#7DC4F2"]
+      }
+    },
+    {
+      "id": "held.coaches-whistle",
+      "name": "Coach's Whistle",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Blow it when the timer runs out, then start again.",
+      "animated": true,
+      "art": {
+        "shape": "whistle",
+        "colors": ["#E8584A", "#FFD166"]
+      }
+    },
+    {
+      "id": "held.study-stopwatch",
+      "name": "Study Stopwatch",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Tick, tick. Every focus block counts.",
+      "animated": true,
+      "art": {
+        "shape": "race-stopwatch",
+        "colors": ["#FF8F7A", "#3B3F52"]
+      }
+    },
+    {
+      "id": "held.trophy-cup",
+      "name": "Trophy Cup",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "For finishing the chapter, not just starting it.",
+      "animated": true,
+      "art": {
+        "shape": "trophy-cup",
+        "colors": ["#F5C542", "#7A4E9C"]
+      }
+    },
+    {
+      "id": "aura.speed-lines",
+      "name": "Speed Lines",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Fast notes, quick recall, no wasted minutes.",
+      "animated": true,
+      "art": {
+        "shape": "speed-lines",
+        "colors": ["#7DD8C0", "#FFD166"]
+      }
+    },
+    {
+      "id": "aura.confetti-burst",
+      "name": "Confetti Burst",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Celebrate every small win, even on a Monday.",
+      "animated": true,
+      "art": {
+        "shape": "confetti-burst",
+        "colors": ["#F28AB0", "#7DD8C0", "#FFD166"]
+      }
+    },
+    {
+      "id": "aura.champions-laurel",
+      "name": "Champion's Laurel",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Legends are made one study session at a time.",
+      "animated": true,
+      "art": {
+        "shape": "champion-laurel",
+        "colors": ["#F5C542", "#5FA777"]
+      }
+    }
+  ]
+}

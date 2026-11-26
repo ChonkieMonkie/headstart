@@ -28,6 +28,7 @@ import {
   WORK_MODES,
   type WorkMode,
 } from "./events.ts";
+import { giftsDue } from "./gifts.ts";
 import { plaquesToEarn } from "./plaques.ts";
 import { checkSettings, type Settings } from "./settings.ts";
 import {
@@ -972,6 +973,17 @@ export function claimWelcomeGift(
     crateType: "study",
     reason: "welcome-back",
   });
+}
+
+/** A crate earned by a habit (see `giftsDue`). Only gifts that are due can be given. */
+export function claimGift(
+  state: ProgressState,
+  ctx: CoreContext,
+  input: { giftId: string; now: number },
+): CommandResult<EventOf<"gift.granted">> {
+  const gift = giftsDue(state, input.now, ctx).find((g) => g.giftId === input.giftId);
+  if (!gift) return reject("No such gift is waiting");
+  return accept({ type: "gift.granted", ...gift });
 }
 
 export const MAX_REFLECTION_LENGTH = 200;

@@ -28,6 +28,9 @@ import type { Settings } from "./settings.ts";
 
 export const EVENT_SCHEMA = 1;
 
+/** Why a crate was given. Only "welcome-back" exists in logs from before v0.5.0. */
+export type GiftReason = "welcome-back" | "weekly-goal" | "streak" | "milestone";
+
 export type FocusRating = 1 | 2 | 3 | 4 | 5;
 
 /** A rough size for a task: Small is about 1 session, Medium 2 to 3, Large 4 or more. */
@@ -208,8 +211,11 @@ export type StudyEvent =
   | { type: "freeze.used"; weeks: string[] }
   /** The user chose not to use freezes on these missed weeks: the run ends there. */
   | { type: "freeze.declined"; weeks: string[] }
-  /** A crate given for something other than sessions, such as coming back after time away. */
-  | { type: "gift.granted"; giftId: string; crateType: CrateType; reason: "welcome-back" }
+  /**
+   * A crate given for something other than sessions: coming back after time
+   * away, a met weekly goal, a run of met weeks or a milestone plaque.
+   */
+  | { type: "gift.granted"; giftId: string; crateType: CrateType; reason: GiftReason }
   /** The short look back at a week: three answers, any of them may be empty. */
   | { type: "reflection.saved"; week: string; well: string; blocked: string; change: string }
   /** The weekly look-ahead was finished for this week. */

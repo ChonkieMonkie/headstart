@@ -22,9 +22,9 @@
   everything else changes the debug profile, which has its own database.
 -->
 <script lang="ts">
-  import { CRATE_TYPES, type CrateType, items, type Item, SLOTS } from "@headstart/content";
+  import { CRATE_TYPES, type CrateType, items, type Item, sets, SLOTS } from "@headstart/content";
   import { developer } from "@headstart/core";
-  import { lookFor, Mascot, MASCOT_TINTS, rarityColors } from "@headstart/ui";
+  import { COVERS, coverStage, lookFor, Mascot, MASCOT_TINTS, rarityColors } from "@headstart/ui";
   import type { Study } from "$lib/study.svelte.ts";
   import Select from "./Select.svelte";
 
@@ -38,6 +38,48 @@
   let stardust = $state(1000);
   let confirmingReset = $state(false);
   let claimed = $state<Item[]>([]);
+  let setId = $state(sets[0]?.id ?? "");
+  let busy = $state(false);
+
+  const setGroups = [{ label: "", options: sets.map((set) => ({ value: set.id, label: set.name })) }];
+  /** The set's pieces (its background is the reward, not a piece). */
+  const members = $derived(items.filter((i) => i.set === setId && i.slot !== "background" && !i.grantOnly));
+  const ownedCount = $derived.by(() => {
+    void study.version;
+    return members.filter((i) => study.owned(i.id) > 0).length;
+  });
+  const stage = $derived(coverStage(ownedCount, members.length));
+
+  /** Items needed for a cover stage: one more layer at each fifth, all of them for stage 5. */
+  function neededFor(target: number, total: number): number {
+    if (target <= 0) return 0;
+    if (target >= 5) return total;
+    return Math.min(total - 1, Math.ceil((target * total) / 5));
+  }
+
+  /** Gives or takes the set's items until the cover is at the target stage. */
+  async function setStage(target: number): Promise<void> {
+    if (busy) return;
+    busy = true;
+    const goal = neededFor(Math.max(0, Math.min(5, target)), members.length);
+    let error: string | null = null;
+    const owned = members.filter((i) => study.owned(i.id) > 0);
+    const missing = members.filter((i) => study.owned(i.id) === 0);
+    if (owned.length < goal) {
+      for (const item of missing.slice(0, goal - owned.length)) {
+        error = await study.dev((_, c) => developer.giveItem(item.id, c));
+        if (error) break;
+      }
+    } else {
+      for (const item of owned.slice(goal).reverse()) {
+        error = await study.dev((st, c) => developer.takeItem(st, item.id, c));
+        if (error) break;
+      }
+    }
+    busy = false;
+    const name = sets.find((x) => x.id === setId)?.name ?? setId;
+    say(error, `${name}: level ${coverStage(goal, members.length)} of 5.`);
+  }
 
   $effect(() => {
     if (!dialog) return;
@@ -135,6 +177,20 @@
         <button type="button" onclick={async () => say(await study.dev((_, c) => developer.giveItem(itemId, c)), "Given.")}>Give</button>
         <button type="button" onclick={async () => say(await study.dev((s, c) => developer.takeItem(s, itemId, c)), "Taken.")}>Take</button>
       </div>
+    </section>
+    <section>
+      <h3>Sets <span class="muted">level {stage} of 5 · {ownedCount} of {members.length} found</span></h3>
+      <div class="row">
+        <Select bind:value={setId} groups={setGroups} label="Set" />
+        <button type="button" disabled={busy || stage === 0} onclick={() => setStage(stage - 1)}>− level</button>
+        <button type="button" disabled={busy || stage === 5} onclick={() => setStage(stage + 1)}>+ level</button>
+        <button type="button" disabled={busy || ownedCount === 0} onclick={() => setStage(0)}>Empty</button>
+        <button type="button" disabled={busy || stage === 5} onclick={() => setStage(5)}>Complete</button>
+      </div>
+      {#if COVERS[setId] && stage < 5}
+        <p class="muted">Next: {COVERS[setId]?.labels[stage]}.</p>
+      {/if}
+      <p class="muted">Gives or takes the set's own items. A finished set's plaque and background stay once earned.</p>
     </section>
     <section>
       <h3>Crates, Insight and XP</h3>

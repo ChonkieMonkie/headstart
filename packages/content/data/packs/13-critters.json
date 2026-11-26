@@ -1,0 +1,378 @@
+{
+  "shapes": {
+    "head": {
+      "bear-ear-hood": 2,
+      "duck-hat": 2,
+      "fox-hood": 2,
+      "shark-hood": 2,
+      "bunny-ear-headband": 2,
+      "hatching-egg": 3
+    },
+    "face": {
+      "whiskers": 1,
+      "cat-nose": 1
+    },
+    "outfit": {
+      "penguin-bib": 2,
+      "bell-collar": 2,
+      "tortoise-shell": 2,
+      "shoulder-parrot": 2
+    },
+    "held": {
+      "puppy-plush": 2,
+      "chick": 2,
+      "hamster": 2,
+      "hedgehog": 2,
+      "goldfish-bag": 2,
+      "ginger-kitten": 2,
+      "otter-pal": 2
+    },
+    "aura": {
+      "paw-print-trail": 1,
+      "hopping-bunny": 2,
+      "penguin-parade": 2,
+      "spirit-fox": 2
+    }
+  },
+  "items": [
+    {
+      "id": "head.bear-ear-hood-honey",
+      "name": "Honey Bear Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Round ears on a warm hood. Naps count as studying.",
+      "art": { "shape": "bear-ear-hood", "colors": ["#D9A05B", "#F6E7D8"] }
+    },
+    {
+      "id": "head.bear-ear-hood-cocoa",
+      "name": "Cocoa Bear Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Chocolate brown, with extra fluffy ears.",
+      "art": { "shape": "bear-ear-hood", "colors": ["#7A5236", "#E8C9A6"] }
+    },
+    {
+      "id": "head.bear-ear-hood-snow",
+      "name": "Snow Bear Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "White and fluffy, with pink insides to the ears.",
+      "art": { "shape": "bear-ear-hood", "colors": ["#F6F1E6", "#F4A7B9"] }
+    },
+    {
+      "id": "head.duck-hat-yellow",
+      "name": "Yellow Duck Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A duck bill over your fringe. Quack, focus.",
+      "art": { "shape": "duck-hat", "colors": ["#F5C542", "#F28A3A"] }
+    },
+    {
+      "id": "head.duck-hat-mallard",
+      "name": "Mallard Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Green head, orange bill and zero distractions.",
+      "art": { "shape": "duck-hat", "colors": ["#5FAE7E", "#D98C4A"] }
+    },
+    {
+      "id": "head.duck-hat-blue",
+      "name": "Blue Duck Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A cool blue duck that waddles to the exam hall.",
+      "art": { "shape": "duck-hat", "colors": ["#7FA8D6", "#F5C542"] }
+    },
+    {
+      "id": "face.whiskers-ink",
+      "name": "Ink Whiskers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Painted whiskers in deep ink. Very focused.",
+      "art": { "shape": "whiskers", "colors": ["#3B3F52"] }
+    },
+    {
+      "id": "face.whiskers-ginger",
+      "name": "Ginger Whiskers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Warm whiskers for a sunny study day.",
+      "art": { "shape": "whiskers", "colors": ["#E9A93A"] }
+    },
+    {
+      "id": "face.whiskers-rose",
+      "name": "Rose Whiskers",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Pink whiskers. Soft, bold and a little silly.",
+      "art": { "shape": "whiskers", "colors": ["#E9579A"] }
+    },
+    {
+      "id": "outfit.penguin-bib-classic",
+      "name": "Penguin Bib",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A smart white bib for the tuxedo-minded student.",
+      "art": { "shape": "penguin-bib", "colors": ["#F6F1E6", "#F28A3A"] }
+    },
+    {
+      "id": "outfit.penguin-bib-rose",
+      "name": "Rose Penguin Bib",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A pale pink bib with a rosy trim.",
+      "art": { "shape": "penguin-bib", "colors": ["#FFE4EE", "#E9579A"] }
+    },
+    {
+      "id": "outfit.penguin-bib-sky",
+      "name": "Sky Penguin Bib",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Blue trim on a bib as clear as a sky.",
+      "art": { "shape": "penguin-bib", "colors": ["#DDEBFF", "#5B9FE0"] }
+    },
+    {
+      "id": "held.puppy-plush-golden",
+      "name": "Golden Puppy",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A golden plush puppy. Fetch the next chapter.",
+      "art": { "shape": "puppy-plush", "colors": ["#E9A93A", "#8E5A3B"] }
+    },
+    {
+      "id": "held.puppy-plush-snowy",
+      "name": "Snowy Puppy",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A soft cream puppy for the long reading nights.",
+      "art": { "shape": "puppy-plush", "colors": ["#F6E7D8", "#C98A4B"] }
+    },
+    {
+      "id": "held.puppy-plush-slate",
+      "name": "Slate Puppy",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A quiet grey-blue puppy. Very good listener.",
+      "art": { "shape": "puppy-plush", "colors": ["#8FA3C0", "#3B3F52"] }
+    },
+    {
+      "id": "held.chick-yellow",
+      "name": "Little Chick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A yellow chick that peeps when you finish a page.",
+      "art": { "shape": "chick", "colors": ["#F5C542", "#F28A3A"] }
+    },
+    {
+      "id": "held.chick-peach",
+      "name": "Peach Chick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A soft peach chick, a little bit of morning sun.",
+      "art": { "shape": "chick", "colors": ["#FFC9A6", "#E5533D"] }
+    },
+    {
+      "id": "held.chick-lilac",
+      "name": "Lilac Chick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A lilac chick with a golden beak. Hatches ideas.",
+      "art": { "shape": "chick", "colors": ["#C9B6F2", "#F5C542"] }
+    },
+    {
+      "id": "head.fox-hood-red",
+      "name": "Red Fox Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Pointed fox ears and a white blaze on the forehead.",
+      "art": { "shape": "fox-hood", "colors": ["#E8743B", "#FFF6EC"] }
+    },
+    {
+      "id": "head.fox-hood-arctic",
+      "name": "Arctic Fox Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A pale fox hood. Very calm, very cool.",
+      "art": { "shape": "fox-hood", "colors": ["#CFE3F2", "#FFFFFF"] }
+    },
+    {
+      "id": "head.shark-hood-blue",
+      "name": "Blue Shark Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A fin on top and a pale belly band. Keep swimming.",
+      "art": { "shape": "shark-hood", "colors": ["#5B8FD6", "#F6F1E6"] }
+    },
+    {
+      "id": "head.shark-hood-sunset",
+      "name": "Sunset Shark Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A coral shark hood for a warm evening session.",
+      "art": { "shape": "shark-hood", "colors": ["#F28A8A", "#FFF3E6"] }
+    },
+    {
+      "id": "face.cat-nose-pink",
+      "name": "Pink Cat Nose",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A small pink nose. Purr-fect for quiet studying.",
+      "art": { "shape": "cat-nose", "colors": ["#F28AB0"] }
+    },
+    {
+      "id": "face.cat-nose-brown",
+      "name": "Brown Cat Nose",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A chocolate-brown nose for a serious cat.",
+      "art": { "shape": "cat-nose", "colors": ["#8E5A3B"] }
+    },
+    {
+      "id": "outfit.bell-collar-red",
+      "name": "Red Bell Collar",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A red collar with a bell. Ring it when you finish.",
+      "art": { "shape": "bell-collar", "colors": ["#E5533D", "#F5C542"] }
+    },
+    {
+      "id": "outfit.bell-collar-blue",
+      "name": "Blue Bell Collar",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A blue collar with a silver bell and quiet confidence.",
+      "art": { "shape": "bell-collar", "colors": ["#5B9FE0", "#DDEBFF"] }
+    },
+    {
+      "id": "held.hamster-honey",
+      "name": "Honey Hamster",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Full cheeks and a plan for the whole week.",
+      "art": { "shape": "hamster", "colors": ["#E0A060", "#FFF6EC"] }
+    },
+    {
+      "id": "held.hamster-blue",
+      "name": "Blue-Grey Hamster",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A calm hamster who never misses a deadline.",
+      "art": { "shape": "hamster", "colors": ["#8FA3C0", "#F6E7D8"] }
+    },
+    {
+      "id": "held.hedgehog-chestnut",
+      "name": "Chestnut Hedgehog",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A spiky friend who keeps your plans in shape.",
+      "art": { "shape": "hedgehog", "colors": ["#8E5A3B", "#F6E7D8"] }
+    },
+    {
+      "id": "held.hedgehog-sand",
+      "name": "Sandy Hedgehog",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A sandy hedgehog. Rolls up when exams come.",
+      "art": { "shape": "hedgehog", "colors": ["#D9B07A", "#FFF6EC"] }
+    },
+    {
+      "id": "head.bunny-ear-headband",
+      "name": "Bunny Ear Headband",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "Long ears that sway when you think hard.",
+      "art": { "shape": "bunny-ear-headband", "colors": ["#F28AB0", "#FFF6EC"] },
+      "animated": true
+    },
+    {
+      "id": "held.goldfish-bag",
+      "name": "Goldfish Bag",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A little fish in a bag, swimming along your hand.",
+      "art": { "shape": "goldfish-bag", "colors": ["#F28A3A", "#A8E0F5"] },
+      "animated": true
+    },
+    {
+      "id": "held.ginger-kitten",
+      "name": "Ginger Kitten",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A ginger kitten who purrs while you focus.",
+      "art": { "shape": "ginger-kitten", "colors": ["#E9B26B", "#F28AB0"] },
+      "animated": true
+    },
+    {
+      "id": "held.otter-pal",
+      "name": "Otter Pal",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "An otter that floats by, bobbing along with you.",
+      "art": { "shape": "otter-pal", "colors": ["#8E5A3B", "#F6E7D8"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.tortoise-shell",
+      "name": "Tortoise Shell",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A green shell on your back. Slow and steady wins.",
+      "art": { "shape": "tortoise-shell", "colors": ["#7DB8A8", "#3E7A3A"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.shoulder-parrot",
+      "name": "Shoulder Parrot",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A green parrot on your shoulder, bobbing along.",
+      "art": { "shape": "shoulder-parrot", "colors": ["#5FBF7A", "#F5A142"] },
+      "animated": true
+    },
+    {
+      "id": "aura.paw-print-trail",
+      "name": "Paw Print Trail",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Tiny paw prints that follow you around the room.",
+      "art": { "shape": "paw-print-trail", "colors": ["#C98A4B"] },
+      "animated": true
+    },
+    {
+      "id": "head.hatching-egg",
+      "name": "Hatching Egg",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "An egg on your head, and a chick is coming out.",
+      "art": { "shape": "hatching-egg", "colors": ["#A8E6CF", "#F5C542", "#F28AB0"] },
+      "animated": true
+    },
+    {
+      "id": "aura.hopping-bunny",
+      "name": "Hopping Bunny",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "A little bunny hops past you every few seconds.",
+      "art": { "shape": "hopping-bunny", "colors": ["#F6E7D8", "#F28AB0"] },
+      "animated": true
+    },
+    {
+      "id": "aura.penguin-parade",
+      "name": "Penguin Parade",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Four penguins waddle along your side. Keep up.",
+      "art": { "shape": "penguin-parade", "colors": ["#3B3F52", "#F5C542"] },
+      "animated": true
+    },
+    {
+      "id": "aura.spirit-fox",
+      "name": "Spirit Fox",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A glowing spirit fox that keeps you company all night.",
+      "art": { "shape": "spirit-fox", "colors": ["#F2803D", "#FFD76B"] },
+      "animated": true
+    }
+  ]
+}

@@ -158,7 +158,8 @@ function examReady(state: ProgressState, today: string): string[] {
 function finishedSets(state: ProgressState, ctx: CoreContext): string[] {
   const sets = new Map<string, boolean>();
   for (const item of ctx.catalog) {
-    if (!item.set) continue;
+    // A set's background is its reward, not one of its pieces.
+    if (!item.set || item.slot === "background") continue;
     sets.set(item.set, (sets.get(item.set) ?? true) && owns(state, item.id));
   }
   return [...sets].filter(([, done]) => done).map(([id]) => id);

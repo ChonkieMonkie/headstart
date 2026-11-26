@@ -34,7 +34,7 @@ Headstart turns studying into small, concrete sessions:
 - **Sessions are short and calm.** A 25-minute countdown (or 50, or just 5 to get going), then a break that starts once you have written down what you remember, so writing never eats into it.
 - **You remember more.** After each session you write down what you recall without looking, and your notes come back as short reviews on day 1, 3, 7, 14 and 30. Retrieval and spacing are two of the best-tested ways to make things stick.
 - **Distractions get less of a grip.** Park a stray thought in one line and keep going, get a gentle nudge when a chosen app pulls you away, and let sessions turn on Do Not Disturb.
-- **Showing up is what counts.** Starting on time, staying focused and writing your recall earn XP, Study Crates and plaques. Crates hold items for your study buddy, and they are only ever earned by studying, never sold.
+- **Showing up is what counts.** Starting on time, staying focused and writing your recall earn XP, Study Crates and plaques, and meeting your weekly goal earns bigger crates. Crates hold items for your study buddy, and they are only ever earned by studying, never sold.
 - **A missed day costs nothing.** Your goal is a number of study days a week, so one bad day never breaks a streak, and coming back after a break is welcomed, not punished.
 - **Planning fits your week.** Plan the next few days around your lectures, drag tasks into free time, and see what you planned and what you actually did in one calendar.
 - **It is yours.** Everything is stored on your computer. No account, no ads, no tracking.
@@ -48,7 +48,7 @@ Headstart turns studying into small, concrete sessions:
 1. **Plan.** Add your courses, their tasks and to-dos. Drag a task into the week plan, or drag over free time, and it fills with sessions and breaks.
 2. **Focus.** Start in one click from the app, the menu bar or a keyboard shortcut. Study in the window, in full screen or with a small timer that floats above everything else.
 3. **Recall.** When the timer ends, write down what you remember (with maths if you need it), add a question for future you, rate your focus and tick off what you got done. The rest goes back on the list.
-4. **Collect.** Every three sessions earn a Study Crate. Open it for an item, put it on your buddy, and work towards complete sets and grander plaques.
+4. **Collect.** Every three sessions earn a Study Crate, and a met weekly goal a Weekly Gift. Open it for an item, put it on your buddy, and watch your sets fill up.
 
 ## Plan your week
 
@@ -91,7 +91,7 @@ Headstart turns studying into small, concrete sessions:
 
 - **Park a thought.** One line and Enter, from the focus view (press <kbd>T</kbd>), the compact timer or the menu bar, and it waits for the break. Most thoughts only need ticking off; the ones about studying can become a to-do.
 - **A gentle nudge.** Pick the apps that tend to pull you away. When one of them has been in front for 10 seconds during a session, a small card asks if you want to go back. Headstart never looks inside the app and never saves which app it was.
-- **Do Not Disturb.** Sessions can turn on a Focus on macOS (through two Shortcuts you make once) or hide notification banners on GNOME, and turn it off again when they end.
+- **Do Not Disturb.** Sessions can turn on a Focus on macOS (through two Shortcuts you make once) or hide notification banners on GNOME, and turn it off again when they end. A small moon in the focus view shows that it is on, or that it could not be turned on.
 
 ## Keep going, week by week
 
@@ -123,7 +123,16 @@ Pick **Inky**, **Axo** or **Maple** when you first open the app. Your buddy show
   <img src="docs/readme/moods.png" width="900" alt="Maple in seven moods: idle, focus, break, celebrate, nudge, sleepy and welcome">
 </p>
 
-There are **154 items** to find in five themed sets, from simple commons to animated legendary skins. Duplicates turn into **Insight**, which crafts the exact item you are missing. Bad luck has a ceiling: an Epic is guaranteed within 15 crates and a Legendary within 60, and every drop chance is shown before you open a crate.
+There are **about 1,000 items** to find: hats, glasses, outfits, things to hold, animated auras and skins, many of them in several colourways. Eight themed sets (Library, Deep Sea, Space, Cosy, Garden, Rainy Day, Café and Student Life) each have a little scene on their cover that is furnished as you find more of the set, and a complete set gives you that scene as a background behind your buddy.
+
+Crates come in four kinds, all earned by studying:
+
+- **Study Crate:** every three sessions, one item.
+- **Weekly Gift:** every week you meet your goal, two items.
+- **Streak Chest:** every fourth week in a row, three items, at least one of them Rare or better. The week card shows the flames lighting up on the way.
+- **Milestone Vault:** for a big plaque tier or a complete set, one Epic or Legendary item.
+
+Duplicates turn into **Insight**, which crafts the exact item you are missing. Bad luck has a ceiling: an Epic is guaranteed within 15 crates and a Legendary within 60, and every drop chance is shown before you open a crate.
 
 ## A look inside
 
@@ -140,12 +149,12 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 <p align="center">
   <img src="docs/readme/screen-crate.png" width="820" alt="A Study Crate revealing a rare Berry Hoodie on Maple, part of the Cosy set, with the next Epic within 10 crates and the next Legendary within 55">
 </p>
-<p align="center"><b>Study Crates.</b> Each item is revealed on your own buddy and can be put on right away.</p>
+<p align="center"><b>Study Crates.</b> Each crate opens in its own way, hopping once more for every step up in rarity, and the item is revealed on your own buddy, ready to put on.</p>
 
 <p align="center">
   <img src="docs/readme/screen-collection.png" width="820" alt="The wardrobe: Maple wearing a striped beanie and the Berry Hoodie, with the items found so far for each slot">
 </p>
-<p align="center"><b>Collection.</b> A wardrobe for each buddy, every item in the catalogue, your progress on each set and your plaques.</p>
+<p align="center"><b>Collection.</b> A wardrobe for each buddy, every item in the catalogue with its colourways, the set covers that fill up as you collect, and your plaques.</p>
 
 <p align="center">
   <img src="docs/readme/screen-courses.png" width="820" alt="The Courses page: Linear Algebra with its exam in 23 days and buttons for its plan and notes, the task Eigenvalues, chapter 5 and its to-dos, each with a grip to drag it into order, and the next step marked">
@@ -174,10 +183,10 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 - **Planned sessions and reminders:** a notification before a session starts and one gentle nudge if it has not, at most a few a day. Starting on time earns a bonus.
 - **Focus sessions** of 25 or 50 minutes or just 5, with breaks that follow the length and start once your notes are done, a long break after every fourth session in a row, and an optional automatic start of the next one.
 - **Three ways to focus:** the normal window, full screen that stays on top, or a compact timer you can drag anywhere.
-- **Focus tools:** park a thought for the break, a gentle nudge when a chosen app pulls you away (macOS, Windows and Linux on X11), and Do Not Disturb during sessions (macOS and GNOME).
+- **Focus tools:** park a thought for the break, a gentle nudge when a chosen app pulls you away (macOS, Windows and Linux on X11), and Do Not Disturb during sessions (macOS and GNOME), with a small moon in the focus view that shows it is on.
 - **Menu bar and tray:** a progress ring with the countdown beside it on macOS, a panel to run a whole session without opening the app, and a global shortcut (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>, <kbd>⌥⇧H</kbd> on a Mac).
 - **Weekly goal:** study days a week with a rest day, weeks in a row instead of a daily streak, freezes that ask before they are used, and a softer week after time away.
-- **Rewards:** XP, levels with Insight and ranks, Study Crates, Insight, crafting, a pity timer, and plaques that grow through five tiers.
+- **Rewards:** XP, levels with Insight and ranks, four kinds of crates (Study Crate, Weekly Gift, Streak Chest and Milestone Vault), about 1,000 items with colourways, eight sets with covers that fill up and a background for each complete set, Insight, crafting, a pity timer, and plaques that grow through five tiers.
 - **Light and dark:** a calm dark theme, a light one, or follow your computer. Picked during setup and changeable any time.
 - **Settings:** theme, session length, breaks, focus tools, reminders, nudges, sound, calendars, the weekly look-ahead, reduced motion and a test notification.
 - **Updates** install from inside the app.
@@ -187,11 +196,11 @@ There are **154 items** to find in five themed sets, from simple commons to anim
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/readme/roadmap-dark.png">
-    <img src="docs/readme/roadmap-light.png" width="900" alt="Three stages. 1, The study loop, all done: everything you need to study well on your own. 2, Habits and depth, mostly done: the week planner with calendar import and sync, dark mode, spaced reviews, focus tools, and weekly goals with plaques are done; a bigger collection and deeper stats are next. 3, Friends and sync: accounts and sync through a server, friends and leaderboards, study rooms, group goals and a phone companion">
+    <img src="docs/readme/roadmap-light.png" width="900" alt="Three stages. 1, The study loop, all done: everything you need to study well on your own. 2, Habits and depth, mostly done: the week planner with calendar import and sync, dark mode, spaced reviews, focus tools, weekly goals with plaques, and more crates, sets and a much bigger collection are done; deeper stats are next. 3, Friends and sync: accounts and sync through a server, friends and leaderboards, study rooms, group goals and a phone companion">
   </picture>
 </p>
 
-Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is well under way: the week planner and dark mode came in [v0.3.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.3.0), and spaced reviews, focus tools, weekly goals and plaques in [v0.4.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.4.0). A bigger collection and deeper stats come next. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
+Headstart grows in three stages. **Stage 1 is out** ([v0.2.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.2.0)), and **stage 2** is well under way: the week planner and dark mode came in [v0.3.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.3.0), spaced reviews, focus tools, weekly goals and plaques in [v0.4.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.4.0), and new crates, eight sets and about 1,000 items in [v0.5.0](https://github.com/ChonkieMonkie/headstart/releases/tag/v0.5.0). Deeper stats come next. Each stage ships in small releases, and installed apps update themselves. Stages 1 and 2 never need a server; stage 3 adds an optional one for sync and friends, and the app keeps working fully offline.
 
 ## Built to run all day
 
@@ -241,17 +250,18 @@ apps/desktop/         Tauri 2 app: SvelteKit UI in src/, Rust shell in src-tauri
                       Apple Calendar through EventKit, the distraction guard and Do Not Disturb)
 packages/core/        domain logic in pure TypeScript: event log, timer, XP, crates, pity,
                       the week planner, spaced reviews, weekly goals, plaques and a small .ics reader
-packages/content/     items (with how each is drawn), sets, crate odds, reward rules, ranks and
-                      plaques as JSON, validated at startup
-packages/ui/          design tokens, fonts, the mascot renderer and shared Svelte components
+packages/content/     items (with how each is drawn, the bulk of them in themed packs), sets, crate
+                      odds, reward rules, ranks and plaques as JSON, validated at startup
+packages/ui/          design tokens, fonts, the mascot renderer with every item's drawing, the set
+                      covers and shared Svelte components
 scripts/              repository tooling, such as the licence check
 .github/workflows/    CI and release builds for all three operating systems
 ```
 
 ### Releasing
 
-1. Bump `version` in `apps/desktop/package.json` (the app reads it from there) and in `apps/desktop/src-tauri/Cargo.toml`.
-2. Commit, then tag and push: `git tag v0.2.0 && git push --tags`.
+1. Bump `version` in `apps/desktop/package.json` (the app reads it from there), in `apps/desktop/src-tauri/Cargo.toml` and in the `headstart` entry of `Cargo.lock`.
+2. Commit, then tag and push: `git tag v0.5.0 && git push --tags`.
 3. The Release workflow builds every installer and creates a **draft** release.
 4. Test the draft, then publish it. Installed apps pick up the update on their next start.
 

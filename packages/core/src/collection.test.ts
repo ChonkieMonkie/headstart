@@ -18,7 +18,7 @@ import { items, sets } from "@headstart/content";
 import { describe, expect, it } from "vitest";
 import { collectionCount, setProgress, slotCount } from "./collection.ts";
 import { defaultContext } from "./index.ts";
-import { createInitialState } from "./state.ts";
+import { applyEvent, createInitialState } from "./state.ts";
 
 describe("collection progress", () => {
   it("starts with only the three starter skins", () => {
@@ -36,7 +36,28 @@ describe("collection progress", () => {
     state.inventory.set("held.pencil", 2);
     const library = setProgress(state, items, sets).find((p) => p.set.id === "library");
     expect(library?.owned).toBe(2);
-    expect(library?.total).toBe(items.filter((i) => i.set === "library").length);
+    // The background is the set's reward, not one of its pieces.
+    expect(library?.total).toBe(
+      items.filter((i) => i.set === "library" && i.slot !== "background").length,
+    );
+  });
+
+  it("gives a set's background when the set plaque is recorded", () => {
+    const state = createInitialState(defaultContext);
+    expect(state.inventory.has("background.cosy-library")).toBe(false);
+    applyEvent(
+      state,
+      {
+        id: "e1",
+        occurredAt: "2026-11-26T10:00:00.000Z",
+        deviceId: "d",
+        seq: 1,
+        schema: 1,
+        event: { type: "plaque.earned", plaqueId: "set:library", tier: 1 },
+      },
+      defaultContext,
+    );
+    expect(state.inventory.get("background.cosy-library")).toBe(1);
   });
 
   it("leaves retired items out until someone owns one", () => {

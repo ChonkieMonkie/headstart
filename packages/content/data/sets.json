@@ -33,5 +33,26 @@
     "description": "Fresh, green and growing.",
     "tint": "#E3F1DC",
     "color": "#3E7A3A"
+  },
+  {
+    "id": "rainy-day",
+    "name": "Rainy Day",
+    "description": "For grey weeks when staying in to study is the plan.",
+    "tint": "#DCE6F2",
+    "color": "#3F7CB8"
+  },
+  {
+    "id": "cafe",
+    "name": "Café",
+    "description": "Coffee, crumbs and a table by the window.",
+    "tint": "#EFE4D6",
+    "color": "#8A5A3B"
+  },
+  {
+    "id": "student-life",
+    "name": "Student Life",
+    "description": "Everything a student's week is really made of.",
+    "tint": "#F6E2E6",
+    "color": "#C2416B"
   }
 ]

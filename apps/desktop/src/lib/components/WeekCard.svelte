@@ -19,6 +19,7 @@
 <!-- This week on Today: study days against the goal, with the focus time beside. Weeks met in a row take the place of a daily streak. -->
 <script lang="ts">
   import { addDays, formatMinutes, MAX_REFLECTION_LENGTH } from "@headstart/core";
+  import Crate from "$lib/components/Crate.svelte";
   import { plural } from "$lib/format.ts";
   import type { Study } from "$lib/study.svelte.ts";
 
@@ -30,6 +31,8 @@
   const weeks = $derived(study.weeks);
   const week = $derived(weeks?.current ?? null);
   const left = $derived(week ? Math.max(0, week.goal - week.studyDays) : 0);
+  /** Flames on the Streak Chest: one for each week of the run towards the next chest. */
+  const flames = $derived(study.streakFlames);
   const lastWeek = $derived(weeks ? addDays(weeks.current.week, -7) : null);
   /** The one change written in the look back at last week. */
   const change = $derived(lastWeek ? (study.reflection(lastWeek)?.change ?? "") : "");
@@ -89,6 +92,12 @@
       {#if week.returnWeek}The goal is halved this week while you get going again.{/if}
     </p>
     <div class="foot">
+      <span class="chest" title="Streak Chest: a flame lights for every week met in a row. Four flames open it.">
+        <Crate type="streak" size={46} {flames} still />
+        <span>
+          {#if flames === 4}<b>Streak Chest earned</b>{:else}Streak Chest: <b>{flames} of 4</b> weeks{/if}
+        </span>
+      </span>
       {#if weeks.run > 0}
         <span class="chip">{plural(weeks.run, "week")} in a row</span>
       {:else if weeks.best > 0}
@@ -280,6 +289,18 @@
   .chip.quiet {
     background: var(--hs-ground);
     color: var(--hs-ink-muted);
+  }
+
+  .chest {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--hs-ink-subtle);
+  }
+
+  .chest b {
+    color: var(--hs-ink);
   }
 
   .freezes {

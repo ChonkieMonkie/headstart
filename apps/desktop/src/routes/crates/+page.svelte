@@ -18,9 +18,22 @@
 
 <!-- Crates: open the Study Crates you have earned, with the odds shown before you open one. -->
 <script lang="ts">
-  import { formatPercent, type OddsRow } from "@headstart/core";
-  import { lookFor, Mascot, MASCOT_NAMES, previewSpecies, rarityColorsLight as rarityColors, InsightIcon } from "@headstart/ui";
-  import StudyCrate from "$lib/components/StudyCrate.svelte";
+  import { formatPercent, type OddsRow, rarityRank } from "@headstart/core";
+  import { type CrateType, RARITIES, type Rarity } from "@headstart/content";
+  import {
+    COVERS,
+    coverStage,
+    InsightIcon,
+    lookFor,
+    Mascot,
+    MASCOT_NAMES,
+    previewSpecies,
+    rarityColorsLight as rarityColors,
+  } from "@headstart/ui";
+  import Crate from "$lib/components/Crate.svelte";
+  import RevealFx from "$lib/components/RevealFx.svelte";
+  import { CRATE_INFO } from "$lib/crateArt.ts";
+  import { crateSoundOn, playHop, playReveal, setCrateSound } from "$lib/crateSound.ts";
   import { useApp } from "$lib/context.ts";
   import { plural } from "$lib/format.ts";
   import type { OpenedCrate } from "$lib/study.svelte.ts";
@@ -29,17 +42,36 @@
   const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary" };
   const reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let phase = $state<"closed" | "opening" | "revealed">("closed");
+  /** closed → charging (hops, the glow climbs) → tell (trembles) → open (lid, bow, chest lid, door) → revealed. */
+  let phase = $state<"closed" | "charging" | "tell" | "open" | "revealed">("closed");
+  let hop = $state(-1);
+  let hopTime = $state(0.46);
+  let level = $state(0);
+  let bestRank = $state(0);
   let opened = $state<OpenedCrate | null>(null);
+  let openedType = $state<CrateType>("study");
+  let glow = $state("transparent");
   let shown = $state(0);
+  /** Bumped for every reveal, so its effect plays again. */
+  let revealKey = $state(0);
+  let animate = $state(true);
   let error = $state<string | null>(null);
   let equipped = $state(false);
+  let sound = $state(crateSoundOn());
+  let timers: ReturnType<typeof setTimeout>[] = [];
 
   const waiting = $derived(study.waitingCrates);
-  const odds = $derived(study.summary?.studyCrateOdds ?? []);
+  const current = $derived(waiting[0] ?? null);
+  const shownType = $derived<CrateType>(phase === "closed" ? (current?.type ?? "study") : openedType);
+  const info = $derived(CRATE_INFO[shownType]);
+  const odds = $derived(study.oddsFor(shownType));
   const plain = $derived(odds.filter((row) => row.guaranteedWithin === null));
   const guaranteed = $derived(odds.filter((row) => row.guaranteedWithin !== null));
-  const drop = $derived(opened?.drops[shown] ?? null);
+  /** Items of a crate are shown one at a time, the best one last. */
+  const drops = $derived(
+    opened ? [...opened.drops].sort((a, b) => rarityRank(a.rarity) - rarityRank(b.rarity)) : [],
+  );
+  const drop = $derived(drops[shown] ?? null);
   const item = $derived(drop?.item ?? null);
   const species = $derived(item ? previewSpecies(item, study.mascot ?? "maple") : (study.mascot ?? "maple"));
   const fitsMine = $derived(!!item && !!study.mascot && species === study.mascot);
@@ -49,6 +81,13 @@
       : null,
   );
   const set = $derived(item ? study.setOf(item) : null);
+  /** "the lamp lights up" when this find added a layer to the set's cover. */
+  const newLayer = $derived.by(() => {
+    if (!set || !drop || drop.duplicate) return null;
+    const after = coverStage(set.owned, set.total);
+    const before = coverStage(set.owned - 1, set.total);
+    return after > before ? (COVERS[set.set.id]?.labels[after - 1] ?? null) : null;
+  });
   const onlyFor = $derived(item?.fits?.length === 1 ? item.fits[0] : null);
   const history = $derived(
     (study.state?.crates ?? [])
@@ -57,26 +96,92 @@
       .reverse(),
   );
   /** Crates still waiting besides the one on screen. */
-  const more = $derived(waiting.length - (phase === "revealed" ? 0 : 1));
+  // The crate on screen is still waiting only while it is closed.
+  const more = $derived(waiting.length - (phase === "closed" ? 1 : 0));
+  /** The reveal of Epic and Legendary items waits a moment for the effect. */
+  const revealDelay = $derived(!animate || !drop ? 0 : drop.rarity === "legendary" ? 0.5 : drop.rarity === "epic" ? 0.3 : 0);
+  const opening = $derived(phase === "charging" || phase === "tell" || phase === "open");
+  /** How long the crate trembles before it opens, by the best rarity inside. */
+  const TELL = [0.12, 0.15, 0.25, 0.45, 0.7];
 
   const oddsColor = (row: OddsRow) => (row.rarity === "epic" ? "#C4B1FF" : "#F5B85A");
 
+  function clearTimers(): void {
+    for (const t of timers) clearTimeout(t);
+    timers = [];
+  }
+
+  function reveal(index: number): void {
+    shown = index;
+    revealKey += 1;
+    phase = "revealed";
+    const rarity = drops[index]?.rarity;
+    if (rarity) playReveal(rarity);
+  }
+
   async function open(): Promise<void> {
+    if (!current) return;
     error = null;
     equipped = false;
-    phase = "opening";
-    const [result] = await Promise.all([
-      study.openCrate(),
-      new Promise((resolve) => setTimeout(resolve, reducedMotion ? 0 : 900)),
-    ]);
+    openedType = current.type;
+    const result = await study.openCrate(current.id);
     if (typeof result === "string") {
       error = result;
-      phase = "closed";
       return;
     }
     opened = result;
-    shown = 0;
-    phase = "revealed";
+    animate = !reducedMotion;
+    if (!animate) {
+      reveal(0);
+      return;
+    }
+    const best = result.drops.reduce<Rarity>(
+      (top, d) => (rarityRank(d.rarity) > rarityRank(top) ? d.rarity : top),
+      "common",
+    );
+    // One hop per rarity step. The glow starts grey and takes the next rarity's
+    // colour on every hop, so where it stops is the best item inside.
+    const rank = rarityRank(best);
+    const hops = rank + 1;
+    bestRank = rank;
+    hopTime = 0.46 - 0.025 * (hops - 1);
+    phase = "charging";
+    for (let i = 0; i < hops; i++) {
+      timers.push(
+        setTimeout(() => {
+          hop = i;
+          level = i;
+          glow = rarityColors[RARITIES[i] ?? "common"].dot;
+          playHop(i, hopTime * 0.76);
+        }, i * hopTime * 1000),
+      );
+    }
+    const charged = hops * hopTime;
+    const tell = TELL[rank] ?? 0.2;
+    timers.push(setTimeout(() => (phase = "tell"), charged * 1000));
+    timers.push(setTimeout(() => (phase = "open"), (charged + tell) * 1000));
+    timers.push(setTimeout(() => reveal(0), (charged + tell + 0.42) * 1000));
+  }
+
+  /** A click or Space during the opening skips straight to the result. */
+  function skip(): void {
+    if (!opening) return;
+    clearTimers();
+    animate = false;
+    reveal(0);
+  }
+
+  function onKey(event: KeyboardEvent): void {
+    if (event.key === " " && opening) {
+      event.preventDefault();
+      skip();
+    }
+  }
+
+  function nextItem(): void {
+    equipped = false;
+    animate = !reducedMotion;
+    reveal(shown + 1);
   }
 
   async function equipNow(): Promise<void> {
@@ -87,12 +192,25 @@
   }
 
   function next(): void {
+    clearTimers();
     opened = null;
     phase = "closed";
+    hop = -1;
+    level = 0;
+    glow = "transparent";
     equipped = false;
     error = null;
   }
+
+  function toggleSound(): void {
+    sound = !sound;
+    setCrateSound(sound);
+  }
+
+  $effect(() => () => clearTimers());
 </script>
+
+<svelte:window onkeydown={onKey} />
 
 {#snippet oddsList()}
   <div class="odds">
@@ -106,7 +224,8 @@
   </div>
 {/snippet}
 
-<div class="stage">
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions (Space skips too) -->
+<div class="stage" onclick={skip}>
   <header class="top">
     <h1 class="visually-hidden">Crates</h1>
     <div class="chips">
@@ -116,37 +235,40 @@
       {#if more > 0}
         <span class="chip">{plural(more, "more crate")} waiting</span>
       {/if}
+      <button type="button" class="chip sound" aria-pressed={sound} onclick={toggleSound}>
+        Sound {sound ? "on" : "off"}
+      </button>
     </div>
   </header>
 
   {#if phase === "revealed" && drop}
     <div class="reveal" style:--ray={rarityColors[drop.rarity].dot}>
       <div class="burst">
-        <svg class="rays" viewBox="0 0 380 380" aria-hidden="true">
-          <g fill="var(--ray)" opacity="0.22">
-            <polygon points="190,190 180,0 200,0" />
-            <polygon points="190,190 180,380 200,380" />
-            <polygon points="190,190 0,180 0,200" />
-            <polygon points="190,190 380,180 380,200" />
-            <polygon points="190,190 50,40 64,30" />
-            <polygon points="190,190 330,340 316,350" />
-            <polygon points="190,190 340,50 330,36" />
-            <polygon points="190,190 40,330 50,344" />
-          </g>
-          <circle cx="190" cy="190" r="130" fill="var(--ray)" opacity="0.18" />
-        </svg>
-        <div class="prize" style:background={rarityColors[drop.rarity].bg}>
+        {#key revealKey}
+          {#if animate}<RevealFx rarity={drop.rarity} color={rarityColors[drop.rarity].dot} />{/if}
+        {/key}
+        {#key revealKey}
+        <div
+          class="prize {drop.rarity}"
+          class:fade={!animate}
+          style:background={rarityColors[drop.rarity].bg}
+          style:--delay="{revealDelay}s"
+        >
+          {#if animate && rarityRank(drop.rarity) >= 2}<span class="shine" aria-hidden="true"></span>{/if}
           {#if look}
             <Mascot {look} mood="celebrate" size={240} />
           {:else}
             <InsightIcon size={140} label="Insight" />
           {/if}
         </div>
+        {/key}
       </div>
 
       <div class="details">
         <div class="tags">
-          <span class="tag" style:background={rarityColors[drop.rarity].fg}>{RARITY_LABEL[drop.rarity]}</span>
+          {#key revealKey}
+            <span class="tag" class:stamp={animate} style:background={rarityColors[drop.rarity].fg} style:--delay="{revealDelay}s">{RARITY_LABEL[drop.rarity]}</span>
+          {/key}
           {#if onlyFor}<span class="tag light only">{MASCOT_NAMES[onlyFor]} only</span>{/if}
           {#if item && !drop.duplicate}<span class="tag light new">New</span>{/if}
           {#if drop.duplicate}<span class="tag light dup">Duplicate</span>{/if}
@@ -161,14 +283,15 @@
         {/if}
         {#if set && item}
           <p class="text">Part of the <b>{set.set.name}</b> set ({set.owned} of {set.total} found).</p>
+          {#if newLayer}<p class="text layer"><b>{set.set.name}:</b> {newLayer}.</p>{/if}
           <div class="bar" aria-hidden="true"><div style:width="{(set.owned / set.total) * 100}%"></div></div>
         {/if}
-        {#if opened && opened.drops.length > 1}
-          <p class="text small">Item {shown + 1} of {opened.drops.length}</p>
+        {#if drops.length > 1}
+          <p class="text small">Item {shown + 1} of {drops.length}{shown < drops.length - 1 ? ", the best comes last" : ""}</p>
         {/if}
         <div class="actions">
-          {#if opened && shown < opened.drops.length - 1}
-            <button type="button" class="gold" onclick={() => (shown += 1)}>Next item</button>
+          {#if shown < drops.length - 1}
+            <button type="button" class="gold" onclick={nextItem}>Next item</button>
           {:else if waiting.length > 0}
             <button type="button" class="gold" onclick={next}>Open next crate</button>
           {/if}
@@ -184,15 +307,29 @@
         {#if error}<p class="error" role="alert">{error}</p>{/if}
       </div>
     </div>
-  {:else if waiting.length > 0 || phase === "opening"}
+  {:else if waiting.length > 0 || opening}
     <div class="closed">
-      <p class="eyebrow">Earned for {plural(study.context.rewards.studyCrateEvery, "focus session")}</p>
-      <h2>Study Crate</h2>
-      <StudyCrate shaking={phase === "opening"} />
+      <p class="eyebrow">{info.earned}</p>
+      <h2>{info.name}</h2>
+      <Crate
+        type={shownType}
+        phase={phase === "charging" || phase === "tell" || phase === "open" ? phase : "idle"}
+        {hop}
+        {hopTime}
+        {glow}
+        {level}
+        float={bestRank === 4}
+        gather={bestRank >= 2}
+        gatherTime={(bestRank + 1) * hopTime + (TELL[bestRank] ?? 0.2)}
+      />
       {@render oddsList()}
-      <button type="button" class="gold big" disabled={phase === "opening"} onclick={open}>
-        {phase === "opening" ? "Opening…" : "Open crate"}
-      </button>
+      {#if phase === "closed"}
+        <button type="button" class="gold big" onclick={open}>
+          Open {info.name}
+        </button>
+      {:else}
+        <p class="text small">Click or press Space to skip</p>
+      {/if}
       {#if error}<p class="error" role="alert">{error}</p>{/if}
     </div>
   {:else}
@@ -260,6 +397,7 @@
   .chips {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
   }
 
@@ -313,6 +451,11 @@
     color: var(--hs-focus-text-muted);
   }
 
+  .layer {
+    color: #ffe08a;
+    font-weight: 800;
+  }
+
   .text b {
     color: var(--hs-focus-text);
   }
@@ -355,12 +498,21 @@
     justify-content: center;
   }
 
-  .rays {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    animation: cr-spin 30s linear infinite;
+
+  .chips .sound {
+    min-height: 0;
+    padding: 8px 12px;
+    border-radius: 999px;
+    line-height: inherit;
+  }
+
+  .sound {
+    border: 0;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
   }
 
   .prize {
@@ -375,7 +527,44 @@
     height: 260px;
     border: 4px solid var(--ray);
     border-radius: 28px;
-    animation: cr-pop 0.6s ease-out both;
+    z-index: 1;
+    overflow: hidden;
+    /* Out of the crate: up from below, overshoot, settle, then float. */
+    animation:
+      cr-emerge 0.6s var(--delay, 0s) cubic-bezier(0.2, 0.8, 0.3, 1.1) both,
+      cr-bob 3.2s calc(var(--delay, 0s) + 0.7s) ease-in-out infinite;
+  }
+
+  .prize.epic {
+    animation-name: cr-emerge-tilt, cr-bob;
+  }
+
+  .prize.legendary {
+    animation-name: cr-emerge-spin, cr-bob;
+  }
+
+  .shine {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    width: 50px;
+    height: 140%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+    opacity: 0;
+    animation: cr-shine 0.7s calc(var(--delay, 0s) + 0.55s) ease-in-out both;
+  }
+
+  .stamp {
+    animation: cr-stamp 0.35s calc(var(--delay, 0s) + 0.45s) ease-out both;
+  }
+
+  .prize.fade {
+    animation: cr-fade 0.3s ease-out both;
+  }
+
+  .details {
+    position: relative;
+    z-index: 1;
   }
 
   .details {
@@ -563,9 +752,103 @@
     white-space: nowrap;
   }
 
-  @keyframes cr-spin {
-    to {
+
+  @keyframes cr-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes cr-emerge {
+    0% {
+      opacity: 0;
+      transform: translateY(90px) scale(0.2);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(-26px) scale(1.12);
+    }
+    80% {
+      transform: translateY(4px) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes cr-emerge-tilt {
+    0% {
+      opacity: 0;
+      transform: translateY(90px) scale(0.2) rotate(0);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(-26px) scale(1.12) rotate(-12deg);
+    }
+    80% {
+      transform: translateY(4px) scale(0.96) rotate(3deg);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes cr-emerge-spin {
+    0% {
+      opacity: 0;
+      transform: translateY(90px) scale(0.2) rotate(0);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(-26px) scale(1.12) rotate(300deg);
+    }
+    80% {
+      transform: translateY(4px) scale(0.96) rotate(370deg);
+    }
+    100% {
+      opacity: 1;
       transform: rotate(360deg);
+    }
+  }
+
+  @keyframes cr-bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -6px;
+    }
+  }
+
+  @keyframes cr-shine {
+    0% {
+      opacity: 0;
+      transform: translateX(-200px) skewX(-20deg);
+    }
+    20% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(200px) skewX(-20deg);
+    }
+  }
+
+  @keyframes cr-stamp {
+    0% {
+      opacity: 0;
+      transform: scale(2.2);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 

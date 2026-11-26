@@ -65,7 +65,13 @@
     {/if}
     <div class="readout" data-tauri-drag-region>
       <span class="clock" role="timer" data-tauri-drag-region>{formatDuration(study.remaining)}</span>
-      <span class="label" data-tauri-drag-region>{label}</span>
+      <span class="label" data-tauri-drag-region>
+        {label}
+        {#if study.dndActive || study.dndError}
+          {@const text = study.dndActive ? "Do Not Disturb is on" : "Do Not Disturb did not turn on"}
+          <svg class="moon" class:failed={!study.dndActive} viewBox="0 0 16 16" width="10" height="10" role="img" aria-label={text}><title>{text}</title><path d="M9.6 1.6a6.6 6.6 0 1 0 4.9 10.3A6 6 0 0 1 9.6 1.6z" /></svg>
+        {/if}
+      </span>
     </div>
     <div class="buttons">
       {#if study.active}
@@ -131,6 +137,18 @@
 </section>
 
 <style>
+  .moon {
+    margin-left: 4px;
+    vertical-align: -1px;
+    fill: currentColor;
+    opacity: 0.8;
+  }
+
+  .moon.failed {
+    fill: #ffc98a;
+    opacity: 1;
+  }
+
   .compact {
     height: 100vh;
     box-sizing: border-box;

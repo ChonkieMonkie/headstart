@@ -20,13 +20,16 @@ import {
   type MascotId,
   type SkinArt,
   SLOTS,
-  WEAR_SHAPES,
+  sets,
+  shapeTables,
+  WEAR_SLOTS,
   type WearArt,
-  type WearSlot,
 } from "@headstart/content";
 import { describe, expect, it } from "vitest";
+import { COVERS, coverStage, itemsToNextStage, renderCover } from "../covers/index.ts";
 import { GEOMETRY, MOOD_LOOKS, MOODS } from "./geometry.ts";
 import { itemPreview, lookFor } from "./look.ts";
+import { SCENES } from "./packs/index.ts";
 import { renderMascot } from "./render.ts";
 import { WEAR_DRAWINGS } from "./wear.ts";
 
@@ -65,12 +68,24 @@ describe("mascot renderer", () => {
     }
   });
 
-  it("has a drawing for every shape the catalogue can use", () => {
-    for (const slot of Object.keys(WEAR_SHAPES) as WearSlot[]) {
+  it("has a drawing for every shape and scene the catalogue can use, and nothing more", () => {
+    for (const slot of WEAR_SLOTS) {
       const drawings: Record<string, unknown> = WEAR_DRAWINGS[slot];
-      for (const shape of Object.keys(WEAR_SHAPES[slot])) {
+      for (const shape of Object.keys(shapeTables.wear[slot])) {
         expect(typeof drawings[shape], `${slot}.${shape}`).toBe("function");
       }
+      for (const shape of Object.keys(drawings)) {
+        expect(
+          shapeTables.wear[slot][shape],
+          `${slot}.${shape} is drawn but not listed`,
+        ).toBeDefined();
+      }
+    }
+    for (const scene of Object.keys(shapeTables.scenes)) {
+      expect(typeof SCENES[scene], `scene ${scene}`).toBe("function");
+    }
+    for (const scene of Object.keys(SCENES)) {
+      expect(shapeTables.scenes[scene], `scene ${scene} is drawn but not listed`).toBeDefined();
     }
   });
 
@@ -80,10 +95,9 @@ describe("mascot renderer", () => {
         expect((item.art as SkinArt).animation !== undefined, item.id).toBe(item.animated === true);
         continue;
       }
+      if (item.slot === "background") continue;
       const art = item.art as WearArt;
-      const draw = (WEAR_DRAWINGS[item.slot] as Record<string, typeof WEAR_DRAWINGS.head.beanie>)[
-        art.shape
-      ];
+      const draw = WEAR_DRAWINGS[item.slot][art.shape];
       const species = fitsOf(item.fits)[0] ?? "maple";
       const parts = draw?.({
         species,
@@ -141,5 +155,22 @@ describe("mascot renderer", () => {
     for (const [, hex] of grey.matchAll(/#([0-9A-F]{6})/gi)) {
       expect(hex?.slice(0, 2), "grey").toBe(hex?.slice(2, 4));
     }
+  });
+
+  it("has a six-layer cover for every set, with a stage for every fifth", () => {
+    for (const set of sets) {
+      const cover = COVERS[set.id];
+      expect(cover, set.id).toBeDefined();
+      expect(cover?.layers.length, set.id).toBe(6);
+      expect(cover?.labels.length, set.id).toBe(5);
+      for (let stage = 0; stage <= 5; stage++)
+        expectClean(renderCover(set.id, stage), `${set.id} ${stage}`);
+    }
+    expect([0, 1, 5, 6, 10, 15, 20, 24, 25].map((n) => coverStage(n, 25))).toEqual([
+      0, 0, 1, 1, 2, 3, 4, 4, 5,
+    ]);
+    expect(itemsToNextStage(0, 25)).toBe(5);
+    expect(itemsToNextStage(21, 25)).toBe(4);
+    expect(itemsToNextStage(25, 25)).toBe(0);
   });
 });

@@ -1,0 +1,394 @@
+{
+  "shapes": {
+    "head": {
+      "rocket-hat": 3,
+      "comet-headband": 3,
+      "moon-crown": 3,
+      "ufo-hat": 3,
+      "astronaut-helmet": 3
+    },
+    "face": {
+      "comet-cheek-streak": 3,
+      "constellation-freckles": 2,
+      "galaxy-sticker": 3
+    },
+    "outfit": {
+      "planet-scarf": 3,
+      "moon-pendant": 3,
+      "astronaut-vest": 3,
+      "jetpack": 3
+    },
+    "held": {
+      "toy-rocket": 3,
+      "moon-rock": 3,
+      "star-map": 3,
+      "satellite": 3,
+      "astronaut-ice-cream": 3,
+      "stardust-jar": 3,
+      "pocket-galaxy": 3
+    },
+    "aura": {
+      "shooting-stars": 3,
+      "orbiting-moons": 3,
+      "nebula-mist": 3
+    }
+  },
+  "scenes": {
+    "observatory": 0
+  },
+  "items": [
+    {
+      "id": "head.rocket-hat",
+      "name": "Rocket Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Ready for lift-off, one study session at a time.",
+      "art": { "shape": "rocket-hat", "colors": ["#F28C7B", "#FFD36E", "#9FD8F0"] }
+    },
+    {
+      "id": "head.mint-rocket-hat",
+      "name": "Mint Rocket Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Mint paint, cream fins and a window for looking out.",
+      "art": { "shape": "rocket-hat", "colors": ["#8FD9C2", "#F6E7A8", "#B8C4FF"] }
+    },
+    {
+      "id": "head.lilac-rocket-hat",
+      "name": "Lilac Rocket Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Count down from ten, then start reading.",
+      "art": { "shape": "rocket-hat", "colors": ["#B9A8F5", "#FF9AD5", "#FFF2C2"] }
+    },
+    {
+      "id": "head.comet-headband",
+      "name": "Comet Headband",
+      "slot": "head",
+      "rarity": "uncommon",
+      "set": "space",
+      "description": "A comet with a long tail, streaking past your ears.",
+      "art": { "shape": "comet-headband", "colors": ["#7A6BD9", "#FFD36E", "#FFF2C2"] }
+    },
+    {
+      "id": "head.ice-comet-headband",
+      "name": "Ice Comet Headband",
+      "slot": "head",
+      "rarity": "uncommon",
+      "set": "space",
+      "description": "Cold, bright and fast, for quick revision rounds.",
+      "art": { "shape": "comet-headband", "colors": ["#F28CB1", "#8FD8F0", "#D8F4FF"] }
+    },
+    {
+      "id": "head.moon-crown",
+      "name": "Moon Crown",
+      "slot": "head",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "A crescent crown for the late-night study crowd.",
+      "art": { "shape": "moon-crown", "colors": ["#FFD36E", "#FFF2C2", "#B9A8F5"] }
+    },
+    {
+      "id": "head.ufo-hat",
+      "name": "UFO Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "set": "space",
+      "animated": true,
+      "description": "A friendly saucer that hovers over you while you focus.",
+      "art": { "shape": "ufo-hat", "colors": ["#C7B8FF", "#A8E6F5", "#FFE58A"] }
+    },
+    {
+      "id": "head.astronaut-helmet",
+      "name": "Astronaut Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A bubble visor, so you can see every page clearly.",
+      "art": { "shape": "astronaut-helmet", "colors": ["#F4F1FF", "#7FD3E8", "#F28C7B"] }
+    },
+    {
+      "id": "head.night-helmet",
+      "name": "Night Helmet",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Dark shell, bright ideas, long library nights.",
+      "art": { "shape": "astronaut-helmet", "colors": ["#5B4BD6", "#B8F3FF", "#FFB3CF"] }
+    },
+    {
+      "id": "face.comet-cheek-streak",
+      "name": "Comet Cheek Streak",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A quick streak of light across one cheek.",
+      "art": { "shape": "comet-cheek-streak", "colors": ["#FFD36E", "#FF9AD5", "#B8F3FF"] }
+    },
+    {
+      "id": "face.mint-comet-streak",
+      "name": "Mint Comet Streak",
+      "slot": "face",
+      "rarity": "common",
+      "description": "The same streak, in mint, for a calm pace.",
+      "art": { "shape": "comet-cheek-streak", "colors": ["#8FD9C2", "#B9A8F5", "#FFF2C2"] }
+    },
+    {
+      "id": "face.coral-comet-streak",
+      "name": "Coral Comet Streak",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Warm and fast, like the last hour before a deadline.",
+      "art": { "shape": "comet-cheek-streak", "colors": ["#F28C7B", "#8FD8F0", "#FFE58A"] }
+    },
+    {
+      "id": "face.constellation-freckles",
+      "name": "Constellation Freckles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Dots that join up into a sky of their own.",
+      "art": { "shape": "constellation-freckles", "colors": ["#7A6BD9", "#FFD36E"] }
+    },
+    {
+      "id": "face.coral-constellation-freckles",
+      "name": "Coral Constellation Freckles",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "The same sky, drawn in warmer ink.",
+      "art": { "shape": "constellation-freckles", "colors": ["#F28C7B", "#8FD8F0"] }
+    },
+    {
+      "id": "face.galaxy-sticker",
+      "name": "Galaxy Sticker",
+      "slot": "face",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "A tiny galaxy on the cheek. It twinkles at good streaks.",
+      "art": { "shape": "galaxy-sticker", "colors": ["#5B4BD6", "#FF9AD5", "#FFE58A"] }
+    },
+    {
+      "id": "outfit.planet-scarf",
+      "name": "Planet Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Wrap up warm, with a planet hanging from the end.",
+      "art": { "shape": "planet-scarf", "colors": ["#F28C7B", "#FFD36E", "#8FD8F0"] }
+    },
+    {
+      "id": "outfit.mint-planet-scarf",
+      "name": "Mint Planet Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mint wool and a little ringed planet for company.",
+      "art": { "shape": "planet-scarf", "colors": ["#8FD9C2", "#FFB3CF", "#FFE58A"] }
+    },
+    {
+      "id": "outfit.lilac-planet-scarf",
+      "name": "Lilac Planet Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Soft lilac, and a planet that always comes along.",
+      "art": { "shape": "planet-scarf", "colors": ["#B9A8F5", "#F28C7B", "#FFF2C2"] }
+    },
+    {
+      "id": "outfit.moon-pendant",
+      "name": "Moon Pendant",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A crescent moon on a chain. Good night, good work.",
+      "art": { "shape": "moon-pendant", "colors": ["#FFE58A", "#FF9AD5", "#B9A8F5"] }
+    },
+    {
+      "id": "outfit.silver-moon-pendant",
+      "name": "Silver Moon Pendant",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Polished silver for early-morning study sessions.",
+      "art": { "shape": "moon-pendant", "colors": ["#E6ECF7", "#8FD8F0", "#A9B4E8"] }
+    },
+    {
+      "id": "outfit.mint-moon-pendant",
+      "name": "Mint Moon Pendant",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A mint moon with a pink star beside it on the chain.",
+      "art": { "shape": "moon-pendant", "colors": ["#8FD9C2", "#FFD36E", "#F6A6B8"] }
+    },
+    {
+      "id": "outfit.astronaut-vest",
+      "name": "Astronaut Vest",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "set": "space",
+      "description": "Patches from every mission, real or made up.",
+      "art": { "shape": "astronaut-vest", "colors": ["#7A6BD9", "#FFE58A", "#FF9AD5"] }
+    },
+    {
+      "id": "outfit.mint-astronaut-vest",
+      "name": "Mint Astronaut Vest",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "set": "space",
+      "description": "The same mission patches, in fresh mint colours.",
+      "art": { "shape": "astronaut-vest", "colors": ["#8FD9C2", "#F28C7B", "#FFF2C2"] }
+    },
+    {
+      "id": "outfit.jetpack",
+      "name": "Jetpack",
+      "slot": "outfit",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "Two small flames for steady climbs up the revision list.",
+      "art": { "shape": "jetpack", "colors": ["#9FB7FF", "#FF8A7A", "#FFD36E"] }
+    },
+    {
+      "id": "held.toy-rocket",
+      "name": "Toy Rocket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A small tin rocket to hold up while you count down.",
+      "art": { "shape": "toy-rocket", "colors": ["#F28C7B", "#8FD8F0", "#FFD36E"] }
+    },
+    {
+      "id": "held.mint-toy-rocket",
+      "name": "Mint Toy Rocket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Mint paint and a rocket that never runs out of fuel.",
+      "art": { "shape": "toy-rocket", "colors": ["#8FD9C2", "#FFE58A", "#FF9AD5"] }
+    },
+    {
+      "id": "held.indigo-toy-rocket",
+      "name": "Indigo Toy Rocket",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Indigo paint and gold flames. Very serious about launch.",
+      "art": { "shape": "toy-rocket", "colors": ["#7A6BD9", "#FFB35C", "#FFF2C2"] }
+    },
+    {
+      "id": "held.moon-rock",
+      "name": "Moon Rock",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A bit of moon to carry around. Heavier than it looks.",
+      "art": { "shape": "moon-rock", "colors": ["#D6D3E0", "#B9B4C9", "#FFF2C2"] }
+    },
+    {
+      "id": "held.rose-moon-rock",
+      "name": "Rose Moon Rock",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Found on a very quiet night, a little pink from the dust.",
+      "art": { "shape": "moon-rock", "colors": ["#F6C9D6", "#E8A3BD", "#FFE58A"] }
+    },
+    {
+      "id": "held.mint-moon-rock",
+      "name": "Mint Moon Rock",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A mint-tinted moon rock, a lucky study stone.",
+      "art": { "shape": "moon-rock", "colors": ["#CDEFE3", "#9FD8C2", "#FFD36E"] }
+    },
+    {
+      "id": "held.star-map",
+      "name": "Star Map",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Constellations drawn in ink, for finding your way.",
+      "art": { "shape": "star-map", "colors": ["#FFF2C2", "#5B4BD6", "#FF9AD5"] }
+    },
+    {
+      "id": "held.mint-star-map",
+      "name": "Mint Star Map",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "The same stars on a sea-green sheet of paper.",
+      "art": { "shape": "star-map", "colors": ["#D6F5EC", "#2F7FD8", "#FFB35C"] }
+    },
+    {
+      "id": "held.satellite",
+      "name": "Satellite",
+      "slot": "held",
+      "rarity": "epic",
+      "set": "space",
+      "animated": true,
+      "description": "A little satellite that blinks while it keeps you company.",
+      "art": { "shape": "satellite", "colors": ["#B9C3F0", "#5B4BD6", "#FFE58A"] }
+    },
+    {
+      "id": "held.astronaut-ice-cream",
+      "name": "Astronaut Ice Cream",
+      "slot": "held",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "Space ice cream, reserved for finished chapters.",
+      "art": { "shape": "astronaut-ice-cream", "colors": ["#E8A96A", "#D9C8FF", "#B8F3FF"] }
+    },
+    {
+      "id": "held.stardust-jar",
+      "name": "Stardust Jar",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Glitter from the galaxy, bottled and labelled.",
+      "art": { "shape": "stardust-jar", "colors": ["#B8F3FF", "#FFD36E", "#FF9AD5"] }
+    },
+    {
+      "id": "held.violet-stardust-jar",
+      "name": "Violet Stardust Jar",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A violet lid, the same glitter, a bit more dramatic.",
+      "art": { "shape": "stardust-jar", "colors": ["#E0D4FF", "#7A6BD9", "#FFE58A"] }
+    },
+    {
+      "id": "held.pocket-galaxy",
+      "name": "Pocket Galaxy",
+      "slot": "held",
+      "rarity": "legendary",
+      "set": "space",
+      "animated": true,
+      "description": "A whole galaxy in your hand. It turns while you focus.",
+      "art": { "shape": "pocket-galaxy", "colors": ["#2B2C6B", "#FF9AD5", "#B8F3FF"] }
+    },
+    {
+      "id": "aura.shooting-stars",
+      "name": "Shooting Stars",
+      "slot": "aura",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "Two shooting stars zip past the edges while you work.",
+      "art": { "shape": "shooting-stars", "colors": ["#FFE58A", "#B9A8F5", "#8FD8F0"] }
+    },
+    {
+      "id": "aura.orbiting-moons",
+      "name": "Orbiting Moons",
+      "slot": "aura",
+      "rarity": "epic",
+      "set": "space",
+      "animated": true,
+      "description": "Two moons circle the buddy and never seem to tire.",
+      "art": { "shape": "orbiting-moons", "colors": ["#C7B8FF", "#9C8BE0", "#FFE58A"] }
+    },
+    {
+      "id": "aura.nebula-mist",
+      "name": "Nebula Mist",
+      "slot": "aura",
+      "rarity": "rare",
+      "set": "space",
+      "animated": true,
+      "description": "Soft clouds of colour drift in the corners of the sky.",
+      "art": { "shape": "nebula-mist", "colors": ["#B9A8F5", "#FF9AD5", "#8FD8F0"] }
+    },
+    {
+      "id": "background.observatory",
+      "name": "Observatory",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "space",
+      "description": "A dome under a sky full of planets. For finishing the Space set.",
+      "art": { "scene": "observatory", "colors": [] }
+    }
+  ]
+}

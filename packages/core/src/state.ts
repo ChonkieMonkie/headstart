@@ -778,6 +778,15 @@ function applyOne(state: ProgressState, envelope: EventEnvelope, ctx: CoreContex
       const have = state.plaques.get(event.plaqueId);
       if (!have || event.tier > have.tier)
         state.plaques.set(event.plaqueId, { tier: event.tier, at });
+      // Finishing a set gives its background. It is worked out here rather
+      // than stored, since the set plaque that causes it is stored.
+      if (event.plaqueId.startsWith("set:")) {
+        const setId = event.plaqueId.slice(4);
+        for (const item of ctx.catalog) {
+          if (item.slot === "background" && item.set === setId && !state.inventory.has(item.id))
+            state.inventory.set(item.id, 1);
+        }
+      }
       return;
     }
   }

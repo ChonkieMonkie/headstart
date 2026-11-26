@@ -1,0 +1,503 @@
+{
+  "shapes": {
+    "head": {
+      "owl-feather-hat": 2,
+      "card-catalogue-hat": 2,
+      "bookworm-hat": 2,
+      "reading-lamp-band": 2,
+      "owl-perch": 3
+    },
+    "face": {
+      "ink-smudge": 1,
+      "pince-nez": 2,
+      "library-stamp": 1
+    },
+    "outfit": {
+      "tweed-jacket": 2,
+      "book-satchel": 2,
+      "scholar-gown": 2,
+      "bookmark-ribbon": 2
+    },
+    "held": {
+      "rolled-scroll": 2,
+      "ink-bottle": 2,
+      "stack-of-books": 2,
+      "wax-letter": 2,
+      "library-bell": 2,
+      "pocket-watch": 2,
+      "hourglass": 2
+    },
+    "aura": {
+      "floating-letters": 2,
+      "turning-pages": 2,
+      "orbiting-books": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.owl-feather-hat",
+      "name": "Owl Feather Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "One feather from a very wise owl, tucked in the band.",
+      "art": {
+        "shape": "owl-feather-hat",
+        "colors": ["#8E5A3C", "#F2C14E"]
+      }
+    },
+    {
+      "id": "head.sage-owl-feather-hat",
+      "name": "Sage Owl Feather Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Quiet green felt for long reading sessions.",
+      "art": {
+        "shape": "owl-feather-hat",
+        "colors": ["#6E8F6A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.berry-owl-feather-hat",
+      "name": "Berry Owl Feather Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Plum felt with a teal feather. Owls approve.",
+      "art": {
+        "shape": "owl-feather-hat",
+        "colors": ["#A84A6B", "#2E8C7A"]
+      }
+    },
+    {
+      "id": "face.indigo-ink-smudge",
+      "name": "Indigo Ink Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little ink on the cheek. Proof that you took notes.",
+      "art": {
+        "shape": "ink-smudge",
+        "colors": ["#2E3A6B"]
+      }
+    },
+    {
+      "id": "face.sepia-ink-smudge",
+      "name": "Sepia Ink Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Old-fashioned ink, the kind that never quite washes off.",
+      "art": {
+        "shape": "ink-smudge",
+        "colors": ["#8E6136"]
+      }
+    },
+    {
+      "id": "face.teal-ink-smudge",
+      "name": "Teal Ink Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Fresh ink from the fountain pen. Please do not rub.",
+      "art": {
+        "shape": "ink-smudge",
+        "colors": ["#2F7F86"]
+      }
+    },
+    {
+      "id": "outfit.tweed-jacket",
+      "name": "Tweed Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Elbow patches, a button or two and very serious opinions.",
+      "art": {
+        "shape": "tweed-jacket",
+        "colors": ["#8C7A5B", "#C8573A"]
+      }
+    },
+    {
+      "id": "outfit.navy-tweed-jacket",
+      "name": "Navy Tweed Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Looks just as good in the lecture hall as in the library.",
+      "art": {
+        "shape": "tweed-jacket",
+        "colors": ["#2E3A6B", "#DDB27A"]
+      }
+    },
+    {
+      "id": "outfit.green-tweed-jacket",
+      "name": "Green Tweed Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Woolly, warm and a little bit professor.",
+      "art": {
+        "shape": "tweed-jacket",
+        "colors": ["#5E7F4A", "#F1E6C8"]
+      }
+    },
+    {
+      "id": "outfit.leather-book-satchel",
+      "name": "Leather Book Satchel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Carries one textbook, a pencil case and a lot of hope.",
+      "art": {
+        "shape": "book-satchel",
+        "colors": ["#8A5A3B", "#3E4A7A"]
+      }
+    },
+    {
+      "id": "outfit.denim-book-satchel",
+      "name": "Denim Book Satchel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A sturdy strap for the heaviest reading list of the year.",
+      "art": {
+        "shape": "book-satchel",
+        "colors": ["#4E7A9A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.berry-book-satchel",
+      "name": "Berry Book Satchel",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pockets for notes, pens and one emergency snack.",
+      "art": {
+        "shape": "book-satchel",
+        "colors": ["#A84A6B", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.brown-scroll",
+      "name": "Brown Scroll",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A rolled note with the whole syllabus on it.",
+      "art": {
+        "shape": "rolled-scroll",
+        "colors": ["#8E5A3C", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.teal-scroll",
+      "name": "Teal Scroll",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Everything that is due next week, neatly rolled up.",
+      "art": {
+        "shape": "rolled-scroll",
+        "colors": ["#2F7F86", "#DDF5E8"]
+      }
+    },
+    {
+      "id": "held.berry-scroll",
+      "name": "Berry Scroll",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Tied with a ribbon and saved for the exam.",
+      "art": {
+        "shape": "rolled-scroll",
+        "colors": ["#A84A6B", "#FFF1D6"]
+      }
+    },
+    {
+      "id": "held.indigo-ink-bottle",
+      "name": "Indigo Ink Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Enough ink for one essay and a few doodles in the margin.",
+      "art": {
+        "shape": "ink-bottle",
+        "colors": ["#2E3A6B", "#C8573A"]
+      }
+    },
+    {
+      "id": "held.teal-ink-bottle",
+      "name": "Teal Ink Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blotting paper not included.",
+      "art": {
+        "shape": "ink-bottle",
+        "colors": ["#2F7F86", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.violet-ink-bottle",
+      "name": "Violet Ink Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A lovely colour with a slightly sticky cap.",
+      "art": {
+        "shape": "ink-bottle",
+        "colors": ["#6B4A9A", "#E9A93A"]
+      }
+    },
+    {
+      "id": "head.oak-card-catalogue-hat",
+      "name": "Oak Card Catalogue Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A little drawer of index cards, worn on top.",
+      "art": {
+        "shape": "card-catalogue-hat",
+        "colors": ["#B9824E", "#F6E7D8"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "head.walnut-card-catalogue-hat",
+      "name": "Walnut Card Catalogue Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Every card filed alphabetically, the hat included.",
+      "art": {
+        "shape": "card-catalogue-hat",
+        "colors": ["#5E3F2D", "#F2C14E"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "head.bookworm-hat",
+      "name": "Bookworm Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A worm in a tiny book, reading over your shoulder.",
+      "art": {
+        "shape": "bookworm-hat",
+        "colors": ["#3E7A8C", "#8FD97A"]
+      }
+    },
+    {
+      "id": "head.plum-bookworm-hat",
+      "name": "Plum Bookworm Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "The same worm in a fancier cover. Still very well read.",
+      "art": {
+        "shape": "bookworm-hat",
+        "colors": ["#7A4A9A", "#F5C542"]
+      }
+    },
+    {
+      "id": "face.brass-pince-nez",
+      "name": "Brass Pince-nez",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Clip-on glasses for the very serious reader.",
+      "art": {
+        "shape": "pince-nez",
+        "colors": ["#D9A441", "#8E5A3C"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "face.navy-pince-nez",
+      "name": "Navy Pince-nez",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Navy frames and a red cord. Sharp and studious.",
+      "art": {
+        "shape": "pince-nez",
+        "colors": ["#2E3A6B", "#C8573A"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "outfit.scholar-gown",
+      "name": "Scholar Gown",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "For the long reading room and the even longer lecture.",
+      "art": {
+        "shape": "scholar-gown",
+        "colors": ["#2E3A6B", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.aubergine-scholar-gown",
+      "name": "Aubergine Scholar Gown",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Deep purple, a gold trim and a grand entrance.",
+      "art": {
+        "shape": "scholar-gown",
+        "colors": ["#6B3E7A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.study-stack",
+      "name": "Study Stack",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three books and one very ambitious plan.",
+      "art": {
+        "shape": "stack-of-books",
+        "colors": ["#3E7A8C", "#E9A93A"]
+      }
+    },
+    {
+      "id": "held.brick-study-stack",
+      "name": "Brick Study Stack",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Red covers, with pages marked by yellow tabs.",
+      "art": {
+        "shape": "stack-of-books",
+        "colors": ["#C8573A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.wax-seal-letter",
+      "name": "Wax Seal Letter",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Sealed and not to be opened before Friday.",
+      "art": {
+        "shape": "wax-letter",
+        "colors": ["#F6E7D8", "#C8573A"]
+      }
+    },
+    {
+      "id": "held.navy-seal-letter",
+      "name": "Navy Seal Letter",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Good news, probably, sealed in navy.",
+      "art": {
+        "shape": "wax-letter",
+        "colors": ["#E4F4EC", "#2E3A6B"]
+      }
+    },
+    {
+      "id": "head.reading-lamp-band",
+      "name": "Reading Lamp Band",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A clip-on lamp that glows softly while you read.",
+      "art": {
+        "shape": "reading-lamp-band",
+        "colors": ["#5B9FE0", "#FFE38A"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "face.library-stamp",
+      "name": "Library Stamp",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "Approved. Stamped on the forehead, sparkling a little.",
+      "art": {
+        "shape": "library-stamp",
+        "colors": ["#C8403A"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "outfit.bookmark-ribbon",
+      "name": "Bookmark Ribbon",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A ribbon necklace that marks your place as it swings.",
+      "art": {
+        "shape": "bookmark-ribbon",
+        "colors": ["#2F7F86", "#F2C14E"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "held.library-bell",
+      "name": "Library Bell",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Ring it softly. Please, it is a library.",
+      "art": {
+        "shape": "library-bell",
+        "colors": ["#D9A441", "#8E5A3C"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "held.pocket-watch",
+      "name": "Pocket Watch",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Ticks along while you study. No alarms, just time.",
+      "art": {
+        "shape": "pocket-watch",
+        "colors": ["#E9B44C", "#2E8C7A"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "aura.floating-letters",
+      "name": "Floating Letters",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Letters drifting around you, spelling nothing in particular.",
+      "art": {
+        "shape": "floating-letters",
+        "colors": ["#5B9FE0", "#F2A541"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "head.owl-perch",
+      "name": "Owl Perch",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A wise owl on your head that blinks slowly and judges your plans.",
+      "art": {
+        "shape": "owl-perch",
+        "colors": ["#B07A4F", "#F6E7D8", "#F2C14E"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "held.hourglass",
+      "name": "Hourglass",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "The sand keeps falling. Plan your time before it runs out.",
+      "art": {
+        "shape": "hourglass",
+        "colors": ["#B9824E", "#F2C14E"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "aura.turning-pages",
+      "name": "Turning Pages",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Pages flip around you, one chapter at a time.",
+      "art": {
+        "shape": "turning-pages",
+        "colors": ["#F6E7D8", "#C98F7A"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "aura.orbiting-books",
+      "name": "Orbiting Books",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Books circle you slowly, glowing a little with every chapter.",
+      "art": {
+        "shape": "orbiting-books",
+        "colors": ["#8E6BD1", "#F2A541"]
+      },
+      "set": "library",
+      "animated": true
+    }
+  ]
+}

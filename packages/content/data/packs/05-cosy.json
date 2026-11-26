@@ -1,0 +1,494 @@
+{
+  "shapes": {
+    "head": {
+      "nightcap": 2,
+      "wool-headwrap": 2,
+      "teacup-hat": 3,
+      "bobble-hood": 2
+    },
+    "face": {
+      "steamed-glasses": 1,
+      "rosy-blush": 1
+    },
+    "outfit": {
+      "pyjama-top": 2,
+      "cable-knit-sweater": 2,
+      "bathrobe": 2,
+      "plaid-blanket": 2
+    },
+    "held": {
+      "knitting-needles": 2,
+      "fluffy-slipper": 2,
+      "hot-water-bottle": 2,
+      "cookie-plate": 1,
+      "candle": 2,
+      "whistling-kettle": 2,
+      "marshmallow-cocoa": 2
+    },
+    "aura": {
+      "cosy-steam": 1,
+      "fairy-lights": 2,
+      "fireplace-embers": 2,
+      "hearth-spirit": 2
+    }
+  },
+  "scenes": {
+    "fireside": 0
+  },
+  "items": [
+    {
+      "id": "head.nightcap-slate",
+      "name": "Slate Nightcap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A long soft cone with a pom. Bedtime is a study tool too.",
+      "art": {
+        "shape": "nightcap",
+        "colors": ["#5E7FA8", "#F5E6CF"]
+      }
+    },
+    {
+      "id": "head.nightcap-caramel",
+      "name": "Caramel Nightcap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Caramel knit with a cream pom, for the late-night reader.",
+      "art": {
+        "shape": "nightcap",
+        "colors": ["#C98B5B", "#FFF6EC"]
+      }
+    },
+    {
+      "id": "head.nightcap-sage",
+      "name": "Sage Nightcap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Sage green with a soft cuff and no judgement about the hour.",
+      "art": {
+        "shape": "nightcap",
+        "colors": ["#7E9C7A", "#F1E6C8"]
+      }
+    },
+    {
+      "id": "head.wool-headwrap-oat",
+      "name": "Oat Wool Headwrap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A chunky band with a knot, for thinking hard in a cold room.",
+      "art": {
+        "shape": "wool-headwrap",
+        "colors": ["#E8D6B5", "#8E6136"]
+      }
+    },
+    {
+      "id": "head.wool-headwrap-rust",
+      "name": "Rust Wool Headwrap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Rust-coloured, and only slightly too warm.",
+      "art": {
+        "shape": "wool-headwrap",
+        "colors": ["#C8573A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.wool-headwrap-moss",
+      "name": "Moss Wool Headwrap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Forest green with a knot on one side.",
+      "art": {
+        "shape": "wool-headwrap",
+        "colors": ["#5E7F4A", "#F1E6C8"]
+      }
+    },
+    {
+      "id": "face.copper-steamed-glasses",
+      "name": "Copper Steamed Glasses",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Fogged up from the tea. You can still study.",
+      "art": {
+        "shape": "steamed-glasses",
+        "colors": ["#B87333"]
+      }
+    },
+    {
+      "id": "face.teal-steamed-glasses",
+      "name": "Teal Steamed Glasses",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Lenses misted up. Wipe them when you are ready.",
+      "art": {
+        "shape": "steamed-glasses",
+        "colors": ["#3E8E8A"]
+      }
+    },
+    {
+      "id": "face.mustard-steamed-glasses",
+      "name": "Mustard Steamed Glasses",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Fogged by a very large mug of cocoa.",
+      "art": {
+        "shape": "steamed-glasses",
+        "colors": ["#E0A72E"]
+      }
+    },
+    {
+      "id": "outfit.navy-pyjama-top",
+      "name": "Navy Pyjama Top",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Striped, buttoned and only for the sofa.",
+      "art": {
+        "shape": "pyjama-top",
+        "colors": ["#2E3A6B", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.sage-pyjama-top",
+      "name": "Sage Pyjama Top",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pyjamas that count as a proper outfit for once.",
+      "art": {
+        "shape": "pyjama-top",
+        "colors": ["#7E9C7A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.rust-pyjama-top",
+      "name": "Rust Pyjama Top",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Cream stripes, and buttons all the way down.",
+      "art": {
+        "shape": "pyjama-top",
+        "colors": ["#C8573A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.mint-knitting-needles",
+      "name": "Mint Knitting Needles",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Two needles and a ball of yarn. Very calming.",
+      "art": {
+        "shape": "knitting-needles",
+        "colors": ["#7DD8C0", "#2A9D8F"]
+      }
+    },
+    {
+      "id": "held.rust-knitting-needles",
+      "name": "Rust Knitting Needles",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Knit one, study one.",
+      "art": {
+        "shape": "knitting-needles",
+        "colors": ["#C8573A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.mustard-knitting-needles",
+      "name": "Mustard Knitting Needles",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Some rows are better than none.",
+      "art": {
+        "shape": "knitting-needles",
+        "colors": ["#E0A72E", "#8E6136"]
+      }
+    },
+    {
+      "id": "held.cream-fluffy-slipper",
+      "name": "Cream Fluffy Slipper",
+      "slot": "held",
+      "rarity": "common",
+      "description": "One slipper, dangling. The other one is under the sofa.",
+      "art": {
+        "shape": "fluffy-slipper",
+        "colors": ["#F6E7D8", "#C98B5B"]
+      }
+    },
+    {
+      "id": "held.dusty-blue-fluffy-slipper",
+      "name": "Dusty Blue Fluffy Slipper",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Warm feet, a soft cuff and no homework in sight.",
+      "art": {
+        "shape": "fluffy-slipper",
+        "colors": ["#8FA7B8", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.rust-fluffy-slipper",
+      "name": "Rust Fluffy Slipper",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Left on the floor by the fireplace.",
+      "art": {
+        "shape": "fluffy-slipper",
+        "colors": ["#C8573A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "face.rosy-blush",
+      "name": "Rosy Blush",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Two soft cheeks, flushed from a good idea.",
+      "art": {
+        "shape": "rosy-blush",
+        "colors": ["#E57F8F"]
+      }
+    },
+    {
+      "id": "face.peach-blush",
+      "name": "Peach Blush",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Warm peach cheeks from sitting too close to the fire.",
+      "art": {
+        "shape": "rosy-blush",
+        "colors": ["#F7B38A"]
+      }
+    },
+    {
+      "id": "outfit.oat-cable-knit-sweater",
+      "name": "Oat Cable-Knit Sweater",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Braids down the front and a ribbed neck.",
+      "art": {
+        "shape": "cable-knit-sweater",
+        "colors": ["#E8D6B5", "#8E6136"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "outfit.moss-cable-knit-sweater",
+      "name": "Moss Cable-Knit Sweater",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A chunky knit for long evenings at the desk.",
+      "art": {
+        "shape": "cable-knit-sweater",
+        "colors": ["#5E7F4A", "#F1E6C8"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "outfit.cream-bathrobe",
+      "name": "Cream Bathrobe",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Lapels, a tie belt and no plans for the morning.",
+      "art": {
+        "shape": "bathrobe",
+        "colors": ["#F6E7D8", "#C98B5B"]
+      }
+    },
+    {
+      "id": "outfit.teal-bathrobe",
+      "name": "Teal Bathrobe",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Soft, warm and very good for reading in bed.",
+      "art": {
+        "shape": "bathrobe",
+        "colors": ["#3E8E8A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.red-hot-water-bottle",
+      "name": "Red Hot Water Bottle",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A knitted cover for cold feet and long chapters.",
+      "art": {
+        "shape": "hot-water-bottle",
+        "colors": ["#C8573A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.teal-hot-water-bottle",
+      "name": "Teal Hot Water Bottle",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Tucked under the blanket for the whole exam block.",
+      "art": {
+        "shape": "hot-water-bottle",
+        "colors": ["#3E8E8A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.blue-cookie-plate",
+      "name": "Blue Cookie Plate",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three cookies on a plate. A study break, ready to go.",
+      "art": {
+        "shape": "cookie-plate",
+        "colors": ["#5B9FE0"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "held.sage-cookie-plate",
+      "name": "Sage Cookie Plate",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three cookies and a small reward for finishing.",
+      "art": {
+        "shape": "cookie-plate",
+        "colors": ["#7E9C7A"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "head.bobble-hood",
+      "name": "Bobble Hood",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A knitted hood whose pom-pom bobs along with you.",
+      "art": {
+        "shape": "bobble-hood",
+        "colors": ["#E0A72E", "#F6E7D8"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "outfit.plaid-blanket",
+      "name": "Plaid Blanket",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Over the shoulders, swaying gently while you think.",
+      "art": {
+        "shape": "plaid-blanket",
+        "colors": ["#B5533C", "#F2C14E"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "held.flickering-candle",
+      "name": "Flickering Candle",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A little light for late revision.",
+      "art": {
+        "shape": "candle",
+        "colors": ["#F4E4C1", "#F5C542"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "held.whistling-kettle",
+      "name": "Whistling Kettle",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Puffs of steam while the water warms up.",
+      "art": {
+        "shape": "whistling-kettle",
+        "colors": ["#D9774B", "#F6E7D8"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "aura.cosy-steam",
+      "name": "Cosy Steam",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Warm steam curling up around you.",
+      "art": {
+        "shape": "cosy-steam",
+        "colors": ["#D9C2A7"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "aura.fairy-lights",
+      "name": "Fairy Lights",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "A string of warm bulbs, twinkling on both sides.",
+      "art": {
+        "shape": "fairy-lights",
+        "colors": ["#F5C542", "#FFF3C4"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "aura.fireplace-embers",
+      "name": "Fireplace Embers",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Little sparks drifting up, never burning anything.",
+      "art": {
+        "shape": "fireplace-embers",
+        "colors": ["#F28A3A", "#F5C542"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "head.teacup-hat",
+      "name": "Teacup Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A saucer, a cup and a little steam. Very dignified.",
+      "art": {
+        "shape": "teacup-hat",
+        "colors": ["#7DD8C0", "#FFF6EC", "#E0A72E"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "held.marshmallow-cocoa",
+      "name": "Marshmallow Cocoa",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A jar of cocoa with marshmallows bobbing out of the top.",
+      "art": {
+        "shape": "marshmallow-cocoa",
+        "colors": ["#8A5A3B", "#F2C14E"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "aura.hearth-spirit",
+      "name": "Hearth Spirit",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A friendly flame that keeps you company while you study.",
+      "art": {
+        "shape": "hearth-spirit",
+        "colors": ["#F28A3A", "#F5C542"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "background.fireside-room",
+      "name": "Fireside Room",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "cosy",
+      "description": "A warm wall, a crackling fireplace and a rug. Finishes the Cosy set.",
+      "art": {
+        "scene": "fireside",
+        "colors": []
+      }
+    }
+  ]
+}

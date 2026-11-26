@@ -1,0 +1,517 @@
+{
+  "shapes": {
+    "head": {
+      "coffee-cup-hat": 2,
+      "chef-toque": 2,
+      "croissant-hat": 2,
+      "chalkboard-headband": 2,
+      "bakery-basket": 2
+    },
+    "face": {
+      "latte-art-sticker": 2,
+      "cocoa-dust": 2,
+      "sugar-cheeks": 1
+    },
+    "outfit": {
+      "barista-vest": 2,
+      "bean-necklace": 2,
+      "pastry-jacket": 2,
+      "tea-towel-tabard": 2
+    },
+    "held": {
+      "donut": 2,
+      "bubble-tea": 2,
+      "macaron-tower": 2,
+      "french-press": 2,
+      "latte-art": 2,
+      "milk-jug": 2,
+      "hand-grinder": 2
+    },
+    "aura": {
+      "floating-beans": 1,
+      "steam-swirl": 1,
+      "espresso-swirl": 2
+    }
+  },
+  "scenes": {
+    "cafe": 0
+  },
+  "items": [
+    {
+      "id": "head.coffee-cup-hat-mocha",
+      "name": "Mocha Cup Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Takeaway coffee on your head. Still warm, probably.",
+      "art": {
+        "shape": "coffee-cup-hat",
+        "colors": ["#F6E7D8", "#8B5A3C"]
+      }
+    },
+    {
+      "id": "head.coffee-cup-hat-mint",
+      "name": "Mint Cup Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Iced, minty and very optimistic about your exam.",
+      "art": {
+        "shape": "coffee-cup-hat",
+        "colors": ["#CDEBDD", "#3E9C7E"]
+      }
+    },
+    {
+      "id": "head.coffee-cup-hat-berry",
+      "name": "Berry Cup Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A pink cup for long lecture days.",
+      "art": {
+        "shape": "coffee-cup-hat",
+        "colors": ["#F5B7C8", "#B23A5E"]
+      }
+    },
+    {
+      "id": "head.chef-toque-cobalt",
+      "name": "Cobalt Chef Toque",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A tall chef hat for the one who plans the study week.",
+      "art": {
+        "shape": "chef-toque",
+        "colors": ["#F7F1E8", "#3E6FB0"]
+      }
+    },
+    {
+      "id": "head.chef-toque-cherry",
+      "name": "Cherry Chef Toque",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A red band and a very serious attitude about pastry.",
+      "art": {
+        "shape": "chef-toque",
+        "colors": ["#F3D7DE", "#C8403A"]
+      }
+    },
+    {
+      "id": "head.chef-toque-cocoa",
+      "name": "Cocoa Chef Toque",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Chocolate brown, with a gold band for the flashcards.",
+      "art": {
+        "shape": "chef-toque",
+        "colors": ["#6B4A3A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "face.latte-art-sticker-caramel",
+      "name": "Caramel Latte Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little leaf of foam, stuck on for luck.",
+      "art": {
+        "shape": "latte-art-sticker",
+        "colors": ["#C98A5A", "#FFF4E6"]
+      }
+    },
+    {
+      "id": "face.latte-art-sticker-rose",
+      "name": "Rose Latte Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Pink foam, pink cheeks, no regrets.",
+      "art": {
+        "shape": "latte-art-sticker",
+        "colors": ["#E0738F", "#FFF0F3"]
+      }
+    },
+    {
+      "id": "face.latte-art-sticker-matcha",
+      "name": "Matcha Latte Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Green tea art for the calm, focused buddy.",
+      "art": {
+        "shape": "latte-art-sticker",
+        "colors": ["#7FB069", "#F4FBEF"]
+      }
+    },
+    {
+      "id": "outfit.barista-vest-slate",
+      "name": "Slate Barista Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pinstripes and buttons for the one who takes orders.",
+      "art": {
+        "shape": "barista-vest",
+        "colors": ["#3B4A5C", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.barista-vest-forest",
+      "name": "Forest Barista Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A green vest for long shifts at the study cafe.",
+      "art": {
+        "shape": "barista-vest",
+        "colors": ["#3E6B57", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.barista-vest-burgundy",
+      "name": "Burgundy Barista Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Deep red, buttoned up, ready for the next order.",
+      "art": {
+        "shape": "barista-vest",
+        "colors": ["#7A2E45", "#E9A7B8"]
+      }
+    },
+    {
+      "id": "outfit.bean-necklace-roast",
+      "name": "Roast Bean Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Coffee beans on a string. Smells like focus.",
+      "art": {
+        "shape": "bean-necklace",
+        "colors": ["#7A4A2E", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.bean-necklace-honey",
+      "name": "Honey Bean Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Golden beans on a cord, a little bit sweet.",
+      "art": {
+        "shape": "bean-necklace",
+        "colors": ["#E0A458", "#8B5A3C"]
+      }
+    },
+    {
+      "id": "outfit.bean-necklace-pistachio",
+      "name": "Pistachio Bean Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Soft green beans for a calm kind of focus.",
+      "art": {
+        "shape": "bean-necklace",
+        "colors": ["#9CC28A", "#F5F0E1"]
+      }
+    },
+    {
+      "id": "held.donut-pink",
+      "name": "Pink Glazed Donut",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A glazed donut for every finished chapter.",
+      "art": {
+        "shape": "donut",
+        "colors": ["#F59AB3", "#E8B86A"]
+      }
+    },
+    {
+      "id": "held.donut-chocolate",
+      "name": "Chocolate Donut",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A reward for the end of the reading list.",
+      "art": {
+        "shape": "donut",
+        "colors": ["#6B4433", "#E8B86A"]
+      }
+    },
+    {
+      "id": "held.donut-mint",
+      "name": "Mint Sprinkle Donut",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Mint icing and sprinkles, a snack for the brain.",
+      "art": {
+        "shape": "donut",
+        "colors": ["#9FE0C8", "#F2D39B"]
+      }
+    },
+    {
+      "id": "head.croissant-hat-golden",
+      "name": "Golden Croissant Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A buttery croissant on a band, for the baker in you.",
+      "art": {
+        "shape": "croissant-hat",
+        "colors": ["#E9AA52", "#B9783F"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "head.croissant-hat-chocolate",
+      "name": "Chocolate Croissant Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A dark chocolate croissant for the late night reader.",
+      "art": {
+        "shape": "croissant-hat",
+        "colors": ["#8A5A3B", "#F2C14E"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "face.cocoa-dust-dark",
+      "name": "Cocoa Dusting",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A light dust of cocoa on each cheek. Very sophisticated.",
+      "art": {
+        "shape": "cocoa-dust",
+        "colors": ["#5C3A28", "#8A5A3B"]
+      }
+    },
+    {
+      "id": "face.cocoa-dust-cinnamon",
+      "name": "Cinnamon Dusting",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Cinnamon on the cheeks. Smells like a warm study hall.",
+      "art": {
+        "shape": "cocoa-dust",
+        "colors": ["#C2703D", "#E9A86A"]
+      }
+    },
+    {
+      "id": "outfit.pastry-jacket-cream",
+      "name": "Cream Pastry Jacket",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A chef's jacket for the baker who studies at dawn.",
+      "art": {
+        "shape": "pastry-jacket",
+        "colors": ["#F3E9DA", "#C98A5A"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "outfit.pastry-jacket-blue",
+      "name": "Blue Pastry Jacket",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Navy-blue and buttoned, ready for the kitchen.",
+      "art": {
+        "shape": "pastry-jacket",
+        "colors": ["#3E6FB0", "#F6E7D8"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "held.bubble-tea-taro",
+      "name": "Taro Bubble Tea",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A purple drink with chewy pearls and a straw to sip with.",
+      "art": {
+        "shape": "bubble-tea",
+        "colors": ["#B9A7E0", "#4E3B31"]
+      }
+    },
+    {
+      "id": "held.bubble-tea-mango",
+      "name": "Mango Bubble Tea",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Sweet mango tea for the break between chapters.",
+      "art": {
+        "shape": "bubble-tea",
+        "colors": ["#F9B94F", "#8A5A3B"]
+      }
+    },
+    {
+      "id": "held.macaron-tower-berry",
+      "name": "Berry Macaron Tower",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three macarons, stacked high. A reward for big goals.",
+      "art": {
+        "shape": "macaron-tower",
+        "colors": ["#F5A3B8", "#B23A5E"]
+      }
+    },
+    {
+      "id": "held.macaron-tower-mint",
+      "name": "Mint Macaron Tower",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Mint shells and cream, stacked for a sweet pause.",
+      "art": {
+        "shape": "macaron-tower",
+        "colors": ["#9FD8C2", "#F9F2D8"]
+      }
+    },
+    {
+      "id": "held.french-press-orange",
+      "name": "Orange French Press",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Fresh coffee, pressed slowly, like good reading.",
+      "art": {
+        "shape": "french-press",
+        "colors": ["#6B4433", "#E0723A"]
+      }
+    },
+    {
+      "id": "held.french-press-berry",
+      "name": "Berry French Press",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A berry-red press for slow, strong study mornings.",
+      "art": {
+        "shape": "french-press",
+        "colors": ["#C98A5A", "#C94F6D"]
+      }
+    },
+    {
+      "id": "head.chalkboard-headband",
+      "name": "Chalkboard Headband",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A little sign that swings. Today: study, then coffee.",
+      "art": {
+        "shape": "chalkboard-headband",
+        "colors": ["#4F6B66", "#C98A5A"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "face.sugar-cheeks",
+      "name": "Sugar Sparkle Cheeks",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "Sugar crystals on the cheeks that twinkle when you focus.",
+      "art": {
+        "shape": "sugar-cheeks",
+        "colors": ["#BFE3F5"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "outfit.tea-towel-tabard",
+      "name": "Tea Towel Tabard",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A striped towel on the belt, ready to wipe the table.",
+      "art": {
+        "shape": "tea-towel-tabard",
+        "colors": ["#7FB8C9", "#F6E7D8"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "held.latte-art",
+      "name": "Latte With Art",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A rosetta in a glass, with steam that rises slowly.",
+      "art": {
+        "shape": "latte-art",
+        "colors": ["#F6E7D8", "#C98A5A"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "held.milk-jug",
+      "name": "Pouring Milk Jug",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A little jug, gently tilting. Cream for the coffee.",
+      "art": {
+        "shape": "milk-jug",
+        "colors": ["#A9D8F0", "#F7F3EA"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "aura.floating-beans",
+      "name": "Floating Coffee Beans",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Beans drift around you. Smells of coffee and concentration.",
+      "art": {
+        "shape": "floating-beans",
+        "colors": ["#9C6B45"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "head.bakery-basket",
+      "name": "Bakery Basket",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A basket of warm rolls that bobs along with your progress.",
+      "art": {
+        "shape": "bakery-basket",
+        "colors": ["#C98A5A", "#E7A84A"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "held.hand-grinder",
+      "name": "Hand Coffee Grinder",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Turn the handle, smell the coffee, start the chapter.",
+      "art": {
+        "shape": "hand-grinder",
+        "colors": ["#A8714A", "#E2B25B"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "aura.steam-swirl",
+      "name": "Coffee Steam Swirl",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Warm steam rising around you, a cosy study room in the air.",
+      "art": {
+        "shape": "steam-swirl",
+        "colors": ["#D9B48F"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "aura.espresso-swirl",
+      "name": "Espresso Swirl",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Cups of espresso circle you in a warm, glowing swirl.",
+      "art": {
+        "shape": "espresso-swirl",
+        "colors": ["#6B4433", "#F6E7D8"]
+      },
+      "set": "cafe",
+      "animated": true
+    },
+    {
+      "id": "background.corner-cafe",
+      "name": "Corner Cafe",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "cafe",
+      "description": "A window seat, a counter and a shelf of cups. For the Cafe set.",
+      "art": {
+        "scene": "cafe",
+        "colors": []
+      }
+    }
+  ]
+}

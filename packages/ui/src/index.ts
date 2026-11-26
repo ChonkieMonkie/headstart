@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+export {
+  COVERS,
+  coverStage,
+  itemsToNextStage,
+  renderCover,
+  type SetCover,
+} from "./covers/index.ts";
 export { default as InsightIcon } from "./InsightIcon.svelte";
 export { default as Logo } from "./Logo.svelte";
 export {
@@ -26,7 +33,7 @@ export {
 } from "./mascot/geometry.ts";
 export { itemPreview, lookFor, previewSpecies, starterSkin } from "./mascot/look.ts";
 export { default as Mascot } from "./mascot/Mascot.svelte";
-export { type MascotLook, mascotLabel, renderMascot } from "./mascot/render.ts";
+export { type MascotLook, mascotLabel, renderBackground, renderMascot } from "./mascot/render.ts";
 export {
   colors,
   courseColor,

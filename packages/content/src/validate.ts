@@ -18,6 +18,8 @@
 // and CI instead of quietly breaking crates in the app.
 
 import {
+  type BackgroundArt,
+  type ContentPack,
   CRATE_TYPES,
   type CrateRules,
   ITEM_RARITIES,
@@ -31,13 +33,15 @@ import {
   type Rank,
   type RarityTable,
   type RewardRules,
+  type ShapeTables,
   SKIN_ANIMATIONS,
   SKIN_PATTERNS,
   type SkinArt,
   SLOTS,
-  type Slot,
   WEAR_SHAPES,
+  WEAR_SLOTS,
   type WearArt,
+  type WearSlot,
 } from "./types.ts";
 
 export class ContentError extends Error {
@@ -112,9 +116,23 @@ function skinArt(value: unknown, where: string): SkinArt {
   return art;
 }
 
-function wearArt(value: unknown, slot: Exclude<Slot, "skin">, where: string): WearArt {
+function backgroundArt(
+  value: unknown,
+  scenes: Record<string, number>,
+  where: string,
+): BackgroundArt {
+  if (!isObject(value)) fail(where, "expected { scene, colors }");
+  const scene = oneOf(value.scene, Object.keys(scenes), `${where}.scene`);
+  const colors = value.colors;
+  const count = scenes[scene] ?? 0;
+  if (!Array.isArray(colors) || colors.length !== count) {
+    fail(`${where}.colors`, `${scene} takes exactly ${count} colours`);
+  }
+  return { scene, colors: colors.map((c, i) => color(c, `${where}.colors[${i}]`)) };
+}
+
+function wearArt(value: unknown, shapes: Record<string, number>, where: string): WearArt {
   if (!isObject(value)) fail(where, "expected { shape, colors }");
-  const shapes: Record<string, number> = WEAR_SHAPES[slot];
   const shape = oneOf(value.shape, Object.keys(shapes), `${where}.shape`);
   const colors = value.colors;
   const count = shapes[shape] ?? 0;
@@ -145,7 +163,69 @@ export function validateSets(value: unknown): ItemSet[] {
 }
 
 /** Checks the catalogue. With `sets`, every item's set must be one of them. */
-export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[] {
+/** The base shapes plus the shapes and scenes the packs add. A shape may be defined only once. */
+export function mergeShapes(packs: readonly ContentPack[]): ShapeTables {
+  const wear: Record<WearSlot, Record<string, number>> = {
+    head: { ...WEAR_SHAPES.head },
+    face: { ...WEAR_SHAPES.face },
+    outfit: { ...WEAR_SHAPES.outfit },
+    held: { ...WEAR_SHAPES.held },
+    aura: { ...WEAR_SHAPES.aura },
+  };
+  const scenes: Record<string, number> = {};
+  packs.forEach((pack, index) => {
+    for (const slot of WEAR_SLOTS) {
+      for (const [shape, count] of Object.entries(pack.shapes?.[slot] ?? {})) {
+        if (shape in wear[slot])
+          fail(`packs[${index}].shapes.${slot}`, `"${shape}" is defined twice`);
+        if (!Number.isInteger(count) || count < 1 || count > 4)
+          fail(`packs[${index}].shapes.${slot}.${shape}`, "takes 1 to 4 colours");
+        wear[slot][shape] = count;
+      }
+    }
+    for (const [scene, count] of Object.entries(pack.scenes ?? {})) {
+      if (scene in scenes) fail(`packs[${index}].scenes`, `"${scene}" is defined twice`);
+      scenes[scene] = count;
+    }
+  });
+  return { wear, scenes };
+}
+
+const BASE_SHAPES: ShapeTables = mergeShapes([]);
+
+/**
+ * The base items followed by every pack's new items. A pack item marked
+ * `"rework": true` instead redraws the base item with the same id, in place:
+ * ids are permanent, so an old item can get a new look but never disappear.
+ */
+export function catalogWithPacks(
+  base: readonly unknown[],
+  packs: readonly ContentPack[],
+): unknown[] {
+  const out = [...base];
+  const index = new Map<unknown, number>();
+  out.forEach((raw, i) => {
+    if (isObject(raw)) index.set(raw.id, i);
+  });
+  for (const pack of packs) {
+    for (const raw of pack.items) {
+      if (isObject(raw) && raw.rework === true) {
+        const at = index.get(raw.id);
+        if (at === undefined)
+          fail(`packs.${String(raw.id)}`, "a rework must redraw an existing item");
+        const { rework: _, ...item } = raw;
+        out[at] = item;
+      } else out.push(raw);
+    }
+  }
+  return out;
+}
+
+export function validateItems(
+  value: unknown,
+  sets?: readonly ItemSet[],
+  shapes: ShapeTables = BASE_SHAPES,
+): Item[] {
   if (!Array.isArray(value)) fail("items", "expected an array");
   const seen = new Set<string>();
   const starterSkins = new Set<string>();
@@ -170,7 +250,9 @@ export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[]
       art:
         slot === "skin"
           ? skinArt(raw.art, `items.${id}.art`)
-          : wearArt(raw.art, slot, `items.${id}.art`),
+          : slot === "background"
+            ? backgroundArt(raw.art, shapes.scenes, `items.${id}.art`)
+            : wearArt(raw.art, shapes.wear[slot], `items.${id}.art`),
     };
     if (raw.description !== undefined) {
       item.description = text(raw.description, `items.${id}.description`);
@@ -215,6 +297,13 @@ export function validateItems(value: unknown, sets?: readonly ItemSet[]): Item[]
     }
     if (item.slot === "skin" && item.fits?.length !== 1) {
       fail(`items.${id}`, "a skin must fit exactly one mascot");
+    }
+    if (item.slot === "background") {
+      // Given for finishing its set, never rolled or crafted.
+      if (!item.set) fail(`items.${id}`, "a background belongs to a set");
+      if (item.fits) fail(`items.${id}`, "a background fits every mascot");
+      item.dropsFromCrates = false;
+      item.craftable = false;
     }
     if (item.starter) {
       if (item.slot !== "skin") fail(`items.${id}`, "only skins can be starters");

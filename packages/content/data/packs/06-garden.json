@@ -1,0 +1,394 @@
+{
+  "shapes": {
+    "head": {
+      "straw-sun-hat": 2,
+      "leaf-crown": 2,
+      "tulip-hat": 2,
+      "ladybug-cap": 2,
+      "sunflower-hat": 2
+    },
+    "face": {
+      "clover-sticker": 2,
+      "ladybug-sticker": 2,
+      "daisy-glasses": 1
+    },
+    "outfit": {
+      "garden-dungarees": 2,
+      "vine-wrap": 2,
+      "flower-corsage": 2,
+      "seed-belt": 2
+    },
+    "held": {
+      "garden-trowel": 2,
+      "carrot": 2,
+      "seed-packet": 2,
+      "tulip-pot": 2,
+      "honey-jar": 2,
+      "bouquet": 2,
+      "garden-gnome": 2
+    },
+    "aura": {
+      "butterflies": 2,
+      "bee-orbit": 2,
+      "bloom-ring": 2
+    }
+  },
+  "scenes": {
+    "greenhouse": 0
+  },
+  "items": [
+    {
+      "id": "head.straw-sun-hat",
+      "name": "Straw Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A wide straw brim with a coral ribbon, for sunny study breaks.",
+      "art": { "shape": "straw-sun-hat", "colors": ["#E9C46A", "#E76F51"] }
+    },
+    {
+      "id": "head.mint-sun-hat",
+      "name": "Mint Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Cream straw and a mint ribbon. Cool even in the greenhouse.",
+      "art": { "shape": "straw-sun-hat", "colors": ["#F6E7D8", "#5FB8A0"] }
+    },
+    {
+      "id": "head.lilac-sun-hat",
+      "name": "Lilac Sun Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Tan straw with a lilac ribbon, for lazy afternoons outside.",
+      "art": { "shape": "straw-sun-hat", "colors": ["#D8B98A", "#A78BFA"] }
+    },
+    {
+      "id": "head.leaf-crown",
+      "name": "Leaf Crown",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Fresh green leaves and two berries. Keep growing.",
+      "art": { "shape": "leaf-crown", "colors": ["#5FB36B", "#F7C6D4"] },
+      "set": "garden"
+    },
+    {
+      "id": "head.autumn-leaf-crown",
+      "name": "Autumn Leaf Crown",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Rust and gold leaves, for the season when the notes pile up.",
+      "art": { "shape": "leaf-crown", "colors": ["#D9782F", "#F2C14E"] },
+      "set": "garden"
+    },
+    {
+      "id": "head.tulip-hat",
+      "name": "Tulip Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A pink tulip on a green band. Blooms on every buddy.",
+      "art": { "shape": "tulip-hat", "colors": ["#F28AB0", "#5FB36B"] }
+    },
+    {
+      "id": "head.golden-tulip-hat",
+      "name": "Golden Tulip Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Golden petals and deep green leaves for a bright morning.",
+      "art": { "shape": "tulip-hat", "colors": ["#F7C948", "#2E7D5B"] }
+    },
+    {
+      "id": "head.ladybug-cap",
+      "name": "Ladybug Cap",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A red shell with black spots, and antennae that bob when you think.",
+      "art": { "shape": "ladybug-cap", "colors": ["#E4572E", "#3B3F52"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "head.sunflower-hat",
+      "name": "Sunflower Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A big sunflower that sways along with every focus session.",
+      "art": { "shape": "sunflower-hat", "colors": ["#F7B733", "#6B4226"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "face.clover-sticker",
+      "name": "Clover Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A lucky clover on one cheek. Results not guaranteed.",
+      "art": { "shape": "clover-sticker", "colors": ["#5FB36B", "#FFE08A"] }
+    },
+    {
+      "id": "face.teal-clover-sticker",
+      "name": "Teal Clover Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Teal leaves for a little extra luck with the flashcards.",
+      "art": { "shape": "clover-sticker", "colors": ["#2E9C86", "#FFD1E3"] }
+    },
+    {
+      "id": "face.lilac-clover-sticker",
+      "name": "Lilac Clover Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Lilac leaves and a pale yellow heart for good measure.",
+      "art": { "shape": "clover-sticker", "colors": ["#9B7FD6", "#FFF3B0"] }
+    },
+    {
+      "id": "face.ladybug-sticker",
+      "name": "Ladybug Sticker",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A ladybug taking a walk across one cheek.",
+      "art": { "shape": "ladybug-sticker", "colors": ["#E4572E", "#3B3F52"] }
+    },
+    {
+      "id": "face.golden-ladybug-sticker",
+      "name": "Golden Ladybug Sticker",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A gold-shelled ladybug for the last lucky exam of the term.",
+      "art": { "shape": "ladybug-sticker", "colors": ["#F2B233", "#8A5A2B"] }
+    },
+    {
+      "id": "face.daisy-glasses",
+      "name": "Daisy Glasses",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "Round daisy frames that keep your eyes on the page.",
+      "art": { "shape": "daisy-glasses", "colors": ["#F7A8C4"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "outfit.garden-dungarees",
+      "name": "Garden Dungarees",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Denim bib and yellow buttons, for planting and reading alike.",
+      "art": { "shape": "garden-dungarees", "colors": ["#4A6FA5", "#F2C14E"] }
+    },
+    {
+      "id": "outfit.forest-dungarees",
+      "name": "Forest Dungarees",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Forest green overalls with orange buttons. Very practical.",
+      "art": { "shape": "garden-dungarees", "colors": ["#3E6B57", "#F28C3B"] }
+    },
+    {
+      "id": "outfit.plum-dungarees",
+      "name": "Plum Dungarees",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Plum denim with mint buttons for the study greenhouse.",
+      "art": { "shape": "garden-dungarees", "colors": ["#7A4E8C", "#7FD8BE"] }
+    },
+    {
+      "id": "outfit.vine-wrap",
+      "name": "Vine Wrap",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A green vine wrapped twice, with a leaf at each end.",
+      "art": { "shape": "vine-wrap", "colors": ["#3E8E5E", "#9BD3A6"] },
+      "set": "garden"
+    },
+    {
+      "id": "outfit.berry-vine-wrap",
+      "name": "Berry Vine Wrap",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A plum vine with pink leaves, sweet as a summer berry.",
+      "art": { "shape": "vine-wrap", "colors": ["#8E3B6B", "#F7A8C4"] },
+      "set": "garden"
+    },
+    {
+      "id": "outfit.rose-corsage",
+      "name": "Rose Corsage",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A pink flower pinned to the chest, for the big presentation.",
+      "art": { "shape": "flower-corsage", "colors": ["#F7A8C4", "#5FB36B"] }
+    },
+    {
+      "id": "outfit.coral-corsage",
+      "name": "Coral Corsage",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Coral petals on olive leaves, fresh from the study garden.",
+      "art": { "shape": "flower-corsage", "colors": ["#F28C5B", "#8A9A5B"] }
+    },
+    {
+      "id": "outfit.seed-belt",
+      "name": "Seed Belt",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A tan tool belt with seed pouches that sway as you walk.",
+      "art": { "shape": "seed-belt", "colors": ["#A9744F", "#5FB36B"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "held.garden-trowel",
+      "name": "Garden Trowel",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A wooden handle and a steel blade. Dig in.",
+      "art": { "shape": "garden-trowel", "colors": ["#B87A4B", "#B8C4D0"] }
+    },
+    {
+      "id": "held.green-trowel",
+      "name": "Green Trowel",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A green handle and a gold blade. Dig in, then dig deeper.",
+      "art": { "shape": "garden-trowel", "colors": ["#3E8E5E", "#F2C14E"] }
+    },
+    {
+      "id": "held.coral-trowel",
+      "name": "Coral Trowel",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A coral handle and a sky-blue blade for the weekend beds.",
+      "art": { "shape": "garden-trowel", "colors": ["#E76F51", "#7FB8D9"] }
+    },
+    {
+      "id": "held.carrot",
+      "name": "Carrot",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A crunchy study snack with its green top still on.",
+      "art": { "shape": "carrot", "colors": ["#F28C3B", "#5FB36B"] }
+    },
+    {
+      "id": "held.purple-carrot",
+      "name": "Purple Carrot",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Brain food in a surprising colour, with teal leaves.",
+      "art": { "shape": "carrot", "colors": ["#9B5DE5", "#2E9C86"] }
+    },
+    {
+      "id": "held.cream-carrot",
+      "name": "Cream Carrot",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A pale carrot for the very sensible snacker.",
+      "art": { "shape": "carrot", "colors": ["#F6E7D8", "#7FB069"] }
+    },
+    {
+      "id": "held.seed-packet",
+      "name": "Seed Packet",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Kraft paper and a flower on the front. Plant now, study later.",
+      "art": { "shape": "seed-packet", "colors": ["#F7D8A8", "#E76F51"] }
+    },
+    {
+      "id": "held.blue-seed-packet",
+      "name": "Blue Seed Packet",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A sky-blue packet with a green flower. Study takes root.",
+      "art": { "shape": "seed-packet", "colors": ["#CFE8F7", "#5FB36B"] }
+    },
+    {
+      "id": "held.lilac-seed-packet",
+      "name": "Lilac Seed Packet",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Lilac paper and a pink flower. Sow a little every day.",
+      "art": { "shape": "seed-packet", "colors": ["#E9D8F5", "#F7A8C4"] }
+    },
+    {
+      "id": "held.tulip-pot",
+      "name": "Tulip Pot",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A terracotta pot with a pink tulip. Water it weekly.",
+      "art": { "shape": "tulip-pot", "colors": ["#D9782F", "#F28AB0"] }
+    },
+    {
+      "id": "held.blue-tulip-pot",
+      "name": "Blue Tulip Pot",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A blue pot and a yellow tulip for the windowsill desk.",
+      "art": { "shape": "tulip-pot", "colors": ["#5C86C9", "#F7C948"] }
+    },
+    {
+      "id": "held.honey-jar",
+      "name": "Honey Jar",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "Golden honey with a bee on the lid, buzzing for focus.",
+      "art": { "shape": "honey-jar", "colors": ["#F2B233", "#8A5A2B"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "held.bouquet",
+      "name": "Bouquet",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Pink and lilac flowers, tied with a ribbon that sways.",
+      "art": { "shape": "bouquet", "colors": ["#F7A8C4", "#B99AE8"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "held.garden-gnome",
+      "name": "Garden Gnome",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tiny gnome in a red hat who guards the study garden.",
+      "art": { "shape": "garden-gnome", "colors": ["#E4572E", "#5C86C9"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "aura.butterflies",
+      "name": "Butterfly Escort",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Three butterflies keep you company while you study.",
+      "art": { "shape": "butterflies", "colors": ["#B99AE8", "#F7A8C4"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "aura.bee-orbit",
+      "name": "Bee Orbit",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Three bees circling the buddy, as busy as a deadline.",
+      "art": { "shape": "bee-orbit", "colors": ["#F2B233", "#A7D8F0"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "aura.bloom-ring",
+      "name": "Bloom Ring",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Flowers rise and bloom around the buddy, one more each session.",
+      "art": { "shape": "bloom-ring", "colors": ["#F7A8C4", "#FFE08A"] },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "background.greenhouse",
+      "name": "Greenhouse",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "garden",
+      "description": "Glass panes, hanging plants and pots. For finishing the Garden set.",
+      "art": { "scene": "greenhouse", "colors": [] }
+    }
+  ]
+}

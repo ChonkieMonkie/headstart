@@ -1,0 +1,486 @@
+{
+  "shapes": {
+    "head": {
+      "paint-splash-cap": 3,
+      "pencil-crown": 2,
+      "palette-hat": 3,
+      "brush-hairclip": 2,
+      "paint-fountain": 3
+    },
+    "face": {
+      "paint-smudge": 1,
+      "brush-brows": 1
+    },
+    "outfit": {
+      "splattered-smock": 3,
+      "sketchbook-satchel": 2,
+      "tie-dye-tee": 3,
+      "denim-art-jacket": 2
+    },
+    "held": {
+      "paintbrush": 2,
+      "crayon": 2,
+      "glue-stick": 2,
+      "sketchbook": 2,
+      "safety-scissors": 1,
+      "paint-tube": 2,
+      "clay-pot": 2,
+      "tiny-easel": 3
+    },
+    "aura": {
+      "paint-splashes": 2,
+      "rainbow-brush-trail": 3,
+      "self-painting-strokes": 3
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.paint-splash-cap",
+      "name": "Paint-splash Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Splashes from last week's still life, still drying.",
+      "art": {
+        "shape": "paint-splash-cap",
+        "colors": ["#9BD3E8", "#4E8FBF", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.berry-paint-splash-cap",
+      "name": "Berry Paint-splash Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Berry brim and mint splashes. Very deliberate.",
+      "art": {
+        "shape": "paint-splash-cap",
+        "colors": ["#F4A6B8", "#C9557A", "#7FD1B9"]
+      }
+    },
+    {
+      "id": "head.cream-paint-splash-cap",
+      "name": "Cream Paint-splash Cap",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Cream dome, brown brim and one bold red splash.",
+      "art": {
+        "shape": "paint-splash-cap",
+        "colors": ["#F6E7D8", "#8A6E4B", "#E5533D"]
+      }
+    },
+    {
+      "id": "face.paint-smudge",
+      "name": "Paint Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A little blue paint on the cheek from the last sketch.",
+      "art": {
+        "shape": "paint-smudge",
+        "colors": ["#3E7CC9"]
+      }
+    },
+    {
+      "id": "face.red-paint-smudge",
+      "name": "Red Paint Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Red, because the sunset study was ambitious.",
+      "art": {
+        "shape": "paint-smudge",
+        "colors": ["#E5533D"]
+      }
+    },
+    {
+      "id": "face.green-paint-smudge",
+      "name": "Green Paint Smudge",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Green from the leaf study. Still a bit wet.",
+      "art": {
+        "shape": "paint-smudge",
+        "colors": ["#5DB36B"]
+      }
+    },
+    {
+      "id": "outfit.splattered-smock",
+      "name": "Splattered Smock",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Cream with a blue pocket and red splashes for courage.",
+      "art": {
+        "shape": "splattered-smock",
+        "colors": ["#F6F1E6", "#7BA7D9", "#E5533D"]
+      }
+    },
+    {
+      "id": "outfit.mint-smock",
+      "name": "Mint Smock",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mint, with a yellow pocket for chalk and pencil stubs.",
+      "art": {
+        "shape": "splattered-smock",
+        "colors": ["#8FD3B6", "#F5C542", "#7B5BD6"]
+      }
+    },
+    {
+      "id": "outfit.plum-smock",
+      "name": "Plum Smock",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Plum with pink splashes, for long afternoons at the easel.",
+      "art": {
+        "shape": "splattered-smock",
+        "colors": ["#B07BB8", "#FFF6EC", "#F28AB0"]
+      }
+    },
+    {
+      "id": "held.paintbrush",
+      "name": "Paintbrush",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A wooden brush for the margins of your notes.",
+      "art": {
+        "shape": "paintbrush",
+        "colors": ["#C98A4B", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.blue-paintbrush",
+      "name": "Blue Paintbrush",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blue handle, yellow bristles and a steady hand.",
+      "art": {
+        "shape": "paintbrush",
+        "colors": ["#4E8FBF", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.pink-paintbrush",
+      "name": "Pink Paintbrush",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Green handle with a little pink on the bristles.",
+      "art": {
+        "shape": "paintbrush",
+        "colors": ["#7CC36A", "#F28AB0"]
+      }
+    },
+    {
+      "id": "held.red-crayon",
+      "name": "Red Crayon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Red for the important bits in the margin.",
+      "art": {
+        "shape": "crayon",
+        "colors": ["#E5533D", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.blue-crayon",
+      "name": "Blue Crayon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blue for the key formula, underlined twice.",
+      "art": {
+        "shape": "crayon",
+        "colors": ["#4E8FBF", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.violet-crayon",
+      "name": "Violet Crayon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Violet for the bits you are not sure about yet.",
+      "art": {
+        "shape": "crayon",
+        "colors": ["#8B7FD1", "#7FD1B9"]
+      }
+    },
+    {
+      "id": "held.glue-stick",
+      "name": "Glue Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Holds the notes in place. Mostly.",
+      "art": {
+        "shape": "glue-stick",
+        "colors": ["#F6F1E6", "#4E8FBF"]
+      }
+    },
+    {
+      "id": "held.peach-glue-stick",
+      "name": "Peach Glue Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Peach cap, very tidy, very sticky.",
+      "art": {
+        "shape": "glue-stick",
+        "colors": ["#FFE0C2", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.mint-glue-stick",
+      "name": "Mint Glue Stick",
+      "slot": "held",
+      "rarity": "common",
+      "description": "For the mood board that is almost finished.",
+      "art": {
+        "shape": "glue-stick",
+        "colors": ["#D9F2E6", "#8B7FD1"]
+      }
+    },
+    {
+      "id": "head.pencil-crown",
+      "name": "Pencil Crown",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Three sharp pencils, ready for the exam.",
+      "art": {
+        "shape": "pencil-crown",
+        "colors": ["#E5533D", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.mint-pencil-crown",
+      "name": "Mint Pencil Crown",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Navy band and mint pencils. Royalty of the study desk.",
+      "art": {
+        "shape": "pencil-crown",
+        "colors": ["#2E3A6B", "#7FD1B9"]
+      }
+    },
+    {
+      "id": "head.palette-hat",
+      "name": "Palette Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A painter's palette worn as a hat. Very brave.",
+      "art": {
+        "shape": "palette-hat",
+        "colors": ["#D9A66B", "#E5533D", "#3E7CC9"]
+      }
+    },
+    {
+      "id": "head.pastel-palette-hat",
+      "name": "Pastel Palette Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Pastel dabs for a softer study session.",
+      "art": {
+        "shape": "palette-hat",
+        "colors": ["#F6F1E6", "#7CC36A", "#8B7FD1"]
+      }
+    },
+    {
+      "id": "face.brush-brows",
+      "name": "Brush-stroke Brows",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Bold brows painted on with one confident stroke.",
+      "art": {
+        "shape": "brush-brows",
+        "colors": ["#2E3A6B"]
+      }
+    },
+    {
+      "id": "face.ginger-brush-brows",
+      "name": "Ginger Brush Brows",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A serious look for serious reading.",
+      "art": {
+        "shape": "brush-brows",
+        "colors": ["#C8573A"]
+      }
+    },
+    {
+      "id": "outfit.sketchbook-satchel",
+      "name": "Sketchbook Satchel",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Sketches tucked inside, ready for the library.",
+      "art": {
+        "shape": "sketchbook-satchel",
+        "colors": ["#8A5A3B", "#C98A4B"]
+      }
+    },
+    {
+      "id": "outfit.navy-sketchbook-satchel",
+      "name": "Navy Sketchbook Satchel",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Fits everything except the homework you forgot.",
+      "art": {
+        "shape": "sketchbook-satchel",
+        "colors": ["#2E3A6B", "#7FD1B9"]
+      }
+    },
+    {
+      "id": "held.sketchbook",
+      "name": "Sketchbook",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Red cover, yellow label and empty pages waiting.",
+      "art": {
+        "shape": "sketchbook",
+        "colors": ["#E5533D", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.teal-sketchbook",
+      "name": "Teal Sketchbook",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Teal cover and a clean first page.",
+      "art": {
+        "shape": "sketchbook",
+        "colors": ["#4E8FBF", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.safety-scissors",
+      "name": "Safety Scissors",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Blunt enough to be safe, sharp enough for notes.",
+      "art": {
+        "shape": "safety-scissors",
+        "colors": ["#F28AB0"]
+      }
+    },
+    {
+      "id": "held.green-safety-scissors",
+      "name": "Green Safety Scissors",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Green loops and extra care with the glue.",
+      "art": {
+        "shape": "safety-scissors",
+        "colors": ["#7CC36A"]
+      }
+    },
+    {
+      "id": "head.brush-hairclip",
+      "name": "Brush Hairclip",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A tiny paintbrush clip that sways when you pause.",
+      "art": {
+        "shape": "brush-hairclip",
+        "colors": ["#E9579A", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.paint-tube",
+      "name": "Paint Tube",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Squeezed out in a hurry. One drop is still hanging on.",
+      "art": {
+        "shape": "paint-tube",
+        "colors": ["#4E8FBF", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.clay-pot",
+      "name": "Clay Pot",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Spun on the wheel, a little wobbly, very proud.",
+      "art": {
+        "shape": "clay-pot",
+        "colors": ["#D9774B", "#8FD3F5"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.tiny-easel",
+      "name": "Tiny Easel",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tiny painting on a tiny easel. Masterpiece pending.",
+      "art": {
+        "shape": "tiny-easel",
+        "colors": ["#C98A4B", "#F5C542", "#7FD1B9"]
+      }
+    },
+    {
+      "id": "outfit.tie-dye-tee",
+      "name": "Tie-dye Tee",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Spirals on cotton. Every swirl is a study session.",
+      "art": {
+        "shape": "tie-dye-tee",
+        "colors": ["#F6F1E6", "#E5533D", "#7DB8F0"]
+      }
+    },
+    {
+      "id": "outfit.denim-art-jacket",
+      "name": "Denim Art Jacket",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Denim covered in paint and pins. Art school, in spirit.",
+      "art": {
+        "shape": "denim-art-jacket",
+        "colors": ["#6E8FC4", "#E5533D"]
+      }
+    },
+    {
+      "id": "aura.paint-splashes",
+      "name": "Paint Splashes",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Splashes around you, bobbing one drop at a time.",
+      "art": {
+        "shape": "paint-splashes",
+        "colors": ["#E9579A", "#4E8FBF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.paint-fountain-hat",
+      "name": "Paint Fountain Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A little paint fountain that never runs out of ideas.",
+      "art": {
+        "shape": "paint-fountain",
+        "colors": ["#8FD3F5", "#F5C542", "#E9579A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.rainbow-brush-trail",
+      "name": "Rainbow Brush Trail",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Three brush trails in bright colours, swaying around you.",
+      "art": {
+        "shape": "rainbow-brush-trail",
+        "colors": ["#E5533D", "#F5C542", "#4E8FBF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.self-painting-strokes",
+      "name": "Self-painting Strokes",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Brushstrokes that paint themselves while you study.",
+      "art": {
+        "shape": "self-painting-strokes",
+        "colors": ["#FF9AD5", "#B8F3FF", "#F5C542"]
+      },
+      "animated": true
+    }
+  ]
+}

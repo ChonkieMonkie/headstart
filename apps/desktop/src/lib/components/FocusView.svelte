@@ -34,6 +34,30 @@
   let { study }: { study: Study } = $props();
 
   let confirmingEnd = $state(false);
+
+  // Do Not Disturb: a small chip says so for 4 s when it turns on (or fails),
+  // then only a quiet moon button stays beside the layout buttons.
+  const dndFailed = $derived(!study.dndActive && study.dndError !== null);
+  const dndShown = $derived(study.dndActive || dndFailed);
+  let dndChip = $state(false);
+  let dndInfo = $state(false);
+  let dndWas = false;
+  $effect(() => {
+    const on = dndShown;
+    if (on && !dndWas) {
+      dndChip = true;
+      const timer = setTimeout(() => (dndChip = false), 4000);
+      dndWas = on;
+      return () => clearTimeout(timer);
+    }
+    dndWas = on;
+    if (!on) dndChip = false;
+  });
+  const dndText = $derived(
+    dndFailed
+      ? "Do Not Disturb did not turn on. Check Focus tools in Settings after this session."
+      : "Do Not Disturb is on until this session ends. You can change it in Focus tools in Settings.",
+  );
   const course = $derived(study.course(study.active?.courseId ?? null));
   const task = $derived(study.task(study.active?.taskId ?? null));
   const sessionsToday = $derived(study.stats(1)?.todaySessions ?? 0);
@@ -168,6 +192,24 @@
       </div>
     </div>
     <div class="layout">
+      {#if dndShown}
+        <span class="dnd-wrap">
+          <button
+            type="button"
+            class="ghost moon"
+            class:failed={dndFailed}
+            aria-label={dndText}
+            title={dndText}
+            aria-expanded={dndInfo}
+            onclick={() => (dndInfo = !dndInfo)}
+          >
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M9.6 1.6a6.6 6.6 0 1 0 4.9 10.3A6 6 0 0 1 9.6 1.6z" /></svg>
+          </button>
+          {#if dndInfo}
+            <span class="dnd-info" role="status">{dndText}</span>
+          {/if}
+        </span>
+      {/if}
       {#if study.layout === "full"}
         <HoldButton label="Exit full screen" onhold={() => study.setLayout("normal")} />
       {:else}
@@ -202,14 +244,10 @@
       </div>
     </div>
     </div>
-    {#if study.dndActive}
-      <p class="quiet">
-        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M11.5 10.2A5 5 0 0 1 5.8 4.5a5 5 0 1 0 5.7 5.7z" /></svg>
-        Do Not Disturb is on
-      </p>
-    {:else if study.dndError}
-      <p class="quiet failed" role="status">Do Not Disturb did not turn on. Check it in Settings.</p>
-    {/if}
+    <p class="dnd-chip" class:shown={dndChip} class:failed={dndFailed} role="status" aria-hidden={!dndChip}>
+      <svg viewBox="0 0 16 16" width="10" height="10" aria-hidden="true"><path d="M9.6 1.6a6.6 6.6 0 1 0 4.9 10.3A6 6 0 0 1 9.6 1.6z" /></svg>
+      {dndFailed ? "Do Not Disturb did not turn on · Check Settings" : "Do Not Disturb is on"}
+    </p>
 
     {#if todos.length > 0 || course}
       <section class="next-step" aria-label="To-dos for this session">
@@ -540,7 +578,7 @@
     aspect-ratio: 1;
   }
 
-  svg {
+  .ring svg {
     width: 100%;
     height: 100%;
     transform: rotate(-90deg);
@@ -583,26 +621,71 @@
     color: var(--hs-focus-text-muted);
   }
 
-  .quiet {
+  .dnd-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin: -12px 0 0;
-    padding: 5px 12px;
+    height: 24px;
+    margin: -10px 0 0;
+    padding: 0 10px;
     border-radius: 999px;
     background: var(--hs-focus-surface);
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--hs-focus-text);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--hs-focus-text-muted);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
   }
 
-  .quiet svg {
+  .dnd-chip.shown {
+    opacity: 1;
+  }
+
+  .dnd-chip svg,
+  .moon svg {
     fill: currentColor;
   }
 
-  .quiet.failed {
-    font-weight: 700;
+  .dnd-chip.failed,
+  .ghost.moon.failed {
+    color: #ffc98a;
+  }
+
+  .dnd-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .ghost.moon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    aspect-ratio: 1;
     color: var(--hs-focus-text-muted);
+  }
+
+  .dnd-info {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 5;
+    width: 240px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--hs-focus-surface);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--hs-focus-text);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dnd-chip {
+      transition: none;
+    }
   }
 
   .controls {

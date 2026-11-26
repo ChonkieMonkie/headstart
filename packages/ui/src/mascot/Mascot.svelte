@@ -46,6 +46,7 @@
 
 <svg
   class="mascot"
+  class:framed={look.background !== undefined}
   viewBox="0 0 200 200"
   width={size}
   height={size}
@@ -60,5 +61,11 @@
   .mascot {
     display: block;
     overflow: visible;
+  }
+
+  /* With a background the scene fills the box, so round it off like a card. */
+  .mascot.framed {
+    overflow: hidden;
+    border-radius: 14%;
   }
 </style>

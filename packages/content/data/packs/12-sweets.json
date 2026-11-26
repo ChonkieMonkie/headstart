@@ -1,0 +1,368 @@
+{
+  "shapes": {
+    "head": {
+      "cupcake-hat": 3,
+      "cherry-hairclip": 3,
+      "scoop-hat": 2,
+      "birthday-candle-pin": 3,
+      "gumball-dome": 3
+    },
+    "face": {
+      "candy-heart": 1,
+      "jam-smudge": 2,
+      "bubble-gum": 1
+    },
+    "outfit": {
+      "gingerbread-vest": 3,
+      "candy-necklace": 2,
+      "sprinkle-sweater": 3,
+      "cupcake-liner-collar": 2
+    },
+    "held": {
+      "lollipop": 2,
+      "popsicle": 2,
+      "cake-slice": 3,
+      "gummy-jar": 2,
+      "ice-cream-cone": 2,
+      "cotton-candy": 2,
+      "candy-cane": 1
+    },
+    "aura": {
+      "falling-sprinkles": 3,
+      "candy-orbit": 3,
+      "sugar-rush": 3
+    }
+  },
+  "items": [
+    {
+      "id": "head.strawberry-cupcake-hat",
+      "name": "Strawberry Cupcake Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A cupcake for your head. Frosting included, sugar optional.",
+      "art": { "shape": "cupcake-hat", "colors": ["#E9A23B", "#F7B8CF", "#E0484F"] }
+    },
+    {
+      "id": "head.mint-cupcake-hat",
+      "name": "Mint Cupcake Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Cool mint frosting for long lecture days.",
+      "art": { "shape": "cupcake-hat", "colors": ["#4FB7B0", "#B8F0DC", "#F5C542"] }
+    },
+    {
+      "id": "head.chocolate-cupcake-hat",
+      "name": "Chocolate Cupcake Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Rich and dark, worth the wait after exam week.",
+      "art": { "shape": "cupcake-hat", "colors": ["#C8573A", "#8E6136", "#FFD166"] }
+    },
+    {
+      "id": "head.cherry-hairclip",
+      "name": "Cherry Hairclip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A pair of cherries, clipped just above the ear.",
+      "art": { "shape": "cherry-hairclip", "colors": ["#E0484F", "#5E9E55", "#F28AB0"] }
+    },
+    {
+      "id": "head.blueberry-hairclip",
+      "name": "Blueberry Hairclip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Little blueberries, very firmly clipped on.",
+      "art": { "shape": "cherry-hairclip", "colors": ["#5B6FD6", "#3E9C8C", "#FFD166"] }
+    },
+    {
+      "id": "head.lemon-drop-hairclip",
+      "name": "Lemon Drop Hairclip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Sour in name only. Bright and cheerful.",
+      "art": { "shape": "cherry-hairclip", "colors": ["#F5C542", "#5E9E55", "#7FD3E0"] }
+    },
+    {
+      "id": "head.strawberry-scoop-hat",
+      "name": "Strawberry Scoop Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "One scoop, no waffle, no regrets.",
+      "art": { "shape": "scoop-hat", "colors": ["#F7A8C4", "#E0487A"] }
+    },
+    {
+      "id": "head.pistachio-scoop-hat",
+      "name": "Pistachio Scoop Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A green scoop with a sensible amount of sauce.",
+      "art": { "shape": "scoop-hat", "colors": ["#B8E3A0", "#6FAF6A"] }
+    },
+    {
+      "id": "head.birthday-candle-pin",
+      "name": "Birthday Candle Pin",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "One candle, one wish, and a flame that will not sit still.",
+      "art": { "shape": "birthday-candle-pin", "colors": ["#E9579A", "#8ED1E0", "#F5A23A"] },
+      "animated": true
+    },
+    {
+      "id": "head.gumball-dome-hat",
+      "name": "Gumball Dome Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A glass dome of gumballs that bounce whenever you are on a roll.",
+      "art": { "shape": "gumball-dome", "colors": ["#E9579A", "#5B9FE0", "#F5C542"] },
+      "animated": true
+    },
+    {
+      "id": "face.pink-candy-heart",
+      "name": "Pink Candy Heart",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A sweet little message on your cheek. Not for eating.",
+      "art": { "shape": "candy-heart", "colors": ["#F28AB0"] }
+    },
+    {
+      "id": "face.lilac-candy-heart",
+      "name": "Lilac Candy Heart",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Says something kind, in pastel.",
+      "art": { "shape": "candy-heart", "colors": ["#B9A4E8"] }
+    },
+    {
+      "id": "face.mint-candy-heart",
+      "name": "Mint Candy Heart",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Cool, sweet and a little bit cheeky.",
+      "art": { "shape": "candy-heart", "colors": ["#8ED1B5"] }
+    },
+    {
+      "id": "face.raspberry-jam-smudge",
+      "name": "Raspberry Jam Smudge",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Breakfast was a good idea. Really.",
+      "art": { "shape": "jam-smudge", "colors": ["#B0325A", "#FFD6E0"] }
+    },
+    {
+      "id": "face.apricot-jam-smudge",
+      "name": "Apricot Jam Smudge",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Toast crumbs and jam, looking good.",
+      "art": { "shape": "jam-smudge", "colors": ["#E0873A", "#FFE2A8"] }
+    },
+    {
+      "id": "face.bubble-gum-bubble",
+      "name": "Bubble Gum Bubble",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "Blown carefully during a long study break.",
+      "art": { "shape": "bubble-gum", "colors": ["#F48FB1"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.gingerbread-vest",
+      "name": "Gingerbread Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Spiced, sturdy and dusted with icing.",
+      "art": { "shape": "gingerbread-vest", "colors": ["#C98A4B", "#FFF3DA", "#E9579A"] }
+    },
+    {
+      "id": "outfit.mint-icing-vest",
+      "name": "Mint Icing Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Iced in mint, with buttons made of gumdrops.",
+      "art": { "shape": "gingerbread-vest", "colors": ["#8ED1B5", "#FFF3DA", "#F5C542"] }
+    },
+    {
+      "id": "outfit.strawberry-icing-vest",
+      "name": "Strawberry Icing Vest",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pink icing and a row of gumdrop buttons.",
+      "art": { "shape": "gingerbread-vest", "colors": ["#F2A7BD", "#FFF3DA", "#B0325A"] }
+    },
+    {
+      "id": "outfit.gumdrop-necklace",
+      "name": "Gumdrop Necklace",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Chewy gumdrops on a string, for emergencies.",
+      "art": { "shape": "candy-necklace", "colors": ["#E9579A", "#F5C542"] }
+    },
+    {
+      "id": "outfit.jelly-bean-necklace",
+      "name": "Jelly Bean Necklace",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Every bead a different flavour of motivation.",
+      "art": { "shape": "candy-necklace", "colors": ["#5FB8A0", "#B9A4E8"] }
+    },
+    {
+      "id": "outfit.sprinkle-sweater",
+      "name": "Sprinkle Sweater",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Knitted with sprinkles that twinkle while you focus.",
+      "art": { "shape": "sprinkle-sweater", "colors": ["#F6C7D8", "#8E6CD8", "#FFD166"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.cupcake-liner-collar",
+      "name": "Cupcake Liner Collar",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "A paper frill that bobs along with your breathing.",
+      "art": { "shape": "cupcake-liner-collar", "colors": ["#FFD166", "#E9579A"] },
+      "animated": true
+    },
+    {
+      "id": "held.pink-swirl-lollipop",
+      "name": "Pink Swirl Lollipop",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A pink swirl for the last page of the chapter.",
+      "art": { "shape": "lollipop", "colors": ["#F28AB0", "#FFD166"] }
+    },
+    {
+      "id": "held.yellow-swirl-lollipop",
+      "name": "Yellow Swirl Lollipop",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Sunny, sticky and very good for focus breaks.",
+      "art": { "shape": "lollipop", "colors": ["#F5C542", "#E9579A"] }
+    },
+    {
+      "id": "held.teal-swirl-lollipop",
+      "name": "Teal Swirl Lollipop",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A cool teal swirl for slow afternoons.",
+      "art": { "shape": "lollipop", "colors": ["#4FB7B0", "#FFB38A"] }
+    },
+    {
+      "id": "held.orange-popsicle",
+      "name": "Orange Popsicle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Orange and dipped, a reward for finishing.",
+      "art": { "shape": "popsicle", "colors": ["#F5A23A", "#E9579A"] }
+    },
+    {
+      "id": "held.grape-popsicle",
+      "name": "Grape Popsicle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Grape purple, with a dip of sunshine on top.",
+      "art": { "shape": "popsicle", "colors": ["#9B7BD8", "#FFF3DA"] }
+    },
+    {
+      "id": "held.lime-popsicle",
+      "name": "Lime Popsicle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Lime green. Lasts longer than a coffee break.",
+      "art": { "shape": "popsicle", "colors": ["#8FD16B", "#5B6FD6"] }
+    },
+    {
+      "id": "held.layer-cake-slice",
+      "name": "Layer Cake Slice",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three layers, one slice, one good reason to rest.",
+      "art": { "shape": "cake-slice", "colors": ["#F2C9A0", "#E9579A", "#B0325A"] }
+    },
+    {
+      "id": "held.lemon-cake-slice",
+      "name": "Lemon Cake Slice",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Lemon sponge, a tangy pick-me-up before the exam.",
+      "art": { "shape": "cake-slice", "colors": ["#FFE07A", "#7FD3E0", "#4FB7B0"] }
+    },
+    {
+      "id": "held.gummy-bear-jar",
+      "name": "Gummy Bear Jar",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Bears in a jar. Share them, if you must.",
+      "art": { "shape": "gummy-jar", "colors": ["#E9579A", "#F5C542"] }
+    },
+    {
+      "id": "held.mint-gummy-jar",
+      "name": "Mint Gummy Jar",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A mint lid and lilac bears. Very calm.",
+      "art": { "shape": "gummy-jar", "colors": ["#5FB8A0", "#B9A4E8"] }
+    },
+    {
+      "id": "held.vanilla-cone",
+      "name": "Vanilla Cone",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A classic, the steady choice for steady studying.",
+      "art": { "shape": "ice-cream-cone", "colors": ["#D9A066", "#FFF3DA"] }
+    },
+    {
+      "id": "held.berry-cone",
+      "name": "Berry Cone",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A berry scoop on a chocolate waffle cone.",
+      "art": { "shape": "ice-cream-cone", "colors": ["#8E6136", "#E9579A"] }
+    },
+    {
+      "id": "held.cotton-candy-cloud",
+      "name": "Cotton Candy Cloud",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A fluffy cloud on a stick that bobs as you work.",
+      "art": { "shape": "cotton-candy", "colors": ["#FFB7D5", "#F5C542"] },
+      "animated": true
+    },
+    {
+      "id": "held.candy-cane",
+      "name": "Candy Cane",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A striped candy cane that sways with every good idea.",
+      "art": { "shape": "candy-cane", "colors": ["#E0484F"] },
+      "animated": true
+    },
+    {
+      "id": "aura.falling-sprinkles",
+      "name": "Falling Sprinkles",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Sprinkles drifting down the sides. No cleanup required.",
+      "art": { "shape": "falling-sprinkles", "colors": ["#F28AB0", "#F5C542", "#5B9FE0"] },
+      "animated": true
+    },
+    {
+      "id": "aura.candy-orbit",
+      "name": "Candy Orbit",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Candies bobbing around your buddy, sparkling as they go.",
+      "art": { "shape": "candy-orbit", "colors": ["#E9579A", "#4FB7B0", "#F5C542"] },
+      "animated": true
+    },
+    {
+      "id": "aura.sugar-rush",
+      "name": "Sugar Rush",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Candies and sprinkles orbiting you in a soft, sugary glow.",
+      "art": { "shape": "sugar-rush", "colors": ["#F28AB0", "#F5C542", "#4FB7B0"] },
+      "animated": true
+    }
+  ]
+}

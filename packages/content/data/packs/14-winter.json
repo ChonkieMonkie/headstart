@@ -1,0 +1,475 @@
+{
+  "shapes": {
+    "head": {
+      "fur-hood": 2,
+      "snowflake-clip": 2,
+      "snowman-hat": 2,
+      "reindeer-antlers": 2,
+      "ice-crown": 2,
+      "icicle-hat": 2
+    },
+    "face": {
+      "frosty-cheeks": 2,
+      "ski-goggles": 2
+    },
+    "outfit": {
+      "puffer-jacket": 2,
+      "snowflake-jumper": 2
+    },
+    "held": {
+      "snowball": 2,
+      "mitten": 2,
+      "skate-keyring": 2,
+      "little-snowman": 2,
+      "snow-shovel": 2,
+      "mini-sled": 2,
+      "figure-skates": 2,
+      "snowflake-wand": 2
+    },
+    "aura": {
+      "frost-sparkle": 2,
+      "ice-crystals": 2,
+      "northern-lights": 3
+    }
+  },
+  "items": [
+    {
+      "id": "head.fur-hood-cocoa",
+      "name": "Cocoa Fur Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A fluffy hood for long revision sessions.",
+      "art": {
+        "shape": "fur-hood",
+        "colors": ["#8E6136", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.fur-hood-snow",
+      "name": "Snow Fur Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Frosty blue with a white fluffy trim.",
+      "art": {
+        "shape": "fur-hood",
+        "colors": ["#A9C9E8", "#FFFFFF"]
+      }
+    },
+    {
+      "id": "head.fur-hood-rose",
+      "name": "Rose Fur Hood",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Pink and fluffy, like a very warm cloud.",
+      "art": {
+        "shape": "fur-hood",
+        "colors": ["#E28FA5", "#FFF1F5"]
+      }
+    },
+    {
+      "id": "head.snowflake-clip-ice",
+      "name": "Ice Snowflake Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Keeps the fringe out of your notes.",
+      "art": {
+        "shape": "snowflake-clip",
+        "colors": ["#5B9FE0", "#DDEBFF"]
+      }
+    },
+    {
+      "id": "head.snowflake-clip-pink",
+      "name": "Pink Snowflake Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A small snowflake for the bright side of exam week.",
+      "art": {
+        "shape": "snowflake-clip",
+        "colors": ["#F28AB0", "#FFD6E6"]
+      }
+    },
+    {
+      "id": "head.snowflake-clip-gold",
+      "name": "Gold Snowflake Clip",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Golden flakes that never melt, even in revision.",
+      "art": {
+        "shape": "snowflake-clip",
+        "colors": ["#F5C542", "#FFF3C4"]
+      }
+    },
+    {
+      "id": "outfit.puffer-jacket-teal",
+      "name": "Teal Puffer Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Puffed up and ready for the bus stop.",
+      "art": {
+        "shape": "puffer-jacket",
+        "colors": ["#3FA7A0", "#2A6F6A"]
+      }
+    },
+    {
+      "id": "outfit.puffer-jacket-red",
+      "name": "Red Puffer Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Bright enough to find in a crowded library.",
+      "art": {
+        "shape": "puffer-jacket",
+        "colors": ["#E5533D", "#7A2B22"]
+      }
+    },
+    {
+      "id": "outfit.puffer-jacket-mustard",
+      "name": "Mustard Puffer Jacket",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Bright on the outside, warm on the inside.",
+      "art": {
+        "shape": "puffer-jacket",
+        "colors": ["#E0A72E", "#8E6136"]
+      }
+    },
+    {
+      "id": "held.snowball-mint",
+      "name": "Mint Snowball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Packed tight, and it will not melt before the exam.",
+      "art": {
+        "shape": "snowball",
+        "colors": ["#8FD9C0", "#2E8B74"]
+      }
+    },
+    {
+      "id": "held.snowball-peach",
+      "name": "Peach Snowball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Round, sweet and a little sprinkled.",
+      "art": {
+        "shape": "snowball",
+        "colors": ["#FFB38A", "#C2573A"]
+      }
+    },
+    {
+      "id": "held.snowball-lilac",
+      "name": "Lilac Snowball",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A snowball that has been studying hard.",
+      "art": {
+        "shape": "snowball",
+        "colors": ["#B9A7F0", "#5B4BD6"]
+      }
+    },
+    {
+      "id": "held.mitten-red",
+      "name": "Red Mitten",
+      "slot": "held",
+      "rarity": "common",
+      "description": "One mitten. The other is somewhere in the lecture hall.",
+      "art": {
+        "shape": "mitten",
+        "colors": ["#E5533D", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.mitten-teal",
+      "name": "Teal Mitten",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Knitted with a spare thumb for good luck.",
+      "art": {
+        "shape": "mitten",
+        "colors": ["#3FA7A0", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.mitten-sunny",
+      "name": "Sunny Mitten",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Bright yellow, so you never lose it again.",
+      "art": {
+        "shape": "mitten",
+        "colors": ["#F5C542", "#5B4BD6"]
+      }
+    },
+    {
+      "id": "held.skate-keyring-blue",
+      "name": "Blue Skate Keyring",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Your keys, but on skates.",
+      "art": {
+        "shape": "skate-keyring",
+        "colors": ["#5B9FE0", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.skate-keyring-pink",
+      "name": "Pink Skate Keyring",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A tiny boot that jingles when you walk.",
+      "art": {
+        "shape": "skate-keyring",
+        "colors": ["#F28AB0", "#7FF0E0"]
+      }
+    },
+    {
+      "id": "held.skate-keyring-green",
+      "name": "Green Skate Keyring",
+      "slot": "held",
+      "rarity": "common",
+      "description": "It is never too late to go skating.",
+      "art": {
+        "shape": "skate-keyring",
+        "colors": ["#6DBB5A", "#F28A3A"]
+      }
+    },
+    {
+      "id": "head.snowman-hat-black",
+      "name": "Snowman Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A tall black hat with a red band for the snow.",
+      "art": {
+        "shape": "snowman-hat",
+        "colors": ["#3B3F52", "#E5533D"]
+      }
+    },
+    {
+      "id": "head.snowman-hat-navy",
+      "name": "Navy Snowman Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "The same hat for a clear night, with a gold band.",
+      "art": {
+        "shape": "snowman-hat",
+        "colors": ["#2E3A6B", "#F2C14E"]
+      }
+    },
+    {
+      "id": "head.reindeer-antlers-caramel",
+      "name": "Reindeer Antlers",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Antlers that do not get in the way of the books.",
+      "art": {
+        "shape": "reindeer-antlers",
+        "colors": ["#C98A4B", "#E5533D"]
+      }
+    },
+    {
+      "id": "head.reindeer-antlers-slate",
+      "name": "Slate Antlers",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Cool grey antlers with a mint band.",
+      "art": {
+        "shape": "reindeer-antlers",
+        "colors": ["#5D6B8C", "#7DD8C0"]
+      }
+    },
+    {
+      "id": "face.frosty-cheeks-ice",
+      "name": "Frosty Cheeks",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Little frost flakes that stick to your cheeks.",
+      "art": {
+        "shape": "frosty-cheeks",
+        "colors": ["#8FD3F5", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "face.frosty-cheeks-pink",
+      "name": "Pink Frosty Cheeks",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Pink frost for a rosy winter look.",
+      "art": {
+        "shape": "frosty-cheeks",
+        "colors": ["#FFB3D1", "#E9579A"]
+      }
+    },
+    {
+      "id": "outfit.snowflake-jumper-red",
+      "name": "Snowflake Jumper",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Red and cream, with a snowflake on every row.",
+      "art": {
+        "shape": "snowflake-jumper",
+        "colors": ["#E5533D", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.snowflake-jumper-navy",
+      "name": "Navy Snowflake Jumper",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "A snowflake jumper for the late-night study.",
+      "art": {
+        "shape": "snowflake-jumper",
+        "colors": ["#2E3A6B", "#7FF0E0"]
+      }
+    },
+    {
+      "id": "held.little-snowman-scarf",
+      "name": "Little Snowman",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A tiny snowman that keeps you company. Bring a scarf.",
+      "art": {
+        "shape": "little-snowman",
+        "colors": ["#3B3F52", "#E5533D"]
+      }
+    },
+    {
+      "id": "held.little-snowman-mint",
+      "name": "Mint Little Snowman",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "The same friend, in a mint hat with a yellow scarf.",
+      "art": {
+        "shape": "little-snowman",
+        "colors": ["#7DB8A8", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.snow-shovel-blue",
+      "name": "Snow Shovel",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "For clearing a path to the library.",
+      "art": {
+        "shape": "snow-shovel",
+        "colors": ["#5B9FE0", "#F28A3A"]
+      }
+    },
+    {
+      "id": "held.snow-shovel-sunny",
+      "name": "Sunny Snow Shovel",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Bright and cheerful, with a teal grip.",
+      "art": {
+        "shape": "snow-shovel",
+        "colors": ["#F5C542", "#3FA7A0"]
+      }
+    },
+    {
+      "id": "head.ice-crown",
+      "name": "Ice Crown",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A crown of ice that sparkles when you finish a chapter.",
+      "art": {
+        "shape": "ice-crown",
+        "colors": ["#9ADFF5", "#FF8FB1"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.mini-sled",
+      "name": "Mini Sled",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A tiny sled that swings a little as you walk.",
+      "art": {
+        "shape": "mini-sled",
+        "colors": ["#E5533D", "#F2C14E"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.figure-skates",
+      "name": "Figure Skates",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Laced up and ready for a spin.",
+      "art": {
+        "shape": "figure-skates",
+        "colors": ["#E9579A", "#FFD6E6"]
+      },
+      "animated": true
+    },
+    {
+      "id": "face.ski-goggles",
+      "name": "Ski Goggles",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "Bright lenses that flash when the sun comes out.",
+      "art": {
+        "shape": "ski-goggles",
+        "colors": ["#E5533D", "#8FD3F5"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.frost-sparkle",
+      "name": "Frost Sparkle",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Little sparkles that twinkle at the edges.",
+      "art": {
+        "shape": "frost-sparkle",
+        "colors": ["#9FE3FA", "#5B9FE0"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.ice-crystals",
+      "name": "Ice Crystals",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Crystals that float gently around you.",
+      "art": {
+        "shape": "ice-crystals",
+        "colors": ["#BFEFFA", "#5B9FE0"]
+      },
+      "animated": true
+    },
+    {
+      "id": "head.icicle-hat",
+      "name": "Icicle Hat",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A knitted hat with icicles that sway in the wind.",
+      "art": {
+        "shape": "icicle-hat",
+        "colors": ["#6C8EE0", "#B8F3FF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.snowflake-wand",
+      "name": "Snowflake Wand",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A wand with a snowflake that twinkles when you get going.",
+      "art": {
+        "shape": "snowflake-wand",
+        "colors": ["#E9A93A", "#9FE3FA"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.northern-lights",
+      "name": "Northern Lights",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "Ribbons of light that dance behind you all night.",
+      "art": {
+        "shape": "northern-lights",
+        "colors": ["#7CE8B0", "#B58CF5", "#7FD8F5"]
+      },
+      "animated": true
+    }
+  ]
+}

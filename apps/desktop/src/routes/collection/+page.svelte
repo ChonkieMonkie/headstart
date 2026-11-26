@@ -31,6 +31,10 @@
     previewSpecies,
     rarityColors,
     InsightIcon,
+    COVERS,
+    coverStage,
+    itemsToNextStage,
+    renderCover,
   } from "@headstart/ui";
   import BuddyPicker from "$lib/components/BuddyPicker.svelte";
   import { page } from "$app/state";
@@ -56,6 +60,7 @@
     outfit: { title: "Outfit", plural: "Outfit", note: "Scarves, ties, medals, hoodies and capes" },
     held: { title: "Held item", plural: "Held", note: "Study gear in the right hand" },
     aura: { title: "Aura", plural: "Aura", note: "Effects around the mascot" },
+    background: { title: "Background", plural: "Backgrounds", note: "Behind your buddy. Each set gives one when it is finished." },
   };
   const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary", exotic: "Exotic" };
   /** Insight to craft an item. Exotic items are never crafted, so they have no price. */
@@ -89,10 +94,49 @@
       const owned = study.owned(item.id) > 0;
       if (found === "found") return owned;
       if (found === "missing") return !owned;
-      return item.dropsFromCrates !== false || owned;
+      // Retired items stay hidden until found; backgrounds never drop but always show.
+      return item.dropsFromCrates !== false || item.slot === "background" || owned;
     }),
   );
   const selected = $derived(study.item(selectedId));
+
+  /**
+   * Colourways of one design share a card: the same shape in the same slot and
+   * rarity. Skins and backgrounds are each their own design.
+   */
+  const designKey = (item: Item) =>
+    item.slot === "skin" || item.slot === "background" || !("shape" in item.art)
+      ? item.id
+      : `${item.slot}:${item.art.shape}:${item.rarity}`;
+  /** Every colourway of each design in the catalogue, in catalogue order. */
+  const colourways = $derived.by(() => {
+    const map = new Map<string, Item[]>();
+    for (const item of sorted) {
+      const key = designKey(item);
+      const list = map.get(key);
+      if (list) list.push(item);
+      else map.set(key, [item]);
+    }
+    return map;
+  });
+  /** The cards to show: one per design among the shown items, led by a found colourway if there is one. */
+  const cards = $derived.by(() => {
+    const seen = new Map<string, Item[]>();
+    for (const item of shown) {
+      const key = designKey(item);
+      const list = seen.get(key);
+      if (list) list.push(item);
+      else seen.set(key, [item]);
+    }
+    return [...seen].map(([key, items]) => ({
+      key,
+      lead: items.find((i) => study.owned(i.id) > 0) ?? items[0]!,
+      all: colourways.get(key) ?? items,
+    }));
+  });
+  const selectedWays = $derived(selected ? (colourways.get(designKey(selected)) ?? [selected]) : []);
+  const colourOf = (item: Item) => ("colors" in item.art ? (item.art.colors[0] ?? "#C9CED8") : (item.art as { body: string }).body);
+  const backgroundOf = (setId: string) => study.catalog.find((i) => i.slot === "background" && i.set === setId) ?? null;
 
   /** Owned items for one slot that the current mascot can wear. */
   function wearable(slot: Slot): Item[] {
@@ -258,14 +302,15 @@
 
     <div class="browse">
       <ul class="grid" aria-label="Items">
-        {#each shown as item (item.id)}
+        {#each cards as card (card.key)}
+          {@const item = card.lead}
           {@const owned = study.owned(item.id) > 0}
           <li>
             <button
               type="button"
               class="item"
               class:exotic={item.rarity === "exotic"}
-              aria-pressed={selectedId === item.id}
+              aria-pressed={card.all.some((i) => i.id === selectedId)}
               style:border-bottom-color={rarityColors[item.rarity].dot}
               onclick={() => (selectedId = item.id)}
             >
@@ -276,6 +321,14 @@
               <span class="item-rarity" style:color={rarityColors[item.rarity].fg}>
                 {RARITY_LABEL[item.rarity]}{owned ? "" : " · not found"}
               </span>
+              {#if card.all.length > 1}
+                {@const got = card.all.filter((i) => study.owned(i.id) > 0).length}
+                <span class="ways" aria-label="{got} of {card.all.length} colourways found">
+                  {#each card.all as way (way.id)}
+                    <span class="way" class:got={study.owned(way.id) > 0} style:--way={colourOf(way)}></span>
+                  {/each}
+                </span>
+              {/if}
             </button>
           </li>
         {/each}
@@ -299,6 +352,21 @@
           </div>
           <h2>{selected.name}</h2>
           {#if selected.description}<p class="note">{selected.description}</p>{/if}
+          {#if selectedWays.length > 1}
+            <div class="chips" role="group" aria-label="Colourways">
+              {#each selectedWays as way (way.id)}
+                <button
+                  type="button"
+                  class="chip way-chip"
+                  aria-pressed={way.id === selected.id}
+                  onclick={() => (selectedId = way.id)}
+                >
+                  <span class="way" class:got={study.owned(way.id) > 0} style:--way={colourOf(way)} aria-hidden="true"></span>
+                  {way.name}
+                </button>
+              {/each}
+            </div>
+          {/if}
           {#if set}<p class="note">Part of the <b>{set.set.name}</b> set, {set.owned} of {set.total} found.</p>{/if}
           {#if owned}
             <p class="have">In your collection</p>
@@ -311,6 +379,8 @@
                 </button>
               {/if}
             {/if}
+          {:else if selected.slot === "background"}
+            <p class="note">Given for finishing its set. It is never in crates and cannot be crafted.</p>
           {:else if selected.grantOnly}
             <p class="note">Exotic items are never in crates. They are only given, one by one.</p>
           {:else if selected.craftable === false || selected.season}
@@ -334,19 +404,24 @@
 {:else if tab === "sets"}
   <div class="sets" role="tabpanel" id="panel-sets" aria-labelledby="tab-sets">
     {#each study.sets as progress (progress.set.id)}
-      {@const members = sorted.filter((i) => i.set === progress.set.id)}
+      {@const members = sorted.filter((i) => i.set === progress.set.id && i.slot !== "background")}
+      {@const reward = backgroundOf(progress.set.id)}
       {@const foundNames = members.filter((i) => study.owned(i.id) > 0).map((i) => i.name)}
-      <article class="card set">
+      {@const stage = coverStage(progress.owned, progress.total)}
+      {@const cover = COVERS[progress.set.id]}
+      {@const toNext = itemsToNextStage(progress.owned, progress.total)}
+      <article class="card set" class:complete={stage === 5}>
         <div class="set-art" style:background={progress.set.tint}>
-          {#each members.filter((i) => study.owned(i.id) > 0).slice(0, 4) as item (item.id)}
-            <LazyMascot look={preview(item)} size={72} />
-          {:else}
-            <span class="note">Nothing found yet</span>
-          {/each}
+          {#if cover}
+            <svg viewBox="0 0 320 180" role="img" aria-label="{progress.set.name} cover, stage {stage} of 5">
+              {@html renderCover(progress.set.id, stage)}
+            </svg>
+          {/if}
+          <span class="count">{progress.owned} of {progress.total}</span>
         </div>
         <div class="set-head">
           <h2>{progress.set.name}</h2>
-          <span class="count">{progress.owned} of {progress.total}</span>
+          {#if stage === 5}<span class="done-tag">Complete</span>{/if}
         </div>
         <div
           class="bar"
@@ -358,10 +433,26 @@
         >
           <div style:width="{(progress.owned / progress.total) * 100}%" style:background={progress.set.color}></div>
         </div>
+        <p class="next">
+          {#if stage === 5}
+            Complete. {reward ? `The ${reward.name} background is yours.` : ""}
+          {:else if cover}
+            {toNext} more and {cover.labels[stage]}.
+          {/if}
+        </p>
         <p class="note">{progress.set.description}</p>
         <p class="members">
           {[...foundNames, `${members.length - foundNames.length} more to find`].join(" · ")}
         </p>
+        {#if reward}
+          {@const have = study.owned(reward.id) > 0}
+          <div class="reward">
+            <span class="reward-art"><LazyMascot look={preview(reward)} size={56} grey={!have} /></span>
+            <p class="note">
+              {have ? "Finished: " : "Finish it for "}<b>{reward.name}</b>, a background behind your buddy, and its plaque.
+            </p>
+          </div>
+        {/if}
       </article>
     {/each}
   </div>
@@ -370,6 +461,41 @@
 {/if}
 
 <style>
+  .ways {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .way {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px var(--hs-line-strong, #b8bfcf);
+  }
+
+  .way.got {
+    background: var(--way);
+    box-shadow: inset 0 0 0 1.5px rgba(42, 31, 45, 0.35);
+  }
+
+  .way-chip {
+    gap: 6px;
+  }
+
+  .reward {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .reward-art {
+    flex: 0 0 auto;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
   .top {
     display: flex;
     flex-wrap: wrap;
@@ -738,12 +864,41 @@
   }
 
   .set-art {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    min-height: 90px;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
     border-radius: 12px;
+  }
+
+  .set-art svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .set-art .count {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(20, 22, 40, 0.72);
+    color: #f3f5fa;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .next {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--hs-ink);
+  }
+
+  .done-tag {
+    font-size: 12px;
+    font-weight: 800;
+    color: #c98f12;
   }
 
   .set-head {

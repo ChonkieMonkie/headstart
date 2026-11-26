@@ -26,7 +26,7 @@ export type Rarity = (typeof RARITIES)[number];
 export const ITEM_RARITIES = [...RARITIES, "exotic"] as const;
 export type ItemRarity = (typeof ITEM_RARITIES)[number];
 
-export const SLOTS = ["skin", "head", "face", "outfit", "held", "aura"] as const;
+export const SLOTS = ["skin", "head", "face", "outfit", "held", "aura", "background"] as const;
 export type Slot = (typeof SLOTS)[number];
 
 export const MASCOTS = ["inky", "axo", "maple"] as const;
@@ -35,8 +35,15 @@ export type MascotId = (typeof MASCOTS)[number];
 export const CRATE_TYPES = ["study", "weekly", "streak", "milestone", "exam"] as const;
 export type CrateType = (typeof CRATE_TYPES)[number];
 
-/** Slots that hold something the mascot wears or holds, as opposed to its skin. */
-export type WearSlot = Exclude<Slot, "skin">;
+/** Slots that hold something the mascot wears or holds, as opposed to its skin or background. */
+export type WearSlot = Exclude<Slot, "skin" | "background">;
+export const WEAR_SLOTS = [
+  "head",
+  "face",
+  "outfit",
+  "held",
+  "aura",
+] as const satisfies readonly WearSlot[];
 
 /**
  * Every shape the mascot renderer can draw, by slot, with the number of
@@ -129,6 +136,33 @@ export interface WearArt {
   colors: string[];
 }
 
+/**
+ * A scene drawn behind the mascot. Backgrounds never drop from crates: each
+ * one belongs to a set and is given when the set is complete.
+ */
+export interface BackgroundArt {
+  scene: string;
+  /** "#RRGGBB" colours, as many as the scene takes. */
+  colors: string[];
+}
+
+/**
+ * A content pack: new shapes (with the number of colours each takes), new
+ * background scenes and the items that use them. Packs keep the catalogue in
+ * small files; their drawings live in `@headstart/ui` under `mascot/packs/`.
+ */
+export interface ContentPack {
+  shapes?: Partial<Record<WearSlot, Record<string, number>>>;
+  scenes?: Record<string, number>;
+  items: unknown[];
+}
+
+/** Every shape and scene the renderer can draw, packs included. */
+export interface ShapeTables {
+  wear: Record<WearSlot, Record<string, number>>;
+  scenes: Record<string, number>;
+}
+
 export const SKIN_PATTERNS = ["none", "spots", "stars", "petals", "stripes"] as const;
 export type SkinPattern = (typeof SKIN_PATTERNS)[number];
 
@@ -172,8 +206,8 @@ export interface Item {
   rarity: ItemRarity;
   /** One line shown when the item drops or is looked at. */
   description?: string;
-  /** How the item is drawn: a `SkinArt` for skins, a `WearArt` for everything else. */
-  art: SkinArt | WearArt;
+  /** How the item is drawn: `SkinArt` for skins, `BackgroundArt` for backgrounds, `WearArt` for the rest. */
+  art: SkinArt | WearArt | BackgroundArt;
   /** Mascots the item fits. Missing means it fits every mascot. */
   fits?: MascotId[];
   /** Themed set the item belongs to. */

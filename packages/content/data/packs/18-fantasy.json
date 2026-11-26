@@ -1,0 +1,476 @@
+{
+  "shapes": {
+    "head": {
+      "knight-helm": 2,
+      "elf-ears": 2,
+      "unicorn-horn": 2,
+      "dragon-hood": 2,
+      "star-circlet": 2
+    },
+    "face": {
+      "rune-marks": 1,
+      "forehead-gem": 2,
+      "masquerade-mask": 2
+    },
+    "outfit": {
+      "knight-breastplate": 2,
+      "starry-robe": 2,
+      "fairy-wings": 2
+    },
+    "held": {
+      "magic-wand": 2,
+      "potion-trio": 2,
+      "round-shield": 2,
+      "crystal-ball": 2,
+      "dragon-egg": 2,
+      "quest-banner": 2,
+      "tiny-dragon": 2
+    },
+    "aura": {
+      "fairy-dust": 2,
+      "magic-circle": 2,
+      "phoenix": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.knight-helm-silver",
+      "name": "Silver Knight Helm",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Open face, shiny plume. Armour for the exam hall.",
+      "art": {
+        "shape": "knight-helm",
+        "colors": ["#B9C4D6", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "head.knight-helm-gold",
+      "name": "Gold Knight Helm",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Golden and glorious, slightly heavy for a long lecture.",
+      "art": {
+        "shape": "knight-helm",
+        "colors": ["#F2C14E", "#C8403A"]
+      }
+    },
+    {
+      "id": "head.knight-helm-bronze",
+      "name": "Bronze Knight Helm",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Warm bronze with a green plume. Ready for finals.",
+      "art": {
+        "shape": "knight-helm",
+        "colors": ["#C98A4B", "#3E7A3A"]
+      }
+    },
+    {
+      "id": "head.elf-ears-tan",
+      "name": "Elf Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Pointy ears for listening to the lecture from far away.",
+      "art": {
+        "shape": "elf-ears",
+        "colors": ["#E8C9A0", "#F2A6A0"]
+      }
+    },
+    {
+      "id": "head.elf-ears-moonlit",
+      "name": "Moonlit Elf Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Pale ears for late-night study sessions under the moon.",
+      "art": {
+        "shape": "elf-ears",
+        "colors": ["#C9D3E6", "#B8F3FF"]
+      }
+    },
+    {
+      "id": "head.elf-ears-forest",
+      "name": "Forest Elf Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Green ears for studying under the trees.",
+      "art": {
+        "shape": "elf-ears",
+        "colors": ["#7DB86B", "#F1E6C8"]
+      }
+    },
+    {
+      "id": "head.unicorn-horn-pink",
+      "name": "Unicorn Horn Band",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A little horn on a pink band. Sparkly enough for the library.",
+      "art": {
+        "shape": "unicorn-horn",
+        "colors": ["#F9B8D8", "#F5D36B"]
+      }
+    },
+    {
+      "id": "head.unicorn-horn-sky",
+      "name": "Sky Unicorn Horn",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Sky-blue and lilac, mostly for show, a bit for focus.",
+      "art": {
+        "shape": "unicorn-horn",
+        "colors": ["#9FD8F5", "#C9B8FF"]
+      }
+    },
+    {
+      "id": "head.dragon-hood-jade",
+      "name": "Jade Dragon Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Dragon-sized deadlines need a dragon-sized hood.",
+      "art": {
+        "shape": "dragon-hood",
+        "colors": ["#2F9E8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "head.dragon-hood-ember",
+      "name": "Ember Dragon Hood",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Warm enough to keep a small fire going, probably.",
+      "art": {
+        "shape": "dragon-hood",
+        "colors": ["#C8403A", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "head.star-circlet",
+      "name": "Star Circlet",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A gold circlet with a star that twinkles at good ideas.",
+      "art": {
+        "shape": "star-circlet",
+        "colors": ["#F5C542", "#7FD8FF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "face.rune-marks-ice",
+      "name": "Ice Rune Marks",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Old letters on your cheeks. Nobody needs to know what they mean.",
+      "art": {
+        "shape": "rune-marks",
+        "colors": ["#7FD8FF"]
+      }
+    },
+    {
+      "id": "face.rune-marks-gold",
+      "name": "Gold Rune Marks",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Ancient marks that say: read one more chapter.",
+      "art": {
+        "shape": "rune-marks",
+        "colors": ["#F5C542"]
+      }
+    },
+    {
+      "id": "face.rune-marks-rose",
+      "name": "Rose Rune Marks",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Rose-pink runes. They probably mean something good.",
+      "art": {
+        "shape": "rune-marks",
+        "colors": ["#FF8FA3"]
+      }
+    },
+    {
+      "id": "face.forehead-gem-ruby",
+      "name": "Ruby Forehead Gem",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A red gem for the brain that never stops thinking.",
+      "art": {
+        "shape": "forehead-gem",
+        "colors": ["#E5533D", "#F5C542"]
+      }
+    },
+    {
+      "id": "face.forehead-gem-sapphire",
+      "name": "Sapphire Forehead Gem",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A calm blue gem for steady focus.",
+      "art": {
+        "shape": "forehead-gem",
+        "colors": ["#4A7FC1", "#C9D3E6"]
+      }
+    },
+    {
+      "id": "face.masquerade-mask",
+      "name": "Masquerade Mask",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "A mysterious mask with sparkly tips. Only slightly distracting.",
+      "art": {
+        "shape": "masquerade-mask",
+        "colors": ["#9B5DE5", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "outfit.knight-breastplate-silver",
+      "name": "Silver Breastplate",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Shiny armour for facing the reading list.",
+      "art": {
+        "shape": "knight-breastplate",
+        "colors": ["#B9C4D6", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.knight-breastplate-bronze",
+      "name": "Bronze Breastplate",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Old-fashioned armour with a cream trim.",
+      "art": {
+        "shape": "knight-breastplate",
+        "colors": ["#C98A4B", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "outfit.knight-breastplate-crimson",
+      "name": "Crimson Breastplate",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Bold red armour for the final push.",
+      "art": {
+        "shape": "knight-breastplate",
+        "colors": ["#C8403A", "#B9C4D6"]
+      }
+    },
+    {
+      "id": "outfit.starry-robe-midnight",
+      "name": "Midnight Robe",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Dark blue with gold stars, for late-night reading.",
+      "art": {
+        "shape": "starry-robe",
+        "colors": ["#2E3A6B", "#F5C542"]
+      }
+    },
+    {
+      "id": "outfit.starry-robe-plum",
+      "name": "Plum Star Robe",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Soft plum with pink stars for very serious thinking.",
+      "art": {
+        "shape": "starry-robe",
+        "colors": ["#7A4FB5", "#F9D7EC"]
+      }
+    },
+    {
+      "id": "outfit.starry-robe-forest",
+      "name": "Forest Star Robe",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Library green with gold stars all over it.",
+      "art": {
+        "shape": "starry-robe",
+        "colors": ["#3E7A3A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "outfit.fairy-wings-frost",
+      "name": "Frost Fairy Wings",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Pale blue wings. Very light, very helpful for flashcards.",
+      "art": {
+        "shape": "fairy-wings",
+        "colors": ["#BFE8FF", "#FFC6E8"]
+      }
+    },
+    {
+      "id": "outfit.fairy-wings-mint",
+      "name": "Mint Fairy Wings",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Mint wings with gold veins, the lightest load you carry.",
+      "art": {
+        "shape": "fairy-wings",
+        "colors": ["#D9F7C9", "#FFE58A"]
+      }
+    },
+    {
+      "id": "held.magic-wand-ebony",
+      "name": "Ebony Magic Wand",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Dark wood and a gold star. Wave it at the textbook.",
+      "art": {
+        "shape": "magic-wand",
+        "colors": ["#3B3F52", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.magic-wand-ivory",
+      "name": "Ivory Magic Wand",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Ivory with a pink star. Wave it gently at the textbook.",
+      "art": {
+        "shape": "magic-wand",
+        "colors": ["#F6E7D8", "#F28AB0"]
+      }
+    },
+    {
+      "id": "held.magic-wand-jade",
+      "name": "Jade Magic Wand",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Green and silver. Works best with a cup of tea.",
+      "art": {
+        "shape": "magic-wand",
+        "colors": ["#3FA89A", "#C9D3E6"]
+      }
+    },
+    {
+      "id": "held.potion-trio-pink",
+      "name": "Potion Trio",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three bottles of focus. Label them carefully.",
+      "art": {
+        "shape": "potion-trio",
+        "colors": ["#E9579A", "#5B9FE0"]
+      }
+    },
+    {
+      "id": "held.potion-trio-green",
+      "name": "Green Potion Trio",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Three green bottles. Do not drink, just study.",
+      "art": {
+        "shape": "potion-trio",
+        "colors": ["#3FBF8F", "#F5C542"]
+      }
+    },
+    {
+      "id": "held.round-shield-red",
+      "name": "Red Round Shield",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A round shield with a gold boss for stormy exam weeks.",
+      "art": {
+        "shape": "round-shield",
+        "colors": ["#C8403A", "#F2C14E"]
+      }
+    },
+    {
+      "id": "held.round-shield-blue",
+      "name": "Blue Round Shield",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Blue and cream, for defending your evenings.",
+      "art": {
+        "shape": "round-shield",
+        "colors": ["#3E7AB8", "#F6E7D8"]
+      }
+    },
+    {
+      "id": "held.crystal-ball",
+      "name": "Crystal Ball",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Shows you the answer, or at least the next chapter.",
+      "art": {
+        "shape": "crystal-ball",
+        "colors": ["#B8A4FF", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.dragon-egg",
+      "name": "Dragon Egg",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Warm to the touch. Hatches after enough study hours.",
+      "art": {
+        "shape": "dragon-egg",
+        "colors": ["#7FD8B8", "#E9579A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.quest-banner",
+      "name": "Quest Banner",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A banner for your quests. It waves when you finish one.",
+      "art": {
+        "shape": "quest-banner",
+        "colors": ["#7A4FB5", "#F2C14E"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.tiny-dragon",
+      "name": "Tiny Dragon",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A small dragon that keeps watch over your notes.",
+      "art": {
+        "shape": "tiny-dragon",
+        "colors": ["#3FBF8F", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.fairy-dust",
+      "name": "Fairy Dust",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Pink and aqua sparkles drifting around you.",
+      "art": {
+        "shape": "fairy-dust",
+        "colors": ["#F9A8D4", "#B8F3FF"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.magic-circle",
+      "name": "Magic Circle",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "A glowing rune circle. Stand inside and focus.",
+      "art": {
+        "shape": "magic-circle",
+        "colors": ["#9B7FE8", "#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "aura.phoenix",
+      "name": "Phoenix",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A phoenix circles you in warm light. It never burns out.",
+      "art": {
+        "shape": "phoenix",
+        "colors": ["#FF7A59", "#F5C542"]
+      },
+      "animated": true
+    }
+  ]
+}

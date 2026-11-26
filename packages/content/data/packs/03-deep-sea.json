@@ -1,0 +1,394 @@
+{
+  "shapes": {
+    "head": {
+      "shell-crown": 2,
+      "sponge-cap": 2,
+      "fishbowl-hat": 2,
+      "brass-diving-helmet": 3,
+      "seahorse-clip": 2,
+      "anglerfish-lure": 2
+    },
+    "face": {
+      "starfish-sticker": 2,
+      "pearl-drop": 2
+    },
+    "outfit": {
+      "shell-necklace": 2,
+      "kelp-scarf": 2,
+      "captains-coat": 2,
+      "turtle-shell-pack": 2
+    },
+    "held": {
+      "seashell": 2,
+      "message-bottle": 2,
+      "little-crab": 2,
+      "conch-shell": 2,
+      "pearl-clam": 2,
+      "sea-staff": 2,
+      "glass-float": 2,
+      "sea-lantern": 2
+    },
+    "aura": {
+      "school-of-fish": 2,
+      "kelp-sway": 2,
+      "little-whale": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.shell-crown-coral",
+      "name": "Coral Shell Crown",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Three scallop shells on a band. Very royal, slightly damp.",
+      "art": { "shape": "shell-crown", "colors": ["#F28A6B", "#FFD3C2"] }
+    },
+    {
+      "id": "head.shell-crown-lilac",
+      "name": "Lilac Shell Crown",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Lilac scallops. Lectures feel calmer down here.",
+      "art": { "shape": "shell-crown", "colors": ["#B9A7F0", "#F4EEFF"] }
+    },
+    {
+      "id": "head.shell-crown-gold",
+      "name": "Gold Shell Crown",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Gold-tipped shells for the top of the class.",
+      "art": { "shape": "shell-crown", "colors": ["#F5B841", "#FFF0C2"] }
+    },
+    {
+      "id": "face.starfish-sticker",
+      "name": "Starfish Sticker",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A starfish on one cheek. Holds on like it means it.",
+      "art": { "shape": "starfish-sticker", "colors": ["#F28A3A", "#FFD0A8"] }
+    },
+    {
+      "id": "face.starfish-sticker-pink",
+      "name": "Pink Starfish",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A pink starfish, stuck on for the whole exam period.",
+      "art": { "shape": "starfish-sticker", "colors": ["#F28AB0", "#FFD6E6"] }
+    },
+    {
+      "id": "face.starfish-sticker-violet",
+      "name": "Violet Starfish",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Violet, and it never misses a deadline.",
+      "art": { "shape": "starfish-sticker", "colors": ["#9D84E8", "#E4DBFF"] }
+    },
+    {
+      "id": "outfit.shell-necklace",
+      "name": "Shell Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Pink shells on a brown cord. Clicks when you walk.",
+      "art": { "shape": "shell-necklace", "colors": ["#F7A8B8", "#8E6136"] }
+    },
+    {
+      "id": "outfit.shell-necklace-cream",
+      "name": "Cream Shell Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Cream shells on a gold cord. Sounds like the sea.",
+      "art": { "shape": "shell-necklace", "colors": ["#F6E7C1", "#F2C14E"] }
+    },
+    {
+      "id": "outfit.shell-necklace-lilac",
+      "name": "Lilac Shell Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Lilac shells on a navy cord, for long sessions by the sea.",
+      "art": { "shape": "shell-necklace", "colors": ["#B9A7F0", "#2E3A6B"] }
+    },
+    {
+      "id": "outfit.kelp-scarf",
+      "name": "Kelp Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Long green kelp, wrapped twice round your neck.",
+      "art": { "shape": "kelp-scarf", "colors": ["#4E9A45", "#2F6E3A"] }
+    },
+    {
+      "id": "outfit.kelp-scarf-teal",
+      "name": "Teal Kelp Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Teal fronds, warm enough for the cold lecture hall.",
+      "art": { "shape": "kelp-scarf", "colors": ["#2A9D8F", "#1E6E66"] }
+    },
+    {
+      "id": "outfit.kelp-scarf-bleached",
+      "name": "Sun-Bleached Kelp Scarf",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Brown and gold, bleached by a summer at sea.",
+      "art": { "shape": "kelp-scarf", "colors": ["#B88A3E", "#7A5A22"] }
+    },
+    {
+      "id": "held.seashell",
+      "name": "Seashell",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Hold it to your ear. The sea says start early.",
+      "art": { "shape": "seashell", "colors": ["#F7A8B8", "#D9768F"] }
+    },
+    {
+      "id": "held.seashell-cream",
+      "name": "Cream Seashell",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Cream and gold, with a very calm hum.",
+      "art": { "shape": "seashell", "colors": ["#F6E7C1", "#D9A441"] }
+    },
+    {
+      "id": "held.seashell-blue",
+      "name": "Blue Seashell",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Blue shell, cool head, steady breathing.",
+      "art": { "shape": "seashell", "colors": ["#9FD8F0", "#4F8FC4"] }
+    },
+    {
+      "id": "held.message-bottle",
+      "name": "Message in a Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A note inside: the answer is in chapter three.",
+      "art": { "shape": "message-bottle", "colors": ["#4FA37A", "#F6E7C1"] }
+    },
+    {
+      "id": "held.message-bottle-blue",
+      "name": "Blue Message Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Same note, bluer glass. Still chapter three.",
+      "art": { "shape": "message-bottle", "colors": ["#5B9FE0", "#F6E7C1"] }
+    },
+    {
+      "id": "held.message-bottle-amber",
+      "name": "Amber Message Bottle",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Same note, warmer glass. Still chapter three.",
+      "art": { "shape": "message-bottle", "colors": ["#E0A72E", "#F6E7C1"] }
+    },
+    {
+      "id": "head.sponge-cap",
+      "name": "Sponge Cap",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Soaks up everything you read. Squeeze gently.",
+      "art": { "shape": "sponge-cap", "colors": ["#F2D15B", "#E6A93A"] }
+    },
+    {
+      "id": "head.sponge-cap-pink",
+      "name": "Pink Sponge Cap",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Soft and pink, a little holey, very absorbent.",
+      "art": { "shape": "sponge-cap", "colors": ["#F28AB0", "#C2587F"] }
+    },
+    {
+      "id": "head.fishbowl-hat",
+      "name": "Fishbowl Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A bowl on your head, with a fish who knows the answers.",
+      "art": { "shape": "fishbowl-hat", "colors": ["#9ED8F0", "#F28A3A"] },
+      "set": "deep-sea"
+    },
+    {
+      "id": "head.fishbowl-hat-green",
+      "name": "Green Fishbowl Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Green glass and a yellow fish. Keeps you company.",
+      "art": { "shape": "fishbowl-hat", "colors": ["#A8E6B0", "#F5C542"] },
+      "set": "deep-sea"
+    },
+    {
+      "id": "face.pearl-drop",
+      "name": "Pearl Drop",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A single pearl on the cheek. Dramatic, but polished.",
+      "art": { "shape": "pearl-drop", "colors": ["#FBE3EC", "#E7B8C9"] }
+    },
+    {
+      "id": "face.pearl-drop-blue",
+      "name": "Blue Pearl Drop",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "A blue pearl, for when a grade surprised you.",
+      "art": { "shape": "pearl-drop", "colors": ["#E6F4FF", "#9FC7E8"] }
+    },
+    {
+      "id": "outfit.captains-coat",
+      "name": "Captain's Coat",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "White buttons, a proud collar, ready for the long semester.",
+      "art": { "shape": "captains-coat", "colors": ["#2E3A6B", "#F6E7D8"] },
+      "set": "deep-sea"
+    },
+    {
+      "id": "outfit.captains-coat-brick",
+      "name": "Brick Captain's Coat",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Rust-red and very sure of its course.",
+      "art": { "shape": "captains-coat", "colors": ["#B5533C", "#F6E7D8"] },
+      "set": "deep-sea"
+    },
+    {
+      "id": "held.little-crab",
+      "name": "Crab Friend",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A little crab that pinches procrastination.",
+      "art": { "shape": "little-crab", "colors": ["#E5533D", "#F6B3A6"] }
+    },
+    {
+      "id": "held.little-crab-teal",
+      "name": "Teal Crab Friend",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Teal, sideways thinking, and it walks at its own pace.",
+      "art": { "shape": "little-crab", "colors": ["#3FBFB0", "#CFF3EC"] }
+    },
+    {
+      "id": "held.conch-shell",
+      "name": "Conch Shell",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Listen closely. Somewhere a lecture is echoing.",
+      "art": { "shape": "conch-shell", "colors": ["#F7B7A3", "#FF8F7A"] }
+    },
+    {
+      "id": "held.conch-shell-gold",
+      "name": "Golden Conch",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Gold-rimmed and very shiny. Loud, for a shell.",
+      "art": { "shape": "conch-shell", "colors": ["#F6E7C1", "#E9A93A"] }
+    },
+    {
+      "id": "head.brass-diving-helmet",
+      "name": "Brass Diving Helmet",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "An open-face brass helmet. Bubbles rise when you go deep.",
+      "art": { "shape": "brass-diving-helmet", "colors": ["#D9A441", "#8E6136", "#BFE8FF"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "head.seahorse-clip",
+      "name": "Seahorse Clip",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A seahorse clip that bobs along with your thoughts.",
+      "art": { "shape": "seahorse-clip", "colors": ["#F2A541", "#FFE7B3"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "aura.school-of-fish",
+      "name": "School of Fish",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Four fish, always on their way somewhere else.",
+      "art": { "shape": "school-of-fish", "colors": ["#F28A3A", "#FFD08A"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "held.pearl-clam",
+      "name": "Pearl in a Clam",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A clam open just enough to show its pearl.",
+      "art": { "shape": "pearl-clam", "colors": ["#8FB8E8", "#FFF6F0"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "held.sea-staff",
+      "name": "Sea Staff",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Three tines and one gem. Strictly for ceremonies.",
+      "art": { "shape": "sea-staff", "colors": ["#D9A441", "#5FD6E6"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "outfit.turtle-shell-pack",
+      "name": "Turtle Shell Pack",
+      "slot": "outfit",
+      "rarity": "rare",
+      "description": "Carries its home on its back, and the notes too.",
+      "art": { "shape": "turtle-shell-pack", "colors": ["#4F8F5A", "#C5E39A"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "held.glass-float",
+      "name": "Sea-Glass Float",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A glass float on a rope. Bobs when you are thinking.",
+      "art": { "shape": "glass-float", "colors": ["#5BBFD6", "#E8D9A8"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "head.anglerfish-lure",
+      "name": "Anglerfish Lure",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A glowing lure on your headband. Lights up dark topics.",
+      "art": { "shape": "anglerfish-lure", "colors": ["#3D4F7C", "#FFE45C"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "held.sea-lantern",
+      "name": "Sea Lantern",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A brass cage with a soft light that breathes with you.",
+      "art": { "shape": "sea-lantern", "colors": ["#D9A441", "#B8F3FF"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "aura.kelp-sway",
+      "name": "Kelp Sway",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Kelp that sways beside you, slow and steady.",
+      "art": { "shape": "kelp-sway", "colors": ["#3E8A52", "#9FD98A"] },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "aura.little-whale",
+      "name": "Little Whale",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A tiny whale circles you and blows bubbles of encouragement.",
+      "art": { "shape": "little-whale", "colors": ["#8EC5F0", "#C9F0FF"] },
+      "set": "deep-sea",
+      "animated": true
+    }
+  ]
+}

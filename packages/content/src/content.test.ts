@@ -15,11 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, it } from "vitest";
+import lockedIds from "../data/ids.lock.json" with { type: "json" };
 import {
   ContentError,
   crateRules,
   items,
   MASCOTS,
+  PACKS,
   RARITIES,
   rewardRules,
   sets,
@@ -71,6 +73,30 @@ describe("shipped content", () => {
           `${slot} ${rarity}`,
         ).toBe(true);
       }
+    }
+  });
+
+  it("keeps every item id ever shipped (data/ids.lock.json)", () => {
+    // Ids are permanent: inventories refer to them forever. A new item's id is
+    // added to the lock file on purpose (scripts/lock-ids.ts); an id in the
+    // lock file may never disappear from the catalogue.
+    const locked: string[] = lockedIds;
+    const ids = new Set(items.map((i) => i.id));
+    for (const id of locked) expect(ids.has(id), `${id} is locked but missing`).toBe(true);
+    const lockedSet = new Set(locked);
+    const unlocked = items.filter((i) => !lockedSet.has(i.id)).map((i) => i.id);
+    expect(unlocked, "new ids: run node packages/content/scripts/lock-ids.ts").toEqual([]);
+  });
+
+  it("follows the colourway rule in packs: at most 3 per Common design, 2 per Uncommon, 1 above", () => {
+    const limit = { common: 3, uncommon: 2, rare: 1, epic: 1, legendary: 1, exotic: 1 };
+    const packIds = new Set(PACKS.flatMap((p) => p.items.map((i) => (i as { id: string }).id)));
+    const groups = new Map<string, number>();
+    for (const item of items) {
+      if (!packIds.has(item.id) || !("shape" in item.art)) continue;
+      const key = `${item.slot}:${item.art.shape}:${item.rarity}`;
+      groups.set(key, (groups.get(key) ?? 0) + 1);
+      expect(groups.get(key), key).toBeLessThanOrEqual(limit[item.rarity]);
     }
   });
 

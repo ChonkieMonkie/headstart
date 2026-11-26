@@ -371,6 +371,79 @@ body {
     opacity: 0;
   }
 }
+/* A stroke that paints itself, holds, then fades (pathLength="100" on the path). */
+@keyframes mc-paint {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 1;
+  }
+  45%,
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+/* A drop falling straight down, fading in and out. */
+@keyframes mc-drop {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(34px);
+    opacity: 0;
+  }
+}
+/* Dashes running along a stroke (stroke-dasharray "3 4"). */
+@keyframes mc-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+/* A hop with a little squash on landing. */
+@keyframes mc-hop {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(-14px) scale(0.96, 1.04);
+  }
+  66% {
+    transform: translateY(0) scale(1.06, 0.94);
+  }
+}
+/* A side-to-side waddle. */
+@keyframes mc-waddle {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+/* Mist drifting slowly sideways and back. */
+@keyframes mc-drift {
+  0%,
+  100% {
+    transform: translateX(-6px);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
 @keyframes mc-bob {
   0%,
   100% {

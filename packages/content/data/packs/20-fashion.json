@@ -1,0 +1,359 @@
+{
+  "shapes": {
+    "head": {
+      "top-hat": 2,
+      "fedora": 2,
+      "tiara": 2,
+      "feather-fascinator": 2
+    },
+    "face": {
+      "beauty-mark": 1,
+      "wire-half-moon": 2,
+      "lip-print": 1
+    },
+    "outfit": {
+      "pearl-necklace": 2,
+      "bow-brooch": 2,
+      "tuxedo-bib": 2,
+      "feather-boa": 2
+    },
+    "held": {
+      "hand-fan": 2,
+      "perfume-bottle": 2,
+      "hand-mirror": 2,
+      "handbag": 2,
+      "opera-glasses": 2,
+      "lace-parasol": 2,
+      "diamond-cane": 2
+    },
+    "aura": {
+      "runway-sparkle": 2,
+      "rose-petals": 2,
+      "golden-spotlight": 2
+    }
+  },
+  "scenes": {},
+  "items": [
+    {
+      "id": "head.top-hat-midnight",
+      "name": "Midnight Top Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A tall hat for very important exam days.",
+      "art": { "shape": "top-hat", "colors": ["#3B3F52", "#F2C14E"] }
+    },
+    {
+      "id": "head.top-hat-plum",
+      "name": "Plum Top Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A little too grand for a Tuesday, and that is fine.",
+      "art": { "shape": "top-hat", "colors": ["#7A4E8C", "#F6E7D8"] }
+    },
+    {
+      "id": "head.top-hat-coral",
+      "name": "Coral Top Hat",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Brightens the hall at nine in the morning.",
+      "art": { "shape": "top-hat", "colors": ["#F08A6C", "#3B3F52"] }
+    },
+    {
+      "id": "head.fedora-cocoa",
+      "name": "Cocoa Fedora",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A brim to think deeply under.",
+      "art": { "shape": "fedora", "colors": ["#8B5A3C", "#F2C14E"] }
+    },
+    {
+      "id": "head.fedora-sage",
+      "name": "Sage Fedora",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Looks very wise. Probably is.",
+      "art": { "shape": "fedora", "colors": ["#6F9A7A", "#F6E7D8"] }
+    },
+    {
+      "id": "head.tiara",
+      "name": "Tiara",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "Three gems that twinkle when you finally finish.",
+      "art": { "shape": "tiara", "colors": ["#F2C14E", "#8FD3F4"] },
+      "animated": true
+    },
+    {
+      "id": "head.feather-fascinator",
+      "name": "Feather Fascinator",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A tall feather that sways when you feel proud.",
+      "art": { "shape": "feather-fascinator", "colors": ["#F28AB0", "#D8B86A"] },
+      "animated": true
+    },
+    {
+      "id": "face.beauty-mark",
+      "name": "Beauty Mark",
+      "slot": "face",
+      "rarity": "common",
+      "description": "One small dot that says you woke up glamorous.",
+      "art": { "shape": "beauty-mark", "colors": ["#6B4226"] }
+    },
+    {
+      "id": "face.beauty-mark-berry",
+      "name": "Berry Beauty Mark",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Placed with care, like a footnote.",
+      "art": { "shape": "beauty-mark", "colors": ["#8E3B6B"] }
+    },
+    {
+      "id": "face.beauty-mark-ink",
+      "name": "Ink Beauty Mark",
+      "slot": "face",
+      "rarity": "common",
+      "description": "A tiny drop of ink, very sophisticated.",
+      "art": { "shape": "beauty-mark", "colors": ["#2E3A6B"] }
+    },
+    {
+      "id": "face.wire-half-moon-gold",
+      "name": "Gold Half-Moon Glasses",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Peer over them at the reading list.",
+      "art": { "shape": "wire-half-moon", "colors": ["#D8B86A", "#BFE6F5"] }
+    },
+    {
+      "id": "face.wire-half-moon-rose",
+      "name": "Rose Half-Moon Glasses",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "For reading the small print very seriously.",
+      "art": { "shape": "wire-half-moon", "colors": ["#C98F7A", "#F2C14E"] }
+    },
+    {
+      "id": "face.lip-print",
+      "name": "Lip Print",
+      "slot": "face",
+      "rarity": "rare",
+      "description": "A kiss from a friend, left on the cheek.",
+      "art": { "shape": "lip-print", "colors": ["#E0525E"] },
+      "animated": true
+    },
+    {
+      "id": "outfit.pearl-necklace-classic",
+      "name": "Classic Pearl Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Real pearls, or at least very convincing ones.",
+      "art": { "shape": "pearl-necklace", "colors": ["#F6E7D8", "#D8B86A"] }
+    },
+    {
+      "id": "outfit.pearl-necklace-rose",
+      "name": "Rose Pearl Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Rose pearls with a sapphire drop.",
+      "art": { "shape": "pearl-necklace", "colors": ["#F5B7C8", "#8FD3F4"] }
+    },
+    {
+      "id": "outfit.pearl-necklace-mint",
+      "name": "Mint Pearl Necklace",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Mint pearls with a lilac pendant.",
+      "art": { "shape": "pearl-necklace", "colors": ["#A8E6CF", "#9B7BD0"] }
+    },
+    {
+      "id": "outfit.bow-brooch-blush",
+      "name": "Blush Bow Brooch",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A small bow pinned neatly to the front.",
+      "art": { "shape": "bow-brooch", "colors": ["#F28AB0", "#D8B86A"] }
+    },
+    {
+      "id": "outfit.bow-brooch-ocean",
+      "name": "Ocean Bow Brooch",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "A little blue bow for calm, careful study.",
+      "art": { "shape": "bow-brooch", "colors": ["#5FA8D3", "#F6E7D8"] }
+    },
+    {
+      "id": "outfit.bow-brooch-sun",
+      "name": "Sun Bow Brooch",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Warm, bright and very easy to spot.",
+      "art": { "shape": "bow-brooch", "colors": ["#F2C14E", "#8E3B4E"] }
+    },
+    {
+      "id": "outfit.tuxedo-bib-midnight",
+      "name": "Midnight Tuxedo Bib",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Black tie for a seminar on a Tuesday.",
+      "art": { "shape": "tuxedo-bib", "colors": ["#3B3F52", "#F2C14E"] }
+    },
+    {
+      "id": "outfit.tuxedo-bib-burgundy",
+      "name": "Burgundy Tuxedo Bib",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Dressed early for the graduation photo.",
+      "art": { "shape": "tuxedo-bib", "colors": ["#8E3B4E", "#F6E7D8"] }
+    },
+    {
+      "id": "outfit.feather-boa-pink",
+      "name": "Pink Feather Boa",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Soft, fluffy and mostly in the way.",
+      "art": { "shape": "feather-boa", "colors": ["#F28AB0", "#F6E7D8"] }
+    },
+    {
+      "id": "outfit.feather-boa-teal",
+      "name": "Teal Feather Boa",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Wrapped twice for good luck.",
+      "art": { "shape": "feather-boa", "colors": ["#2A9D8F", "#F2C14E"] }
+    },
+    {
+      "id": "held.hand-fan-peach",
+      "name": "Peach Hand Fan",
+      "slot": "held",
+      "rarity": "common",
+      "description": "For fanning yourself through the exam hall.",
+      "art": { "shape": "hand-fan", "colors": ["#F6A88A", "#F6E7D8"] }
+    },
+    {
+      "id": "held.hand-fan-mint",
+      "name": "Mint Hand Fan",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Cool, calm and very neatly folded.",
+      "art": { "shape": "hand-fan", "colors": ["#7DD8C0", "#F2C14E"] }
+    },
+    {
+      "id": "held.hand-fan-lilac",
+      "name": "Lilac Hand Fan",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Lilac silk, mostly for dramatic sighs.",
+      "art": { "shape": "hand-fan", "colors": ["#B79AD9", "#F6E7D8"] }
+    },
+    {
+      "id": "held.perfume-bottle-rose",
+      "name": "Rose Perfume",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Smells faintly of fresh notes and library paper.",
+      "art": { "shape": "perfume-bottle", "colors": ["#F28AB0", "#D8B86A"] }
+    },
+    {
+      "id": "held.perfume-bottle-sea",
+      "name": "Sea-glass Perfume",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Smells like a summer you cannot have yet.",
+      "art": { "shape": "perfume-bottle", "colors": ["#7DD8C0", "#F6E7D8"] }
+    },
+    {
+      "id": "held.perfume-bottle-amethyst",
+      "name": "Amethyst Perfume",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A small bottle with a big opinion.",
+      "art": { "shape": "perfume-bottle", "colors": ["#9B7BD0", "#F2C14E"] }
+    },
+    {
+      "id": "held.hand-mirror-rose",
+      "name": "Rose Hand Mirror",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "For checking your face before the oral exam.",
+      "art": { "shape": "hand-mirror", "colors": ["#E58FA3", "#BFE6F5"] }
+    },
+    {
+      "id": "held.hand-mirror-gold",
+      "name": "Gold Hand Mirror",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Mostly used for checking your hair.",
+      "art": { "shape": "hand-mirror", "colors": ["#D8B86A", "#C9E4F5"] }
+    },
+    {
+      "id": "held.handbag-berry",
+      "name": "Berry Handbag",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Holds a notebook, two pens and a snack.",
+      "art": { "shape": "handbag", "colors": ["#B5517A", "#F6E7D8"] }
+    },
+    {
+      "id": "held.handbag-sky",
+      "name": "Sky Handbag",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Big enough for the whole reading list.",
+      "art": { "shape": "handbag", "colors": ["#5FA8D3", "#F2C14E"] }
+    },
+    {
+      "id": "held.opera-glasses",
+      "name": "Opera Glasses",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "For watching the lecturer from the back row.",
+      "art": { "shape": "opera-glasses", "colors": ["#D8B86A", "#8E3B4E"] },
+      "animated": true
+    },
+    {
+      "id": "held.lace-parasol",
+      "name": "Lace Parasol",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "Shade for the walk between the libraries.",
+      "art": { "shape": "lace-parasol", "colors": ["#F5B7C8", "#F6E7D8"] },
+      "animated": true
+    },
+    {
+      "id": "held.diamond-cane",
+      "name": "Diamond Cane",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "A walking stick with a gem that catches the light.",
+      "art": { "shape": "diamond-cane", "colors": ["#D8B86A", "#8FD3F4"] },
+      "animated": true
+    },
+    {
+      "id": "aura.runway-sparkle",
+      "name": "Runway Sparkle",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "A little twinkle with every step to class.",
+      "art": { "shape": "runway-sparkle", "colors": ["#F6D365", "#F28AB0"] },
+      "animated": true
+    },
+    {
+      "id": "aura.rose-petals",
+      "name": "Falling Rose Petals",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Petals drift down while you revise.",
+      "art": { "shape": "rose-petals", "colors": ["#F28AB0", "#C0476E"] },
+      "animated": true
+    },
+    {
+      "id": "aura.golden-spotlight",
+      "name": "Golden Spotlight",
+      "slot": "aura",
+      "rarity": "legendary",
+      "description": "A golden glow and sparkles, for the finest studier.",
+      "art": { "shape": "golden-spotlight", "colors": ["#F2C14E", "#FFF3C4"] },
+      "animated": true
+    }
+  ]
+}

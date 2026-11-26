@@ -39,7 +39,11 @@ function count(state: ProgressState, items: readonly Item[]): CollectionCount {
 export function collectionCount(state: ProgressState, catalog: readonly Item[]): CollectionCount {
   return count(
     state,
-    catalog.filter((i) => !i.grantOnly && (i.dropsFromCrates !== false || owns(state, i.id))),
+    catalog.filter(
+      (i) =>
+        !i.grantOnly &&
+        (i.dropsFromCrates !== false || i.slot === "background" || owns(state, i.id)),
+    ),
   );
 }
 
@@ -63,7 +67,8 @@ export function setProgress(
     set,
     ...count(
       state,
-      catalog.filter((i) => i.set === set.id),
+      // The background is the set's reward, not one of its pieces.
+      catalog.filter((i) => i.set === set.id && i.slot !== "background"),
     ),
   }));
 }

@@ -1,0 +1,554 @@
+{
+  "shapes": {
+    "head": {
+      "frog-bucket": 3,
+      "earflap-hat": 2,
+      "mushroom-cap": 3,
+      "cat-ears": 2,
+      "space-boppers": 2,
+      "saturn-hat": 3
+    },
+    "face": {
+      "moustache": 1,
+      "snorkel-mask": 2,
+      "gold-star": 1,
+      "sleep-mask": 2
+    },
+    "outfit": {
+      "raincoat": 3,
+      "argyle-vest": 3,
+      "life-ring": 3,
+      "apron": 2
+    },
+    "held": {
+      "watering-can": 2,
+      "balloon": 1,
+      "potted-cactus": 3,
+      "instant-noodles": 3,
+      "rubber-duck": 2,
+      "fishing-rod": 2,
+      "snow-globe": 3,
+      "jellyfish-lamp": 2
+    },
+    "aura": {
+      "rain-cloud": 2,
+      "fireflies": 2,
+      "paper-planes": 2
+    }
+  },
+  "scenes": {
+    "library": 0,
+    "aquarium": 0
+  },
+  "items": [
+    {
+      "id": "head.cat-ears-charcoal",
+      "name": "Cat Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "A headband with ears. Cute on every buddy.",
+      "art": {
+        "shape": "cat-ears",
+        "colors": ["#3B3F52", "#F28AB0"]
+      }
+    },
+    {
+      "id": "head.cat-ears-cream",
+      "name": "Cream Cat Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Soft cream ears with pink insides.",
+      "art": {
+        "shape": "cat-ears",
+        "colors": ["#F6E7D8", "#F28AB0"]
+      }
+    },
+    {
+      "id": "head.cat-ears-ginger",
+      "name": "Ginger Cat Ears",
+      "slot": "head",
+      "rarity": "common",
+      "description": "For the orange cat in all of us.",
+      "art": {
+        "shape": "cat-ears",
+        "colors": ["#E9A93A", "#FFE0C2"]
+      }
+    },
+    {
+      "id": "head.trapper-knit-rust",
+      "name": "Trapper Knit",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Ear flaps, braids and a zigzag band.",
+      "art": {
+        "shape": "earflap-hat",
+        "colors": ["#C8573A", "#F6E7D8"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "head.trapper-knit-navy",
+      "name": "Navy Trapper Knit",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Warm enough for the walk to the library.",
+      "art": {
+        "shape": "earflap-hat",
+        "colors": ["#2E3A6B", "#F2C14E"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "head.trapper-knit-moss",
+      "name": "Moss Trapper Knit",
+      "slot": "head",
+      "rarity": "common",
+      "description": "Knitted in forest colours.",
+      "art": {
+        "shape": "earflap-hat",
+        "colors": ["#5E7F4A", "#F1E6C8"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "face.fine-moustache",
+      "name": "Fine Moustache",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Very distinguished. One colour is enough.",
+      "art": {
+        "shape": "moustache",
+        "colors": ["#6B4226"]
+      }
+    },
+    {
+      "id": "face.ginger-moustache",
+      "name": "Ginger Moustache",
+      "slot": "face",
+      "rarity": "common",
+      "description": "Curled every morning.",
+      "art": {
+        "shape": "moustache",
+        "colors": ["#C8573A"]
+      }
+    },
+    {
+      "id": "face.gold-star",
+      "name": "Gold Star",
+      "slot": "face",
+      "rarity": "common",
+      "description": "The teacher's sticker, on one cheek.",
+      "art": {
+        "shape": "gold-star",
+        "colors": ["#F5C542"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "outfit.raincoat-yellow",
+      "name": "Raincoat",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Yellow, with toggles. For grey weeks.",
+      "art": {
+        "shape": "raincoat",
+        "colors": ["#F5C542", "#8E6136", "#E0A72E"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "outfit.raincoat-red",
+      "name": "Red Raincoat",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Easy to spot through the drizzle.",
+      "art": {
+        "shape": "raincoat",
+        "colors": ["#E5533D", "#F6E7D8", "#C0402D"]
+      },
+      "set": "rainy-day"
+    },
+    {
+      "id": "outfit.cafe-apron",
+      "name": "Café Apron",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "For the barista who studies between orders.",
+      "art": {
+        "shape": "apron",
+        "colors": ["#7DB8A8", "#F6F1E6"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "outfit.cafe-apron-brown",
+      "name": "Espresso Apron",
+      "slot": "outfit",
+      "rarity": "common",
+      "description": "Dark roast, extra pockets.",
+      "art": {
+        "shape": "apron",
+        "colors": ["#8A5A3B", "#F6E7D8"]
+      },
+      "set": "cafe"
+    },
+    {
+      "id": "held.instant-noodles",
+      "name": "Instant Noodles",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Exam week dinner, chopsticks included.",
+      "art": {
+        "shape": "instant-noodles",
+        "colors": ["#F7F2EA", "#E5533D", "#C98A4B"]
+      },
+      "set": "student-life"
+    },
+    {
+      "id": "held.rubber-duck",
+      "name": "Rubber Duck",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Explain your problem to the duck.",
+      "art": {
+        "shape": "rubber-duck",
+        "colors": ["#F5C542", "#F28A3A"]
+      }
+    },
+    {
+      "id": "held.balloon-pink",
+      "name": "Balloon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Bobs gently. One colour, one string.",
+      "art": {
+        "shape": "balloon",
+        "colors": ["#E9579A"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.balloon-sky",
+      "name": "Sky Balloon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Floats like a good idea.",
+      "art": {
+        "shape": "balloon",
+        "colors": ["#5B9FE0"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.balloon-sunny",
+      "name": "Sunny Balloon",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A little sun on a string.",
+      "art": {
+        "shape": "balloon",
+        "colors": ["#F5C542"]
+      },
+      "animated": true
+    },
+    {
+      "id": "held.watering-can",
+      "name": "Watering Can",
+      "slot": "held",
+      "rarity": "common",
+      "description": "A few drops for the plants on your desk.",
+      "art": {
+        "shape": "watering-can",
+        "colors": ["#5FA8D3", "#8FD3F5"]
+      },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "held.watering-can-tin",
+      "name": "Tin Watering Can",
+      "slot": "held",
+      "rarity": "common",
+      "description": "Old, dented and much loved.",
+      "art": {
+        "shape": "watering-can",
+        "colors": ["#9AA3B5", "#8FD3F5"]
+      },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "head.frog-hat",
+      "name": "Frog Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "A bucket hat that is also a frog.",
+      "art": {
+        "shape": "frog-bucket",
+        "colors": ["#7CC36A", "#4E9A45", "#FFFFFF"]
+      },
+      "set": "garden"
+    },
+    {
+      "id": "head.tree-frog-hat",
+      "name": "Tree Frog Hat",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Bright green with red bands, straight from the rainforest.",
+      "art": {
+        "shape": "frog-bucket",
+        "colors": ["#3FBF8F", "#E5533D", "#FFFFFF"]
+      },
+      "set": "garden"
+    },
+    {
+      "id": "head.space-boppers",
+      "name": "Space Boppers",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Springy antennae with glowing tips.",
+      "art": {
+        "shape": "space-boppers",
+        "colors": ["#5B4BD6", "#7FF0E0"]
+      },
+      "set": "space",
+      "animated": true
+    },
+    {
+      "id": "head.alien-boppers",
+      "name": "Alien Boppers",
+      "slot": "head",
+      "rarity": "uncommon",
+      "description": "Take me to your study group.",
+      "art": {
+        "shape": "space-boppers",
+        "colors": ["#3FBF8F", "#F5C542"]
+      },
+      "set": "space",
+      "animated": true
+    },
+    {
+      "id": "face.snorkel-mask",
+      "name": "Snorkel Mask",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Ready to dive into the reading list.",
+      "art": {
+        "shape": "snorkel-mask",
+        "colors": ["#F28A3A", "#BFE8FF"]
+      },
+      "set": "deep-sea"
+    },
+    {
+      "id": "face.sleep-mask",
+      "name": "Sleep Mask",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Closed eyes printed on. Eight hours, please.",
+      "art": {
+        "shape": "sleep-mask",
+        "colors": ["#8B7FD1", "#FFFFFF"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "face.sleep-mask-night",
+      "name": "Night Sleep Mask",
+      "slot": "face",
+      "rarity": "uncommon",
+      "description": "Gold lashes on midnight blue.",
+      "art": {
+        "shape": "sleep-mask",
+        "colors": ["#2E3A6B", "#F5C542"]
+      },
+      "set": "cosy"
+    },
+    {
+      "id": "outfit.argyle-vest",
+      "name": "Argyle Vest",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Knitted diamonds for quiet reading rooms.",
+      "art": {
+        "shape": "argyle-vest",
+        "colors": ["#E0A72E", "#8E6136", "#F6E7D8"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "outfit.argyle-vest-navy",
+      "name": "Navy Argyle Vest",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Very proper, very warm.",
+      "art": {
+        "shape": "argyle-vest",
+        "colors": ["#2E3A6B", "#C8403A", "#F2C14E"]
+      },
+      "set": "library"
+    },
+    {
+      "id": "outfit.life-ring",
+      "name": "Life Ring",
+      "slot": "outfit",
+      "rarity": "uncommon",
+      "description": "Keeps you afloat in exam season.",
+      "art": {
+        "shape": "life-ring",
+        "colors": ["#FFFFFF", "#E5533D", "#F1D9B5"]
+      },
+      "set": "deep-sea"
+    },
+    {
+      "id": "held.desk-cactus",
+      "name": "Desk Cactus",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "Hard to kill, flowers once a year.",
+      "art": {
+        "shape": "potted-cactus",
+        "colors": ["#D9774B", "#6DBB5A", "#F28AB0"]
+      },
+      "set": "garden"
+    },
+    {
+      "id": "held.desk-cactus-blue",
+      "name": "Blue Pot Cactus",
+      "slot": "held",
+      "rarity": "uncommon",
+      "description": "A yellow flower in a blue pot.",
+      "art": {
+        "shape": "potted-cactus",
+        "colors": ["#5B9FE0", "#6DBB5A", "#F5C542"]
+      },
+      "set": "garden"
+    },
+    {
+      "id": "head.toadstool",
+      "name": "Toadstool",
+      "slot": "head",
+      "rarity": "rare",
+      "description": "A big spotted cap, gills and all.",
+      "art": {
+        "shape": "mushroom-cap",
+        "colors": ["#D9483B", "#FFF6EC", "#F1D9B5"]
+      },
+      "set": "garden"
+    },
+    {
+      "id": "held.lucky-catch",
+      "name": "Lucky Catch",
+      "slot": "held",
+      "rarity": "rare",
+      "description": "A rod with a small fish that wiggles on the line.",
+      "art": {
+        "shape": "fishing-rod",
+        "colors": ["#4A7FC1", "#F28A3A"]
+      },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "aura.own-weather",
+      "name": "Own Weather",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "A little cloud that rains beside you.",
+      "art": {
+        "shape": "rain-cloud",
+        "colors": ["#C9D3E6", "#5FA8D3"]
+      },
+      "set": "rainy-day",
+      "animated": true
+    },
+    {
+      "id": "aura.paper-planes",
+      "name": "Paper Planes",
+      "slot": "aura",
+      "rarity": "rare",
+      "description": "Folded from old notes, gliding around you.",
+      "art": {
+        "shape": "paper-planes",
+        "colors": ["#FFFFFF", "#9AA3B5"]
+      },
+      "set": "library",
+      "animated": true
+    },
+    {
+      "id": "head.tiny-saturn",
+      "name": "Tiny Saturn",
+      "slot": "head",
+      "rarity": "epic",
+      "description": "A ringed planet floating above your head.",
+      "art": {
+        "shape": "saturn-hat",
+        "colors": ["#F2A541", "#F6E3B4", "#FFFFFF"]
+      },
+      "set": "space",
+      "animated": true
+    },
+    {
+      "id": "held.snow-globe",
+      "name": "Snow Globe",
+      "slot": "held",
+      "rarity": "epic",
+      "description": "It never stops snowing inside.",
+      "art": {
+        "shape": "snow-globe",
+        "colors": ["#8E6136", "#3E7A3A", "#DDEBFF"]
+      },
+      "set": "cosy",
+      "animated": true
+    },
+    {
+      "id": "aura.fireflies",
+      "name": "Fireflies",
+      "slot": "aura",
+      "rarity": "epic",
+      "description": "Soft lights blinking around you, one at a time.",
+      "art": {
+        "shape": "fireflies",
+        "colors": ["#F7E04A", "#FFF3A0"]
+      },
+      "set": "garden",
+      "animated": true
+    },
+    {
+      "id": "held.moon-jelly",
+      "name": "Moon Jelly",
+      "slot": "held",
+      "rarity": "legendary",
+      "description": "A glowing jellyfish on a leash. It pulses while you focus.",
+      "art": {
+        "shape": "jellyfish-lamp",
+        "colors": ["#FF9AD5", "#B8F3FF"]
+      },
+      "set": "deep-sea",
+      "animated": true
+    },
+    {
+      "id": "background.cosy-library",
+      "name": "Cosy Library",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "library",
+      "description": "Bookshelves, a window at dusk and a rug. For finishing the Library set.",
+      "art": {
+        "scene": "library",
+        "colors": []
+      }
+    },
+    {
+      "id": "background.aquarium",
+      "name": "Aquarium",
+      "slot": "background",
+      "rarity": "epic",
+      "set": "deep-sea",
+      "description": "Light from above, seaweed and bubbles. For finishing the Deep Sea set.",
+      "art": {
+        "scene": "aquarium",
+        "colors": []
+      }
+    }
+  ]
+}

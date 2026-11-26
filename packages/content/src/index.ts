@@ -20,7 +20,10 @@ import plaquesJson from "../data/plaques.json" with { type: "json" };
 import ranksJson from "../data/ranks.json" with { type: "json" };
 import rewardsJson from "../data/rewards.json" with { type: "json" };
 import setsJson from "../data/sets.json" with { type: "json" };
+import { PACKS } from "./packs.ts";
 import {
+  catalogWithPacks,
+  mergeShapes,
   validateCrateRules,
   validateItems,
   validatePlaques,
@@ -29,9 +32,12 @@ import {
   validateSets,
 } from "./validate.ts";
 
+export { PACKS } from "./packs.ts";
 export * from "./types.ts";
 export {
   ContentError,
+  catalogWithPacks,
+  mergeShapes,
   PLAQUE_TIERS,
   validateCrateRules,
   validateItems,
@@ -44,8 +50,11 @@ export {
 /** Themed item sets. */
 export const sets = validateSets(setsJson);
 
-/** The item catalogue, validated when the module loads. */
-export const items = validateItems(itemsJson, sets);
+/** Every shape and background scene the renderer can draw, packs included. */
+export const shapeTables = mergeShapes(PACKS);
+
+/** The item catalogue, packs included, validated when the module loads. */
+export const items = validateItems(catalogWithPacks(itemsJson, PACKS), sets, shapeTables);
 
 /** Crate definitions, odds, pity limits and Insight values. */
 export const crateRules = validateCrateRules(cratesJson);
